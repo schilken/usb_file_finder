@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
@@ -9,88 +10,144 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return BlocProvider<AppCubit>(
+    return BlocProvider<AppCubit>(
           create: (context) => AppCubit(),
-          child: MacosScaffold(
-            toolBar: ToolBar(
-              title: const Text('Open Source Browser'),
-              titleWidth: 250.0,
-              actions: [
-                ToolBarIconButton(
-                  label: 'Toggle Sidebar',
-                  icon: const MacosIcon(CupertinoIcons.sidebar_left),
-                  showLabel: false,
-                  tooltipMessage: 'Toggle Sidebar',
-                  onPressed: () {
-                    MacosWindowScope.of(context).toggleSidebar();
-                  },
-                ),
-                ToolBarSpacer(spacerUnits: 3),
-                ToolBarPullDownButton(
-                  label: "Actions",
-                  icon: CupertinoIcons.ellipsis_circle,
-                  tooltipMessage: "Perform tasks with the selected items",
-                  items: [
-                    MacosPulldownMenuItem(
-                      label: "Open file list",
-                      title: const Text("Open File List"),
-                      onTap: () {
-                        context.read<AppCubit>().loadFileList();
-                      },
-                    ),
-                    const MacosPulldownMenuDivider(),
-                    MacosPulldownMenuItem(
-                      label: "Remove",
-                      enabled: false,
-                      title: const Text('Remove'),
-                      onTap: () => debugPrint("Deleting..."),
-                    ),
-                  ],
-                ),
-                const ToolBarDivider(),
-                const ToolbarSearchfield(placeholder: 'Primary word'),
-                const ToolbarSearchfield(placeholder: 'Secondary word'),
-                ToolBarIconButton(
-                  label: "Search",
-                  icon: const MacosIcon(
-                    CupertinoIcons.search,
-                  ),
-                  onPressed: () => debugPrint("Search ..."),
-                  showLabel: false,
-                ),
-                const ToolBarDivider(),
-                ToolBarIconButton(
-                  label: "Share",
-                  icon: const MacosIcon(
-                    CupertinoIcons.share,
-                  ),
-                  onPressed: () => debugPrint("pressed"),
-                  showLabel: false,
-                ),
-              ],
-            ),
-            children: [
-              ContentArea(
-                builder: (context, scrollController) {
-                  return const Center(
-                    child: Text('Home'),
-                  );
+      child: Builder(builder: (context) {
+        return MacosScaffold(
+          toolBar: ToolBar(
+            title: const Text('Open Source Browser'),
+            titleWidth: 250.0,
+            actions: [
+              ToolBarIconButton(
+                label: 'Toggle Sidebar',
+                icon: const MacosIcon(CupertinoIcons.sidebar_left),
+                showLabel: false,
+                tooltipMessage: 'Toggle Sidebar',
+                onPressed: () {
+                  MacosWindowScope.of(context).toggleSidebar();
                 },
               ),
-              ResizablePane(
-                  minWidth: 300,
-                  startWidth: 300,
-                  windowBreakpoint: 800,
-                  resizableSide: ResizableSide.left,
-                  builder: (_, __) {
-                    return Center(child: Text('details'));
-                  })
+              ToolBarSpacer(spacerUnits: 3),
+              ToolBarPullDownButton(
+                label: "Actions",
+                icon: CupertinoIcons.ellipsis_circle,
+                tooltipMessage: "Perform tasks with the selected items",
+                items: [
+                  MacosPulldownMenuItem(
+                    label: "Open file list",
+                    title: const Text("Open File List"),
+                    onTap: () {
+                      context.read<AppCubit>().loadFileList();
+                    },
+                  ),
+                  const MacosPulldownMenuDivider(),
+                  MacosPulldownMenuItem(
+                    label: "Remove",
+                    enabled: false,
+                    title: const Text('Remove'),
+                    onTap: () => debugPrint("Deleting..."),
+                  ),
+                ],
+              ),
+              const ToolBarDivider(),
+              ToolbarSearchfield(
+                placeholder: 'Primary word',
+                onChanged: (word) =>
+                    context.read<AppCubit>().setPrimarySearchWord(word),
+              ),
+              ToolbarSearchfield(
+                placeholder: 'Secondary word',
+                onChanged: (word) =>
+                    context.read<AppCubit>().setSecondarySearchWord(word),
+              ),
+              ToolBarIconButton(
+                label: "Search",
+                icon: const MacosIcon(
+                  CupertinoIcons.search,
+                ),
+                onPressed: () => context.read<AppCubit>().search(),
+                showLabel: false,
+              ),
+              const ToolBarDivider(),
+              ToolBarIconButton(
+                label: "Share",
+                icon: const MacosIcon(
+                  CupertinoIcons.share,
+                ),
+                onPressed: () => debugPrint("pressed"),
+                showLabel: false,
+              ),
             ],
           ),
+          children: [
+            ContentArea(
+              builder: (context, scrollController) {
+                return BlocBuilder<AppCubit, AppState>(
+                  builder: (context, state) {
+                    if (state is DetailsLoaded) {
+                      return Column(
+                        children: [
+                          Container(
+                            color: Colors.blueGrey[100],
+                            padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('Current File: '),
+                                BlocBuilder<AppCubit, AppState>(
+                                  builder: (context, topState) {
+                                    if (topState is DetailsLoaded) {
+                                      return Text(topState.currentPathname);
+                                    } else if (topState is DetailsLoading) {
+                                      return const CupertinoActivityIndicator();
+                                    }
+                                    return const Text('No file selected');
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView.separated(
+                              itemCount: state.details.length,
+                              itemBuilder: (context, index) {
+                                final detail = state.details[index];
+                                return MacosListTile(
+                                    title: Padding(
+                                  padding: EdgeInsets.fromLTRB(20, 12, 8, 8),
+                                  child: Text(detail.title ?? 'no title'),
+                                ));
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return const Divider(
+                                  thickness: 2,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (state is DetailsLoading) {
+                      return const CupertinoActivityIndicator();
+                    }
+                    return Center(child: const Text('No file selected'));
+                  },
+                  );
+              },
+            ),
+            ResizablePane(
+                minWidth: 300,
+                startWidth: 300,
+                windowBreakpoint: 800,
+                resizableSide: ResizableSide.left,
+                builder: (_, __) {
+                  return Center(child: Text('Details'));
+                })
+          ],
         );
-      },
+      }
+          ),
     );
   }
 }
