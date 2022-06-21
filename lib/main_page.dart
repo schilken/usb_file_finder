@@ -107,16 +107,32 @@ class MainPage extends StatelessWidget {
                               ],
                             ),
                           ),
+                          if (state.message != null)
+                            Container(
+                                padding: EdgeInsets.all(20),
+                                color: Colors.red[100],
+                                child: Text(state.message!)),
                           Expanded(
                             child: ListView.separated(
+                              controller: ScrollController(),
                               itemCount: state.details.length,
                               itemBuilder: (context, index) {
                                 final detail = state.details[index];
                                 return MacosListTile(
                                     title: Padding(
                                   padding: EdgeInsets.fromLTRB(20, 12, 8, 8),
-                                  child: Text(detail.title ?? 'no title'),
-                                ));
+                                    child: Text(
+                                        detail.previewText ?? 'no preview'),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(detail.projectName ?? 'no project'),
+                                      Text(detail.title ?? 'no title'),
+                                    ],
+                                  ),
+                                );
                               },
                               separatorBuilder:
                                   (BuildContext context, int index) {
