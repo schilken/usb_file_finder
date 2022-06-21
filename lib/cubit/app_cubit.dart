@@ -66,16 +66,23 @@ class AppCubit extends Cubit<AppState> {
     }
     processAllFilesIn(currentPathname, primaryWord!);
     await Future.delayed(Duration(milliseconds: 1000));
-    emit(
-      DetailsLoaded(
-        currentPathname: currentPathname,
-        details: sectionsMap.keys
+    final primaryResult = sectionsMap.keys
             .map((key) => Detail(
                   projectName: key.split('/lib').first,
                   title: key.split('/lib').last,
                   previewText: sectionsMap[key]!.join('\n'),
                 ))
-            .toList(),
+        .toList();
+    var secondaryResult = primaryResult;
+    if (secondaryWord != null && (secondaryWord ?? '').length > 2) {
+      secondaryResult = primaryResult
+          .where((detail) => secondaryMatch(detail, secondaryWord!))
+          .toList();
+    }
+    emit(
+      DetailsLoaded(
+        currentPathname: currentPathname,
+        details: secondaryResult,
       ),
     );
   }
@@ -121,5 +128,9 @@ class AppCubit extends Cubit<AppState> {
       print('exception: $e');
     }
     return followingLines;
+  }
+  
+  bool secondaryMatch(Detail item, String secondaryWord) {
+    return item.previewText?.contains(secondaryWord) ?? false;
   }
 }
