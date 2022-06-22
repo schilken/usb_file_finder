@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
+import 'package:open_source_browser/highlighted_text.dart';
 import 'package:open_source_browser/toolbar_searchfield.dart';
 
 class MainPage extends StatelessWidget {
@@ -94,16 +95,7 @@ class MainPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text('Current File: '),
-                                BlocBuilder<AppCubit, AppState>(
-                                  builder: (context, topState) {
-                                    if (topState is DetailsLoaded) {
-                                      return Text(topState.currentPathname);
-                                    } else if (topState is DetailsLoading) {
-                                      return const CupertinoActivityIndicator();
-                                    }
-                                    return const Text('No file selected');
-                                  },
-                                ),
+                                Text(state.currentPathname)
                               ],
                             ),
                           ),
@@ -121,8 +113,13 @@ class MainPage extends StatelessWidget {
                                 return MacosListTile(
                                     title: Padding(
                                   padding: EdgeInsets.fromLTRB(20, 12, 8, 8),
-                                    child: Text(
-                                        detail.previewText ?? 'no preview'),
+                                    child: HighlightedText(
+                                      text: detail.previewText ?? 'no preview',
+                                      highlights: [
+                                        state.primaryWord ?? '@',
+                                        state.secondaryWord ?? '@',
+                                      ],
+                                    ),
                                   ),
                                   subtitle: Column(
                                     crossAxisAlignment:

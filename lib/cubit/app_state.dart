@@ -26,6 +26,23 @@ class Detail {
     this.imageUrl,
     this.webDetailUUID,
   });
+
+  Detail copyWith({
+    String? title,
+    String? projectName,
+    String? previewText,
+    String? markdown,
+    String? imageUrl,
+    String? webDetailUUID,
+  }) {
+    return Detail(
+      title: title ?? this.title,
+      projectName: projectName ?? this.projectName,
+      previewText: previewText ?? this.previewText,
+      imageUrl: imageUrl ?? this.imageUrl,
+      webDetailUUID: webDetailUUID ?? this.webDetailUUID,
+    );
+  }
 }
 
 class DetailsLoading extends AppState {}
@@ -41,7 +58,9 @@ class DetailsLoaded extends AppState {
     required this.details,
     required this.currentPathname,
     this.message,
-  });
+    String? primaryWord,
+    String? secondaryWord,
+  }) : super(primaryWord: primaryWord, secondaryWord: secondaryWord);
 
   DetailsLoaded copyWith({
     String? fileType,

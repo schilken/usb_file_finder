@@ -83,6 +83,8 @@ class AppCubit extends Cubit<AppState> {
       DetailsLoaded(
         currentPathname: currentPathname,
         details: secondaryResult,
+        primaryWord: primaryWord,
+        secondaryWord: secondaryWord,
       ),
     );
   }
@@ -132,5 +134,11 @@ class AppCubit extends Cubit<AppState> {
   
   bool secondaryMatch(Detail item, String secondaryWord) {
     return item.previewText?.contains(secondaryWord) ?? false;
+  }
+  
+  Detail addMarkdown(Detail detail) {
+    var markdowned =
+        detail.previewText!.replaceAll(primaryWord!, '**$primaryWord**');
+    return detail.copyWith(markdown: markdowned);
   }
 }
