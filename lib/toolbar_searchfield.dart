@@ -10,17 +10,20 @@ class ToolbarSearchfield extends ToolbarItem {
     Key? key,
     this.placeholder,
     required this.onChanged,
+    required this.onSubmitted,
   }) : super(key: key);
   final String? placeholder;
   final StringCallback onChanged;
+  final StringCallback onSubmitted;
 
   @override
   Widget build(BuildContext context, ToolbarItemDisplayMode displayMode) {
     return SizedBox(
-      width: 150,
+      width: 120,
       child: HookedSearchField(
         placeholder: placeholder,
         onChanged: onChanged,
+        onSubmitted: onSubmitted,
       ),
     );
   }
@@ -31,9 +34,13 @@ class HookedSearchField extends HookWidget {
     Key? key,
     this.placeholder,
     required this.onChanged,
+    required this.onSubmitted,
+
   }) : super(key: key);
   final String? placeholder;
   final StringCallback onChanged;
+  final StringCallback onSubmitted;
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +48,13 @@ class HookedSearchField extends HookWidget {
     controller.addListener(() {
       onChanged('');
     });
-    return MacosSearchField(
+    return MacosTextField(
       controller: controller,
       placeholder: placeholder,
       maxLines: 1,
       onTap: () {},
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
     );
   }
 }

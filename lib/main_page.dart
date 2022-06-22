@@ -103,11 +103,13 @@ class MainPage extends StatelessWidget {
                 placeholder: 'Primary word',
                 onChanged: (word) =>
                     context.read<AppCubit>().setPrimarySearchWord(word),
+                onSubmitted: (word) => context.read<AppCubit>().search(),
               ),
               ToolbarSearchfield(
                 placeholder: 'Secondary word',
                 onChanged: (word) =>
                     context.read<AppCubit>().setSecondarySearchWord(word),
+                onSubmitted: (word) => context.read<AppCubit>().search(),
               ),
               ToolBarIconButton(
                 label: "Search",
