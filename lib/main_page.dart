@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
 import 'package:open_source_browser/highlighted_text.dart';
@@ -67,7 +68,7 @@ class MainPage extends StatelessWidget {
                     },
                   ),
                   MacosPulldownMenuItem(
-                    title: const Text("Scan Folder for Image Files"),
+                    title: const Text("Scan Folder for SVG Files"),
                     onTap: () async {
                       String? selectedDirectory =
                           await FilePicker.platform.getDirectoryPath();
@@ -75,7 +76,7 @@ class MainPage extends StatelessWidget {
                         context
                             .read<AppCubit>()
                             .scanFolder(
-                            folderPath: selectedDirectory, type: 'png');
+                            folderPath: selectedDirectory, type: 'svg');
                       }
                     },
                   ),
@@ -148,7 +149,7 @@ class MainPage extends StatelessWidget {
                         children: [
                           Container(
                             color: Colors.blueGrey[100],
-                            padding: EdgeInsets.fromLTRB(12, 20, 20, 20),
+                            padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -157,7 +158,7 @@ class MainPage extends StatelessWidget {
                                 else
                                   Text('${state.fileType} Files in Folder: '),
                                 Text(state.currentPathname),
-                                Spacer(),
+                                const Spacer(),
                                 Text(
                                     '${state.fileCount}|${state.primaryHitCount}|${state.secondaryHitCount}'),
                               ],
@@ -165,7 +166,7 @@ class MainPage extends StatelessWidget {
                           ),
                           if (state.message != null)
                             Container(
-                                padding: EdgeInsets.all(20),
+                                padding: const EdgeInsets.all(20),
                                 color: Colors.red[100],
                                 child: Text(state.message!)),
                           Expanded(
@@ -186,21 +187,34 @@ class MainPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 12,
                                       ),
                                       Text(
                                         detail.projectName ?? 'no project',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 15,
                                         ),
                                       ),
                                       Text(
                                         detail.title ?? 'no title',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 15,
                                         ),
                                       ),
+                                      if (detail.imageUrl != null)
+                                        FutureBuilder<String?>(
+                                            future:
+                                                _loadSvgFile(detail.imageUrl!),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return SvgPicture.string(
+                                                    height: 100,
+                                                    width: 100,
+                                                    snapshot.data ?? '');
+                                              }
+                                              return CircularProgressIndicator();
+                                            })
                                     ],
                                   ),
                                 );
@@ -236,5 +250,10 @@ class MainPage extends StatelessWidget {
       }
           ),
     );
+  }
+  
+  Future<String?> _loadSvgFile(String imageUrl) async {
+    final svgAsString = await File(imageUrl).readAsString();
+    return svgAsString;
   }
 }

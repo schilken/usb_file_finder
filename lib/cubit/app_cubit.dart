@@ -72,7 +72,7 @@ class AppCubit extends Cubit<AppState> {
   Future<void> search() async {
     emit(DetailsLoading());
     print('search: $_primaryWord $_secondaryWord');
-    if (_currentPathname == "no file selected") {
+    if (_currentPathname == "no filelist selected") {
       emit(
         DetailsLoaded(
             currentPathname: _currentPathname,
@@ -98,6 +98,44 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
+    if (_fileType == 'svg') {
+      await searchInFilename();
+    } else {
+      await searchForText();
+    }
+  }
+
+  Future<void> searchInFilename() async {
+    final primaryResult = <Detail>[];
+    for (final path in _allFilePaths!) {
+      if (path.contains(_primaryWord!)) {
+        _primaryHitCount++;
+        var shortPath = path;
+        if (_folderPath != null) {
+          shortPath = path.replaceFirst('${_folderPath!}/', '');
+        }
+        primaryResult.add(Detail(
+          title: shortPath.split('/assets').last,
+          projectName: shortPath.split('/assets').first,
+          imageUrl: path,
+        ));
+      }
+    }
+    emit(
+      DetailsLoaded(
+        currentPathname: _currentPathname,
+        fileType: _fileType,
+        fileCount: _fileCount,
+        primaryHitCount: _primaryHitCount,
+        secondaryHitCount: _secondaryHitCount,
+        details: primaryResult,
+        primaryWord: _primaryWord,
+        secondaryWord: _secondaryWord,
+      ),
+    );
+  }
+
+  Future<void> searchForText() async {
     sectionsMap.clear();
     await processAllFilesIn(_primaryWord!);
 //    await Future.delayed(Duration(milliseconds: 1000));
@@ -213,4 +251,6 @@ class AppCubit extends Cubit<AppState> {
   }
 
   void saveFileList() {}
+  
+
 }
