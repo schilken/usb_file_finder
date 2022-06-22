@@ -22,7 +22,6 @@ class AppCubit extends Cubit<AppState> {
   final sectionsMap = <String, List<String>>{};
 
   Future<void> loadFileList() async {
-    debugPrint("Opening...");
     emit(DetailsLoading());
     FilePickerResult? selected = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -51,14 +50,20 @@ class AppCubit extends Cubit<AppState> {
     ));
   }
 
-  void setPrimarySearchWord(word) {
+  void setPrimarySearchWord(String? word) {
     print('setPrimarySearchWord: $word');
     _primaryWord = word;
+    if (_primaryWord != null && (_primaryWord ?? '').isEmpty) {
+      _primaryWord = null;
+    }
   }
 
-  void setSecondarySearchWord(word) {
+  void setSecondarySearchWord(String? word) {
     print('setSecondarySearchWord: $word');
     _secondaryWord = word;
+    if (_secondaryWord != null && (_secondaryWord ?? '').isEmpty) {
+      _secondaryWord = null;
+    }
   }
 
   Future<void> search() async {
@@ -88,7 +93,8 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
-    processAllFilesIn(_primaryWord!);
+    sectionsMap.clear();
+    await processAllFilesIn(_primaryWord!);
 //    await Future.delayed(Duration(milliseconds: 1000));
     final primaryResult = sectionsMap.keys
             .map((key) => Detail(
@@ -118,7 +124,7 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  void processAllFilesIn(String primarySearchWord) async {
+  Future<void> processAllFilesIn(String primarySearchWord) async {
     var fileNumber = 0;
     var hitCount = 0;
     var hitFileCount = 0;
@@ -165,8 +171,34 @@ class AppCubit extends Cubit<AppState> {
   
   Future<void> scanFolder({required String type, required String path}) async {
     print('scanFolder: $path for $type');
-    
 
+    _allFilePaths = (await runFindCommand(path, type))
+        .where((path) => path.isNotEmpty)
+        .toList();
+    if (path != null) {
+      _currentPathname = path;
+      File data = File(_currentPathname);
+      _fileCount = _allFilePaths?.length ?? 0;
+    } else {
+      _currentPathname = "no file selected";
+      _fileCount = 0;
+    }
+    emit(DetailsLoaded(
+      currentPathname: _currentPathname,
+      fileCount: _fileCount,
+      primaryHitCount: _primaryHitCount,
+      secondaryHitCount: _secondaryHitCount,
+      details: [
+        Detail(title: 'nothing...'),
+      ],
+    ));
+  }
+
+  Future<List<String>> runFindCommand(
+      String workingDir, String extension) async {
+    var process = await Process.run(
+        'find', [workingDir, '-name', '*$extension', '-type', 'f']);
+    return process.stdout.split('\n');
   }
 
   void saveFileList() {}

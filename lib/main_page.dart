@@ -45,7 +45,8 @@ class MainPage extends StatelessWidget {
                       if (selectedDirectory != null) {
                         context
                             .read<AppCubit>()
-                            .scanFolder(path: selectedDirectory, type: 'yaml');
+                            .scanFolder(
+                            path: selectedDirectory, type: 'pubspec.yaml');
                       }
                     },
                   ),
