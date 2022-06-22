@@ -43,11 +43,13 @@ class MainPage extends StatelessWidget {
                       String? selectedDirectory =
                           await FilePicker.platform.getDirectoryPath();
                       if (selectedDirectory != null) {
-                        context
+                        await context
                             .read<AppCubit>()
                             .scanFolder(
                             folderPath: selectedDirectory,
                             type: 'pubspec.yaml');
+                        context.read<AppCubit>().setPrimarySearchWord('name:');
+                        context.read<AppCubit>().search();
                       }
                     },
                   ),
