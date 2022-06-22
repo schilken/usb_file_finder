@@ -35,10 +35,33 @@ class MainPage extends StatelessWidget {
                 tooltipMessage: "Perform tasks with the selected items",
                 items: [
                   MacosPulldownMenuItem(
-                    label: "Open file list",
+                    title: const Text("Scan Folder for YAML Files"),
+                    onTap: () {
+                      context.read<AppCubit>().scanFolder(type: 'yaml');
+                    },
+                  ),
+                  MacosPulldownMenuItem(
+                    title: const Text("Scan Folder for Dart Files"),
+                    onTap: () {
+                      context.read<AppCubit>().scanFolder(type: 'yaml');
+                    },
+                  ),
+                  MacosPulldownMenuItem(
+                    title: const Text("Scan Folder for Image Files"),
+                    onTap: () {
+                      context.read<AppCubit>().scanFolder(type: 'yaml');
+                    },
+                  ),
+                  MacosPulldownMenuItem(
                     title: const Text("Open File List"),
                     onTap: () {
                       context.read<AppCubit>().loadFileList();
+                    },
+                  ),
+                  MacosPulldownMenuItem(
+                    title: const Text("Save File List"),
+                    onTap: () {
+                      context.read<AppCubit>().saveFileList();
                     },
                   ),
                   const MacosPulldownMenuDivider(),
@@ -90,12 +113,14 @@ class MainPage extends StatelessWidget {
                         children: [
                           Container(
                             color: Colors.blueGrey[100],
-                            padding: EdgeInsets.fromLTRB(0, 20, 20, 20),
+                            padding: EdgeInsets.fromLTRB(12, 20, 20, 20),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text('Current File: '),
-                                Text(state.currentPathname)
+                                const Text('Current Files: '),
+                                Text(state.currentPathname),
+                                Spacer(),
+                                Text('${state.fileCount}'),
                               ],
                             ),
                           ),
@@ -111,15 +136,12 @@ class MainPage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 final detail = state.details[index];
                                 return MacosListTile(
-                                    title: Padding(
-                                  padding: EdgeInsets.fromLTRB(20, 12, 8, 8),
-                                    child: HighlightedText(
+                                  title: HighlightedText(
                                       text: detail.previewText ?? 'no preview',
                                       highlights: [
                                         state.primaryWord ?? '@',
                                         state.secondaryWord ?? '@',
-                                      ],
-                                    ),
+                                    ],
                                   ),
                                   subtitle: Column(
                                     crossAxisAlignment:
@@ -152,7 +174,7 @@ class MainPage extends StatelessWidget {
             ResizablePane(
                 minWidth: 300,
                 startWidth: 300,
-                windowBreakpoint: 800,
+                windowBreakpoint: 500,
                 resizableSide: ResizableSide.left,
                 builder: (_, __) {
                   return Center(child: Text('Details'));

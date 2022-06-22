@@ -51,12 +51,14 @@ class DetailsLoaded extends AppState {
   final String? fileType;
   final List<Detail> details;
   final String currentPathname;
+  final int fileCount;
   final String? message;
 
   DetailsLoaded({
     this.fileType,
     required this.details,
     required this.currentPathname,
+    required this.fileCount,
     this.message,
     String? primaryWord,
     String? secondaryWord,
@@ -66,6 +68,7 @@ class DetailsLoaded extends AppState {
     String? fileType,
     List<Detail>? details,
     String? currentPathname,
+    int? fileCount,
     String? message,
   }) {
     return DetailsLoaded(
@@ -73,6 +76,7 @@ class DetailsLoaded extends AppState {
       details: details ?? this.details,
       currentPathname: currentPathname ?? this.currentPathname,
       message: message ?? this.message,
+      fileCount: fileCount ?? this.fileCount,
     );
   }
 }

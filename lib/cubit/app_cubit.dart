@@ -9,63 +9,78 @@ part 'app_state.dart';
 
 class AppCubit extends Cubit<AppState> {
   AppCubit() : super(AppInitial());
-  String? primaryWord;
-  String? secondaryWord;
-  String currentPathname = "no file selected";
+  String? _primaryWord;
+  String? _secondaryWord;
+  String _currentPathname = "no file selected";
+  int _fileCount = 0;
+  List<String>? _allFilePaths;
+
   // pathname → loist of 10 lines following hit
   final sectionsMap = <String, List<String>>{};
 
   Future<void> loadFileList() async {
     debugPrint("Opening...");
+    emit(DetailsLoading());
     FilePickerResult? selected = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: [
         'txt',
       ],
     );
-    currentPathname = selected?.paths.first ?? "no file selected";
-
-    emit(DetailsLoading());
-    await Future.delayed(Duration(milliseconds: 1000));
-    emit(DetailsLoaded(currentPathname: currentPathname, details: [
-      Detail(title: 'the first title'),
-      Detail(title: 'the second title'),
-    ]));
+    
+    if (selected?.paths.first != null) {
+      _currentPathname = selected!.paths.first!;
+      File data = File(_currentPathname);
+      _allFilePaths = await data.readAsLines();
+      _fileCount = _allFilePaths?.length ?? 0;
+    } else {
+      _currentPathname = "no file selected";
+      _fileCount = 0;
+    }
+    emit(DetailsLoaded(
+      currentPathname: _currentPathname,
+      fileCount: _fileCount,
+      details: [
+        Detail(title: 'nothing...'),
+      ],
+    ));
   }
 
   void setPrimarySearchWord(word) {
     print('setPrimarySearchWord: $word');
-    primaryWord = word;
+    _primaryWord = word;
   }
 
   void setSecondarySearchWord(word) {
     print('setSecondarySearchWord: $word');
-    secondaryWord = word;
+    _secondaryWord = word;
   }
 
   Future<void> search() async {
     emit(DetailsLoading());
-    print('search: $primaryWord $secondaryWord');
-    if (currentPathname == "no file selected") {
+    print('search: $_primaryWord $_secondaryWord');
+    if (_currentPathname == "no file selected") {
       emit(
         DetailsLoaded(
-            currentPathname: currentPathname,
+            currentPathname: _currentPathname,
+            fileCount: _fileCount,
             details: [],
             message: 'No filelist loaded'),
       );
       return;
     }
-    if (primaryWord == null || (primaryWord ?? '').length < 5) {
+    if (_primaryWord == null || (_primaryWord ?? '').length < 5) {
       emit(
         DetailsLoaded(
-            currentPathname: currentPathname,
+            currentPathname: _currentPathname,
+            fileCount: _fileCount,
             details: [],
             message: 'Primary Search Word must be at least 5 characters'),
       );
       return;
     }
-    processAllFilesIn(currentPathname, primaryWord!);
-    await Future.delayed(Duration(milliseconds: 1000));
+    processAllFilesIn(_currentPathname, _primaryWord!);
+//    await Future.delayed(Duration(milliseconds: 1000));
     final primaryResult = sectionsMap.keys
             .map((key) => Detail(
                   projectName: key.split('/lib').first,
@@ -74,17 +89,18 @@ class AppCubit extends Cubit<AppState> {
                 ))
         .toList();
     var secondaryResult = primaryResult;
-    if (secondaryWord != null && (secondaryWord ?? '').length > 2) {
+    if (_secondaryWord != null && (_secondaryWord ?? '').length > 2) {
       secondaryResult = primaryResult
-          .where((detail) => secondaryMatch(detail, secondaryWord!))
+          .where((detail) => secondaryMatch(detail, _secondaryWord!))
           .toList();
     }
     emit(
       DetailsLoaded(
-        currentPathname: currentPathname,
+        currentPathname: _currentPathname,
+        fileCount: _fileCount,
         details: secondaryResult,
-        primaryWord: primaryWord,
-        secondaryWord: secondaryWord,
+        primaryWord: _primaryWord,
+        secondaryWord: _secondaryWord,
       ),
     );
   }
@@ -138,7 +154,13 @@ class AppCubit extends Cubit<AppState> {
   
   Detail addMarkdown(Detail detail) {
     var markdowned =
-        detail.previewText!.replaceAll(primaryWord!, '**$primaryWord**');
+        detail.previewText!.replaceAll(_primaryWord!, '**$_primaryWord**');
     return detail.copyWith(markdown: markdowned);
   }
+
+  void scanFolder({required String type}) {
+    print('scanFolder: $type');
+  }
+
+  void saveFileList() {}
 }
