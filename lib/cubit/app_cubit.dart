@@ -17,6 +17,7 @@ class AppCubit extends Cubit<AppState> {
   int _primaryHitCount = 0;
   int _secondaryHitCount = 0;
   String? _folderPath;
+  int _maxLinesToBuffer = 10;
 
   List<String>? _allFilePaths;
 
@@ -42,6 +43,7 @@ class AppCubit extends Cubit<AppState> {
       _fileCount = 0;
     }
     _fileType = null;
+    _maxLinesToBuffer = 10;
     emit(DetailsLoaded(
       currentPathname: _currentPathname,
       fileCount: _fileCount,
@@ -197,7 +199,7 @@ class AppCubit extends Cubit<AppState> {
       for (final line in lines) {
         if (line.contains(word)) {
 //          print('$path: $lineNumber');
-          linesToSave = 10;
+          linesToSave = _maxLinesToBuffer;
         }
         lineNumber++;
         if (linesToSave > 0) {
@@ -220,6 +222,11 @@ class AppCubit extends Cubit<AppState> {
     print('scanFolder: $folderPath for $type');
     _folderPath = folderPath;
     _fileType = type;
+    if (_fileType == 'pubspec.yaml') {
+      _maxLinesToBuffer = 50;
+    } else {
+      _maxLinesToBuffer = 10;
+    }
     _allFilePaths = (await runFindCommand(folderPath, type))
         .where((path) => path.isNotEmpty)
         .toList();

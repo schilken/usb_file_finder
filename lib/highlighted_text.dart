@@ -40,7 +40,7 @@ class HighlightedText extends StatelessWidget {
     this.softWrap = true,
     this.overflow = TextOverflow.clip,
     this.textScaleFactor = 1.0,
-    this.maxLines = 10,
+    this.maxLines = 50,
 //    this.locale = Locale,
 //    this.strutStyle,
     this.textWidthBasis = TextWidthBasis.parent,
