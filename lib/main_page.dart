@@ -46,7 +46,8 @@ class MainPage extends StatelessWidget {
                         context
                             .read<AppCubit>()
                             .scanFolder(
-                            path: selectedDirectory, type: 'pubspec.yaml');
+                            folderPath: selectedDirectory,
+                            type: 'pubspec.yaml');
                       }
                     },
                   ),
@@ -58,7 +59,8 @@ class MainPage extends StatelessWidget {
                       if (selectedDirectory != null) {
                         context
                             .read<AppCubit>()
-                            .scanFolder(path: selectedDirectory, type: 'dart');
+                            .scanFolder(
+                            folderPath: selectedDirectory, type: 'dart');
                       }
                     },
                   ),
@@ -70,7 +72,8 @@ class MainPage extends StatelessWidget {
                       if (selectedDirectory != null) {
                         context
                             .read<AppCubit>()
-                            .scanFolder(path: selectedDirectory, type: 'png');
+                            .scanFolder(
+                            folderPath: selectedDirectory, type: 'png');
                       }
                     },
                   ),
@@ -170,8 +173,21 @@ class MainPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(detail.projectName ?? 'no project'),
-                                      Text(detail.title ?? 'no title'),
+                                      SizedBox(
+                                        height: 12,
+                                      ),
+                                      Text(
+                                        detail.projectName ?? 'no project',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      Text(
+                                        detail.title ?? 'no title',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 );

@@ -15,6 +15,7 @@ class AppCubit extends Cubit<AppState> {
   int _fileCount = 0;
   int _primaryHitCount = 0;
   int _secondaryHitCount = 0;
+  String? _folderPath;
 
   List<String>? _allFilePaths;
 
@@ -81,7 +82,7 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
-    if (_primaryWord == null || (_primaryWord ?? '').length < 5) {
+    if (_primaryWord == null || (_primaryWord ?? '').length < 4) {
       emit(
         DetailsLoaded(
             currentPathname: _currentPathname,
@@ -89,7 +90,7 @@ class AppCubit extends Cubit<AppState> {
             primaryHitCount: _primaryHitCount,
             secondaryHitCount: _secondaryHitCount,
             details: [],
-            message: 'Primary Search Word must be at least 5 characters'),
+            message: 'Primary Search Word must be at least 4 characters'),
       );
       return;
     }
@@ -134,8 +135,10 @@ class AppCubit extends Cubit<AppState> {
       if (hitsInFile.isNotEmpty) {
         hitFileCount++;
         hitCount += hitsInFile.length;
+        if (_folderPath != null) {
         sectionsMap[path.replaceFirst(
-            '/Users/aschilken/flutterdev/examples/', '')] = hitsInFile;
+            '${_folderPath!}/', '')] = hitsInFile;
+        }
       }
       fileNumber++;
     }
@@ -150,7 +153,7 @@ class AppCubit extends Cubit<AppState> {
       var linesToSave = 0;
       for (final line in lines) {
         if (line.contains(word)) {
-          print('$path: $lineNumber');
+//          print('$path: $lineNumber');
           linesToSave = 10;
         }
         lineNumber++;
@@ -169,14 +172,15 @@ class AppCubit extends Cubit<AppState> {
     return item.previewText?.contains(secondaryWord) ?? false;
   }
   
-  Future<void> scanFolder({required String type, required String path}) async {
-    print('scanFolder: $path for $type');
-
-    _allFilePaths = (await runFindCommand(path, type))
+  Future<void> scanFolder(
+      {required String type, required String folderPath}) async {
+    print('scanFolder: $folderPath for $type');
+    _folderPath = folderPath;
+    _allFilePaths = (await runFindCommand(folderPath, type))
         .where((path) => path.isNotEmpty)
         .toList();
-    if (path != null) {
-      _currentPathname = path;
+    if (folderPath != null) {
+      _currentPathname = folderPath;
       File data = File(_currentPathname);
       _fileCount = _allFilePaths?.length ?? 0;
     } else {
