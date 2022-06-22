@@ -103,13 +103,19 @@ class MainPage extends StatelessWidget {
                 placeholder: 'Primary word',
                 onChanged: (word) =>
                     context.read<AppCubit>().setPrimarySearchWord(word),
-                onSubmitted: (word) => context.read<AppCubit>().search(),
+                onSubmitted: (word) {
+                  context.read<AppCubit>().setPrimarySearchWord(word);
+                  context.read<AppCubit>().search();
+                },
               ),
               ToolbarSearchfield(
                 placeholder: 'Secondary word',
                 onChanged: (word) =>
                     context.read<AppCubit>().setSecondarySearchWord(word),
-                onSubmitted: (word) => context.read<AppCubit>().search(),
+                onSubmitted: (word) {
+                  context.read<AppCubit>().setSecondarySearchWord(word);
+                  context.read<AppCubit>().search();
+                },
               ),
               ToolBarIconButton(
                 label: "Search",
@@ -144,7 +150,10 @@ class MainPage extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text('Current Files: '),
+                                if (state.fileType == null)
+                                  const Text('Paths from File: ')
+                                else
+                                  Text('${state.fileType} Files in Folder: '),
                                 Text(state.currentPathname),
                                 Spacer(),
                                 Text(

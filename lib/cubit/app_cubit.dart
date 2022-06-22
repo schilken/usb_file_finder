@@ -12,6 +12,7 @@ class AppCubit extends Cubit<AppState> {
   String? _primaryWord;
   String? _secondaryWord;
   String _currentPathname = "no file selected";
+  String? _fileType;
   int _fileCount = 0;
   int _primaryHitCount = 0;
   int _secondaryHitCount = 0;
@@ -40,6 +41,7 @@ class AppCubit extends Cubit<AppState> {
       _currentPathname = "no file selected";
       _fileCount = 0;
     }
+    _fileType = null;
     emit(DetailsLoaded(
       currentPathname: _currentPathname,
       fileCount: _fileCount,
@@ -74,6 +76,7 @@ class AppCubit extends Cubit<AppState> {
       emit(
         DetailsLoaded(
             currentPathname: _currentPathname,
+            fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
             secondaryHitCount: _secondaryHitCount,
@@ -86,6 +89,7 @@ class AppCubit extends Cubit<AppState> {
       emit(
         DetailsLoaded(
             currentPathname: _currentPathname,
+            fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
             secondaryHitCount: _secondaryHitCount,
@@ -115,6 +119,7 @@ class AppCubit extends Cubit<AppState> {
     emit(
       DetailsLoaded(
         currentPathname: _currentPathname,
+        fileType: _fileType,
         fileCount: _fileCount,
         primaryHitCount: _primaryHitCount,
         secondaryHitCount: _secondaryHitCount,
@@ -176,6 +181,7 @@ class AppCubit extends Cubit<AppState> {
       {required String type, required String folderPath}) async {
     print('scanFolder: $folderPath for $type');
     _folderPath = folderPath;
+    _fileType = type;
     _allFilePaths = (await runFindCommand(folderPath, type))
         .where((path) => path.isNotEmpty)
         .toList();
@@ -189,6 +195,7 @@ class AppCubit extends Cubit<AppState> {
     }
     emit(DetailsLoaded(
       currentPathname: _currentPathname,
+      fileType: _fileType,
       fileCount: _fileCount,
       primaryHitCount: _primaryHitCount,
       secondaryHitCount: _secondaryHitCount,
