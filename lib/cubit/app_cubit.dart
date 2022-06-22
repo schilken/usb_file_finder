@@ -163,8 +163,10 @@ class AppCubit extends Cubit<AppState> {
     return item.previewText?.contains(secondaryWord) ?? false;
   }
   
-  void scanFolder({required String type}) {
-    print('scanFolder: $type');
+  Future<void> scanFolder({required String type, required String path}) async {
+    print('scanFolder: $path for $type');
+    
+
   }
 
   void saveFileList() {}

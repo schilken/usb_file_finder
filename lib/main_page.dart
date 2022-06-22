@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,20 +39,38 @@ class MainPage extends StatelessWidget {
                 items: [
                   MacosPulldownMenuItem(
                     title: const Text("Scan Folder for YAML Files"),
-                    onTap: () {
-                      context.read<AppCubit>().scanFolder(type: 'yaml');
+                    onTap: () async {
+                      String? selectedDirectory =
+                          await FilePicker.platform.getDirectoryPath();
+                      if (selectedDirectory != null) {
+                        context
+                            .read<AppCubit>()
+                            .scanFolder(path: selectedDirectory, type: 'yaml');
+                      }
                     },
                   ),
                   MacosPulldownMenuItem(
                     title: const Text("Scan Folder for Dart Files"),
-                    onTap: () {
-                      context.read<AppCubit>().scanFolder(type: 'yaml');
+                    onTap: () async {
+                      String? selectedDirectory =
+                          await FilePicker.platform.getDirectoryPath();
+                      if (selectedDirectory != null) {
+                        context
+                            .read<AppCubit>()
+                            .scanFolder(path: selectedDirectory, type: 'dart');
+                      }
                     },
                   ),
                   MacosPulldownMenuItem(
                     title: const Text("Scan Folder for Image Files"),
-                    onTap: () {
-                      context.read<AppCubit>().scanFolder(type: 'yaml');
+                    onTap: () async {
+                      String? selectedDirectory =
+                          await FilePicker.platform.getDirectoryPath();
+                      if (selectedDirectory != null) {
+                        context
+                            .read<AppCubit>()
+                            .scanFolder(path: selectedDirectory, type: 'png');
+                      }
                     },
                   ),
                   MacosPulldownMenuItem(
