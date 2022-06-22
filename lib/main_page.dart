@@ -120,7 +120,8 @@ class MainPage extends StatelessWidget {
                                 const Text('Current Files: '),
                                 Text(state.currentPathname),
                                 Spacer(),
-                                Text('${state.fileCount}'),
+                                Text(
+                                    '${state.fileCount}|${state.primaryHitCount}|${state.secondaryHitCount}'),
                               ],
                             ),
                           ),

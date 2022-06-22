@@ -13,6 +13,9 @@ class AppCubit extends Cubit<AppState> {
   String? _secondaryWord;
   String _currentPathname = "no file selected";
   int _fileCount = 0;
+  int _primaryHitCount = 0;
+  int _secondaryHitCount = 0;
+
   List<String>? _allFilePaths;
 
   // pathname → loist of 10 lines following hit
@@ -40,6 +43,8 @@ class AppCubit extends Cubit<AppState> {
     emit(DetailsLoaded(
       currentPathname: _currentPathname,
       fileCount: _fileCount,
+      primaryHitCount: _primaryHitCount,
+      secondaryHitCount: _secondaryHitCount,
       details: [
         Detail(title: 'nothing...'),
       ],
@@ -64,6 +69,8 @@ class AppCubit extends Cubit<AppState> {
         DetailsLoaded(
             currentPathname: _currentPathname,
             fileCount: _fileCount,
+            primaryHitCount: _primaryHitCount,
+            secondaryHitCount: _secondaryHitCount,
             details: [],
             message: 'No filelist loaded'),
       );
@@ -74,12 +81,14 @@ class AppCubit extends Cubit<AppState> {
         DetailsLoaded(
             currentPathname: _currentPathname,
             fileCount: _fileCount,
+            primaryHitCount: _primaryHitCount,
+            secondaryHitCount: _secondaryHitCount,
             details: [],
             message: 'Primary Search Word must be at least 5 characters'),
       );
       return;
     }
-    processAllFilesIn(_currentPathname, _primaryWord!);
+    processAllFilesIn(_primaryWord!);
 //    await Future.delayed(Duration(milliseconds: 1000));
     final primaryResult = sectionsMap.keys
             .map((key) => Detail(
@@ -94,10 +103,14 @@ class AppCubit extends Cubit<AppState> {
           .where((detail) => secondaryMatch(detail, _secondaryWord!))
           .toList();
     }
+    _primaryHitCount = primaryResult.length;
+    _secondaryHitCount = secondaryResult.length;
     emit(
       DetailsLoaded(
         currentPathname: _currentPathname,
         fileCount: _fileCount,
+        primaryHitCount: _primaryHitCount,
+        secondaryHitCount: _secondaryHitCount,
         details: secondaryResult,
         primaryWord: _primaryWord,
         secondaryWord: _secondaryWord,
@@ -105,13 +118,11 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  void processAllFilesIn(String path, String primarySearchWord) async {
-    File data = File(path);
-    final lines = await data.readAsLines();
+  void processAllFilesIn(String primarySearchWord) async {
     var fileNumber = 0;
     var hitCount = 0;
     var hitFileCount = 0;
-    for (final path in lines) {
+    for (final path in _allFilePaths!) {
 //    print('searching in file number $fileNumber: $path: ');
       final hitsInFile = await searchFile(path, primarySearchWord);
       if (hitsInFile.isNotEmpty) {
@@ -152,12 +163,6 @@ class AppCubit extends Cubit<AppState> {
     return item.previewText?.contains(secondaryWord) ?? false;
   }
   
-  Detail addMarkdown(Detail detail) {
-    var markdowned =
-        detail.previewText!.replaceAll(_primaryWord!, '**$_primaryWord**');
-    return detail.copyWith(markdown: markdowned);
-  }
-
   void scanFolder({required String type}) {
     print('scanFolder: $type');
   }

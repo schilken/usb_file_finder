@@ -18,29 +18,28 @@ class Detail {
   final String? projectName;
   final String? previewText;
   final String? imageUrl;
-  final String? webDetailUUID;
+  final int? lineNumber;
   Detail({
     this.title,
     this.projectName,
     this.previewText,
     this.imageUrl,
-    this.webDetailUUID,
+    this.lineNumber,
   });
 
   Detail copyWith({
     String? title,
     String? projectName,
     String? previewText,
-    String? markdown,
     String? imageUrl,
-    String? webDetailUUID,
+    int? lineNumber,
   }) {
     return Detail(
       title: title ?? this.title,
       projectName: projectName ?? this.projectName,
       previewText: previewText ?? this.previewText,
       imageUrl: imageUrl ?? this.imageUrl,
-      webDetailUUID: webDetailUUID ?? this.webDetailUUID,
+      lineNumber: lineNumber ?? this.lineNumber,
     );
   }
 }
@@ -52,6 +51,8 @@ class DetailsLoaded extends AppState {
   final List<Detail> details;
   final String currentPathname;
   final int fileCount;
+  final int primaryHitCount;
+  final int secondaryHitCount;
   final String? message;
 
   DetailsLoaded({
@@ -59,6 +60,8 @@ class DetailsLoaded extends AppState {
     required this.details,
     required this.currentPathname,
     required this.fileCount,
+    required this.primaryHitCount,
+    required this.secondaryHitCount,
     this.message,
     String? primaryWord,
     String? secondaryWord,
@@ -69,6 +72,8 @@ class DetailsLoaded extends AppState {
     List<Detail>? details,
     String? currentPathname,
     int? fileCount,
+    int? primaryHitCount,
+    int? secondaryHitCount,
     String? message,
   }) {
     return DetailsLoaded(
@@ -77,6 +82,8 @@ class DetailsLoaded extends AppState {
       currentPathname: currentPathname ?? this.currentPathname,
       message: message ?? this.message,
       fileCount: fileCount ?? this.fileCount,
+      primaryHitCount: primaryHitCount ?? this.primaryHitCount,
+      secondaryHitCount: secondaryHitCount ?? this.secondaryHitCount,
     );
   }
 }
