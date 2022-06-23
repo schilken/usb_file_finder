@@ -181,11 +181,12 @@ class AppCubit extends Cubit<AppState> {
 //    await Future.delayed(Duration(milliseconds: 1000));
     final primaryResult = sectionsMap.keys
             .map((key) => Detail(
-                  projectName: key.split('/lib').first,
-                  title: key.split('/lib').last,
+              projectName: key.split(RegExp('/lib|/test')).first,
+              title: key.split(RegExp('/lib|/test')).last,
                   previewText: sectionsMap[key]!.join('\n'),
               filePathName: '${_folderPath!}/$key',
-              projectPathName: '${_folderPath!}/${key.split('/lib').first}',
+              projectPathName:
+                  '${_folderPath!}/${key.split(RegExp('/lib|/test')).first}',
                 ))
         .toList();
     var secondaryResult = primaryResult;
