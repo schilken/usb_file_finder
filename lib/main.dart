@@ -10,6 +10,7 @@ import 'package:open_source_browser/about_window.dart';
 import 'package:open_source_browser/cubit/settings_cubit.dart';
 import 'package:open_source_browser/main_page.dart';
 import 'package:open_source_browser/settings_window.dart';
+import 'package:open_source_browser/sidebar_switch.dart';
 import 'package:open_source_browser/toolbar_searchfield.dart';
 
 void main(List<String> args) {
@@ -20,10 +21,10 @@ void main(List<String> args) {
         ? const {}
         : jsonDecode(args[2]) as Map<String, dynamic>;
     if (arguments['args1'] == 'About') {
-    runApp(AboutWindow(
-      windowController: WindowController.fromWindowId(windowId),
-      args: arguments,
-    ));
+      runApp(AboutWindow(
+        windowController: WindowController.fromWindowId(windowId),
+        args: arguments,
+      ));
     } else if (arguments['args1'] == 'Preferences') {
       runApp(SettingsWindow(
         windowController: WindowController.fromWindowId(windowId),
@@ -51,12 +52,12 @@ class App extends StatelessWidget {
           return BlocProvider.value(
             value: snapshot.data!,
             child: MacosApp(
-      title: 'open_source_browser',
-      theme: MacosThemeData.light(),
-      darkTheme: MacosThemeData.dark(),
-      themeMode: ThemeMode.system,
-      home: const MainView(),
-      debugShowCheckedModeBanner: false,
+              title: 'open_source_browser',
+              theme: MacosThemeData.light(),
+              darkTheme: MacosThemeData.dark(),
+              themeMode: ThemeMode.system,
+              home: const MainView(),
+              debugShowCheckedModeBanner: false,
             ),
           );
         });
@@ -125,17 +126,95 @@ class _MainViewState extends State<MainView> {
       body: MacosWindow(
         sidebar: Sidebar(
           minWidth: 200,
+          top: BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, state) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8),
+                  Text('Filter Files',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
+                  MacosPopupButton<String>(
+                    value: context.read<SettingsCubit>().exampleFileFilter,
+                    onChanged: (String? value) async {
+                      await context
+                          .read<SettingsCubit>()
+                          .setExampleFileFilter(value);
+                    },
+                    items: <String>[
+                      'All Files',
+                      'Only */example/*',
+                      'Without */example/*'
+                    ].map<MacosPopupMenuItem<String>>((String value) {
+                      return MacosPopupMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 16),
+                  MacosPopupButton<String>(
+                    value: context.read<SettingsCubit>().testFileFilter,
+                    onChanged: (String? newValue) async {
+                      await context
+                          .read<SettingsCubit>()
+                          .setTestFileFilter(newValue);
+                    },
+                    items: <String>[
+                      'All Files',
+                      'Only *_test.dart',
+                      'Without *_test.dart'
+                    ].map<MacosPopupMenuItem<String>>((String value) {
+                      return MacosPopupMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 32),
+                  Text('Filter Lines',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
+                  MacosPopupButton<String>(
+                    value: context.read<SettingsCubit>().lineFilter,
+                    onChanged: (String? newValue) async {
+                      await context
+                          .read<SettingsCubit>()
+                          .setLineFilter(newValue);
+                    },
+                    items: <String>[
+                      'Only First Line',
+                      'First Two Lines',
+                      'All Lines'
+                    ].map<MacosPopupMenuItem<String>>((String value) {
+                      return MacosPopupMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 32),
+                ],
+              );
+            },
+          ),
           builder: (context, scrollController) => SidebarItems(
             currentIndex: _pageIndex,
             onChanged: (index) {
               setState(() => _pageIndex = index);
             },
-            items: const [
-              SidebarItem(
+            items: [
+              const SidebarItem(
                 leading: MacosIcon(CupertinoIcons.home),
                 label: Text('Home'),
               ),
             ],
+          ),
+          bottom: const MacosListTile(
+            leading: MacosIcon(CupertinoIcons.profile_circled),
+            title: Text('Alfred Schilken'),
+            subtitle: Text('alfred@schilken.de'),
           ),
         ),
         child: IndexedStack(
@@ -148,5 +227,3 @@ class _MainViewState extends State<MainView> {
     );
   }
 }
-
-
