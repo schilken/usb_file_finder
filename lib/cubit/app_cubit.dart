@@ -4,11 +4,21 @@ import 'package:bloc/bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
+import 'package:open_source_browser/cubit/settings_cubit.dart';
 
 part 'app_state.dart';
 
 class AppCubit extends Cubit<AppState> {
-  AppCubit() : super(AppInitial());
+  AppCubit(SettingsCubit settingsCubit)
+      : _settingsCubit = settingsCubit,
+        super(AppInitial()) {
+    _settingsCubit.stream.listen((settings) {
+      print('_settingsCubit.stream.listen : $settings');
+      if (settings is SettingsLoaded) {
+        _applyFilters(settings);
+      }
+    });
+  } 
   String? _primaryWord;
   String? _secondaryWord;
   String _currentPathname = "no file selected";
@@ -18,8 +28,15 @@ class AppCubit extends Cubit<AppState> {
   int _secondaryHitCount = 0;
   String? _folderPath;
   int _maxLinesToBuffer = 10;
+  final SettingsCubit _settingsCubit;
+  bool _onlyExampleFiles = false;
+  bool _removeExampleFiles = false;
+  bool _onlyTestFiles = false;
+  bool _removeTestFiles = false;
+  int? _displayLineCount;
 
   List<String>? _allFilePaths;
+  List<String>? _filteredFilePaths;
 
   // pathname → loist of 10 lines following hit
   final sectionsMap = <String, List<String>>{};
@@ -100,6 +117,27 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
+    _filteredFilePaths = _allFilePaths;
+    if (_onlyExampleFiles) {
+      _filteredFilePaths = _filteredFilePaths!
+          .where((path) => path.contains('/example/'))
+          .toList();
+    }
+    if (_removeExampleFiles) {
+      _filteredFilePaths = _filteredFilePaths!
+          .where((path) => !path.contains('/example/'))
+          .toList();
+    }
+    if (_onlyTestFiles) {
+      _filteredFilePaths =
+          _filteredFilePaths!.where((path) => path.contains('_test')).toList();
+    }
+    if (_removeTestFiles) {
+      _filteredFilePaths =
+          _filteredFilePaths!.where((path) => !path.contains('_test')).toList();
+    }
+    print('_filteredFilePaths.length: ${_filteredFilePaths!.length}');
+
     if (_fileType == 'svg') {
       await searchInFilename();
     } else {
@@ -156,6 +194,11 @@ class AppCubit extends Cubit<AppState> {
     }
     _primaryHitCount = primaryResult.length;
     _secondaryHitCount = secondaryResult.length;
+    if (_displayLineCount != null) {
+      secondaryResult = secondaryResult.map((detail) {
+        return detail.copyWith(previewText: _reduceLines(detail.previewText!));
+      }).toList();
+    }
     emit(
       DetailsLoaded(
         currentPathname: _currentPathname,
@@ -170,11 +213,22 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
+  String _reduceLines(String previewText) {
+    var lines = previewText.split('\n');
+    if (_displayLineCount == 1) {
+      lines = [lines.first];
+    } else if (lines.length > 1) {
+      lines = [lines.first, lines[1]];
+    }
+    return lines.join('\n');
+  }
+
+
   Future<void> processAllFilesIn(String primarySearchWord) async {
     var fileNumber = 0;
     var hitCount = 0;
     var hitFileCount = 0;
-    for (final path in _allFilePaths!) {
+    for (final path in _filteredFilePaths!) {
 //    print('searching in file number $fileNumber: $path: ');
       final hitsInFile = await searchFile(path, primarySearchWord);
       if (hitsInFile.isNotEmpty) {
@@ -259,5 +313,19 @@ class AppCubit extends Cubit<AppState> {
 
   void saveFileList() {}
   
+  void _applyFilters(SettingsLoaded settings) {
+    _onlyExampleFiles = settings.exampleFileFilter.startsWith('Only');
+    _removeExampleFiles = settings.exampleFileFilter.startsWith('Without');
+    _onlyTestFiles = settings.testFileFilter.startsWith('Only');
+    _removeTestFiles = settings.testFileFilter.startsWith('Without');
+    if (settings.lineFilter.startsWith('All')) {
+      _displayLineCount = null;
+    } else if (settings.lineFilter.startsWith('Only')) {
+      _displayLineCount = 1;
+    } else if (settings.lineFilter.startsWith('First')) {
+      _displayLineCount = 2;
+    }
+    search();
+  }
 
 }

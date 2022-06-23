@@ -17,7 +17,7 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AppCubit>(
-          create: (context) => AppCubit(),
+      create: (context) => AppCubit(context.read<SettingsCubit>()),
       child: Builder(builder: (context) {
         return MacosScaffold(
           toolBar: ToolBar(
