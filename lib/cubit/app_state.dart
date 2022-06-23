@@ -19,12 +19,17 @@ class Detail {
   final String? previewText;
   final String? imageUrl;
   final int? lineNumber;
+  final String? filePathName;
+  final String? projectPathName;
+
   Detail({
     this.title,
     this.projectName,
     this.previewText,
     this.imageUrl,
     this.lineNumber,
+    this.filePathName,
+    this.projectPathName,
   });
 
   Detail copyWith({
@@ -33,6 +38,8 @@ class Detail {
     String? previewText,
     String? imageUrl,
     int? lineNumber,
+    String? filePathName,
+    String? projectPathName,
   }) {
     return Detail(
       title: title ?? this.title,
@@ -40,6 +47,8 @@ class Detail {
       previewText: previewText ?? this.previewText,
       imageUrl: imageUrl ?? this.imageUrl,
       lineNumber: lineNumber ?? this.lineNumber,
+      filePathName: filePathName ?? this.filePathName,
+      projectPathName: projectPathName ?? this.projectPathName,
     );
   }
 }

@@ -184,6 +184,8 @@ class AppCubit extends Cubit<AppState> {
                   projectName: key.split('/lib').first,
                   title: key.split('/lib').last,
                   previewText: sectionsMap[key]!.join('\n'),
+              filePathName: '${_folderPath!}/$key',
+              projectPathName: '${_folderPath!}/${key.split('/lib').first}',
                 ))
         .toList();
     var secondaryResult = primaryResult;
@@ -326,6 +328,10 @@ class AppCubit extends Cubit<AppState> {
       _displayLineCount = 2;
     }
     search();
+  }
+
+  void openEditor(String? filePathName) {
+    Process.run('code', [filePathName!]);
   }
 
 }

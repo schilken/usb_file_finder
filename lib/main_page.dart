@@ -233,17 +233,49 @@ class MainPage extends StatelessWidget {
                                       const SizedBox(
                                         height: 12,
                                       ),
-                                      Text(
-                                        detail.projectName ?? 'no project',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            detail.projectName ?? 'no project',
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          MacosIconButton(
+                                            icon: const MacosIcon(
+                                              CupertinoIcons.link,
+                                            ),
+                                            shape: BoxShape.circle,
+                                            onPressed: () {
+                                              context
+                                                  .read<AppCubit>()
+                                                  .openEditor(
+                                                      detail.projectPathName);
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        detail.title ?? 'no title',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            detail.title ?? 'no title',
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                            ),
+                                          ),
+                                          MacosIconButton(
+                                            icon: const MacosIcon(
+                                              CupertinoIcons.link,
+                                            ),
+                                            shape: BoxShape.circle,
+                                            onPressed: () {
+                                              context
+                                                  .read<AppCubit>()
+                                                  .openEditor(
+                                                      detail.filePathName);
+                                            },
+                                          ),
+                                        ],
                                       ),
                                       if (detail.imageUrl != null)
                                         FutureBuilder<String?>(
@@ -256,7 +288,7 @@ class MainPage extends StatelessWidget {
                                                     width: 100,
                                                     snapshot.data ?? '');
                                               }
-                                              return CircularProgressIndicator();
+                                              return const CircularProgressIndicator();
                                             })
                                     ],
                                   ),
@@ -275,7 +307,7 @@ class MainPage extends StatelessWidget {
                     } else if (state is DetailsLoading) {
                       return const CupertinoActivityIndicator();
                     }
-                    return Center(child: const Text('No file selected'));
+                    return const Center(child: Text('No file selected'));
                   },
                   );
               },
@@ -286,7 +318,7 @@ class MainPage extends StatelessWidget {
                 windowBreakpoint: 500,
                 resizableSide: ResizableSide.left,
                 builder: (_, __) {
-                  return Center(child: Text('Details'));
+                  return const Center(child: Text('Details'));
                 })
           ],
         );
