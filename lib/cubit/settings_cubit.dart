@@ -16,4 +16,13 @@ class SettingsCubit extends Cubit<SettingsState> {
   String get examplesFolder =>
       _prefs.getString('examplesFolder') ??
       '/Users/aschilken/flutterdev/examples';
+
+  String get packagesFolder =>
+      _prefs.getString('packagesFolder') ??
+      '/Users/aschilken/.pub-cache/hosted/pub.dartlang.org';
+
+  String get flutterSourceFolder =>
+      _prefs.getString('flutterSourceFolder') ??
+      '/Users/aschilken/flutterdev/flutter';
+
 }

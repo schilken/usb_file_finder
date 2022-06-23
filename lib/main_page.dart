@@ -44,10 +44,42 @@ class MainPage extends StatelessWidget {
                     onTap: () async {
                       String selectedDirectory =
                           context.read<SettingsCubit>().examplesFolder;
-                      context.read<AppCubit>().scanFolder(
+                      await context.read<AppCubit>().scanFolder(
                           folderPath: selectedDirectory, type: 'dart');
                     },
                   ),
+                  MacosPulldownMenuItem(
+                    title: const Text("Scan Packages Folder for Dart Files"),
+                    onTap: () async {
+                      String selectedDirectory =
+                          context.read<SettingsCubit>().packagesFolder;
+                      await context.read<AppCubit>().scanFolder(
+                          folderPath: selectedDirectory, type: 'dart');
+                    },
+                  ),
+                  MacosPulldownMenuItem(
+                    title:
+                        const Text("Scan Flutter Source Folder for Dart Files"),
+                    onTap: () async {
+                      String selectedDirectory =
+                          context.read<SettingsCubit>().flutterSourceFolder;
+                      await context.read<AppCubit>().scanFolder(
+                          folderPath: selectedDirectory, type: 'dart');
+                    },
+                  ),
+                  const MacosPulldownMenuDivider(),
+                  MacosPulldownMenuItem(
+                    title: const Text("Scan Packages Folder for YAML Files"),
+                    onTap: () async {
+                      String selectedDirectory =
+                          context.read<SettingsCubit>().packagesFolder;
+                      await context.read<AppCubit>().scanFolder(
+                          folderPath: selectedDirectory, type: 'pubspec.yaml');
+                      context.read<AppCubit>().setPrimarySearchWord('name:');
+                      context.read<AppCubit>().search();
+                    },
+                  ),
+
                   MacosPulldownMenuItem(
                     title: const Text("Scan Folder for YAML Files"),
                     onTap: () async {
@@ -64,6 +96,7 @@ class MainPage extends StatelessWidget {
                       }
                     },
                   ),
+                  const MacosPulldownMenuDivider(),
                   MacosPulldownMenuItem(
                     title: const Text("Scan Folder for Dart Files"),
                     onTap: () async {
