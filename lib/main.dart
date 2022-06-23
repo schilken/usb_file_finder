@@ -4,8 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/about_window.dart';
+import 'package:open_source_browser/cubit/settings_cubit.dart';
 import 'package:open_source_browser/main_page.dart';
 import 'package:open_source_browser/settings_window.dart';
 import 'package:open_source_browser/toolbar_searchfield.dart';
@@ -39,18 +41,27 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MacosApp(
+    return FutureBuilder<SettingsCubit>(
+        future: SettingsCubit().initialize(),
+        builder: (context, snapshot) {
+          print('builder: ${snapshot.hasData}');
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          return BlocProvider.value(
+            value: snapshot.data!,
+            child: MacosApp(
       title: 'open_source_browser',
       theme: MacosThemeData.light(),
       darkTheme: MacosThemeData.dark(),
       themeMode: ThemeMode.system,
       home: const MainView(),
       debugShowCheckedModeBanner: false,
-    );
+            ),
+          );
+        });
   }
 }
-
-
 
 class MainView extends StatefulWidget {
   const MainView({super.key});

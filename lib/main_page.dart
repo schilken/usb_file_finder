@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
+import 'package:open_source_browser/cubit/settings_cubit.dart';
 import 'package:open_source_browser/highlighted_text.dart';
 import 'package:open_source_browser/toolbar_searchfield.dart';
 
@@ -38,6 +39,15 @@ class MainPage extends StatelessWidget {
                 icon: CupertinoIcons.ellipsis_circle,
                 tooltipMessage: "Perform tasks with the selected items",
                 items: [
+                  MacosPulldownMenuItem(
+                    title: const Text("Scan Examples Folder for Dart Files"),
+                    onTap: () async {
+                      String selectedDirectory =
+                          context.read<SettingsCubit>().examplesFolder;
+                      context.read<AppCubit>().scanFolder(
+                          folderPath: selectedDirectory, type: 'dart');
+                    },
+                  ),
                   MacosPulldownMenuItem(
                     title: const Text("Scan Folder for YAML Files"),
                     onTap: () async {
