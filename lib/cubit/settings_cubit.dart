@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,9 +11,11 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   get lineFilter => _prefs.getString('lineFilter') ?? 'All Lines';
 
-  get testFileFilter => _prefs.getString('testFileFilter') ?? 'All Files';
+  get testFileFilter =>
+      _prefs.getString('testFileFilter') ?? 'Include Test Files';
 
-  get exampleFileFilter => _prefs.getString('exampleFileFilter') ?? 'All Files';
+  get exampleFileFilter =>
+      _prefs.getString('exampleFileFilter') ?? 'Include Example Files';
 
   Future<SettingsCubit> initialize() async {
     await Future.delayed(Duration(milliseconds: 1000));
@@ -35,28 +38,40 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> setTestFileFilter(value) async {
     await _prefs.setString('testFileFilter', value);
     emit(SettingsLoaded(
-        examplesFolder: examplesFolder,
-        flutterFolder: flutterSourceFolder,
-        myProjectsFolder: '',
-        packagesFolder: packagesFolder));
+      examplesFolder: examplesFolder,
+      flutterFolder: flutterSourceFolder,
+      myProjectsFolder: '',
+      packagesFolder: packagesFolder,
+      exampleFileFilter: exampleFileFilter,
+      lineFilter: lineFilter,
+      testFileFilter: testFileFilter,
+    ));
   }
 
   Future<void> setExampleFileFilter(value) async {
     await _prefs.setString('exampleFileFilter', value);
     emit(SettingsLoaded(
-        examplesFolder: examplesFolder,
-        flutterFolder: flutterSourceFolder,
-        myProjectsFolder: '',
-        packagesFolder: packagesFolder));
+      examplesFolder: examplesFolder,
+      flutterFolder: flutterSourceFolder,
+      myProjectsFolder: '',
+      packagesFolder: packagesFolder,
+      exampleFileFilter: exampleFileFilter,
+      lineFilter: lineFilter,
+      testFileFilter: testFileFilter,
+    ));
   }
 
   Future<void> setLineFilter(value) async {
     await _prefs.setString('lineFilter', value);
     emit(SettingsLoaded(
-        examplesFolder: examplesFolder,
-        flutterFolder: flutterSourceFolder,
-        myProjectsFolder: '',
-        packagesFolder: packagesFolder));
+      examplesFolder: examplesFolder,
+      flutterFolder: flutterSourceFolder,
+      myProjectsFolder: '',
+      packagesFolder: packagesFolder,
+      exampleFileFilter: exampleFileFilter,
+      lineFilter: lineFilter,
+      testFileFilter: testFileFilter,
+    ));
   }
 
 }

@@ -143,7 +143,7 @@ class _MainViewState extends State<MainView> {
                           .setExampleFileFilter(value);
                     },
                     items: <String>[
-                      'All Files',
+                      'Include Example Files',
                       'Only */example/*',
                       'Without */example/*'
                     ].map<MacosPopupMenuItem<String>>((String value) {
@@ -162,7 +162,7 @@ class _MainViewState extends State<MainView> {
                           .setTestFileFilter(newValue);
                     },
                     items: <String>[
-                      'All Files',
+                      'Include Test Files',
                       'Only *_test.dart',
                       'Without *_test.dart'
                     ].map<MacosPopupMenuItem<String>>((String value) {
