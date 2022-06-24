@@ -8,10 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/about_window.dart';
 import 'package:open_source_browser/cubit/settings_cubit.dart';
+import 'package:open_source_browser/filter_settings.dart';
 import 'package:open_source_browser/main_page.dart';
 import 'package:open_source_browser/settings_window.dart';
-import 'package:open_source_browser/sidebar_switch.dart';
-import 'package:open_source_browser/toolbar_searchfield.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -126,79 +125,7 @@ class _MainViewState extends State<MainView> {
       body: MacosWindow(
         sidebar: Sidebar(
           minWidth: 200,
-          top: BlocBuilder<SettingsCubit, SettingsState>(
-            builder: (context, state) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 8),
-                  Text('Filter Files',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 16),
-                  MacosPopupButton<String>(
-                    value: context.read<SettingsCubit>().exampleFileFilter,
-                    onChanged: (String? value) async {
-                      await context
-                          .read<SettingsCubit>()
-                          .setExampleFileFilter(value);
-                    },
-                    items: <String>[
-                      'Include Example Files',
-                      'Only */example/*',
-                      'Without */example/*'
-                    ].map<MacosPopupMenuItem<String>>((String value) {
-                      return MacosPopupMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(height: 16),
-                  MacosPopupButton<String>(
-                    value: context.read<SettingsCubit>().testFileFilter,
-                    onChanged: (String? newValue) async {
-                      await context
-                          .read<SettingsCubit>()
-                          .setTestFileFilter(newValue);
-                    },
-                    items: <String>[
-                      'Include Test Files',
-                      'Only *_test.dart',
-                      'Without *_test.dart'
-                    ].map<MacosPopupMenuItem<String>>((String value) {
-                      return MacosPopupMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(height: 32),
-                  Text('Filter Lines',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 16),
-                  MacosPopupButton<String>(
-                    value: context.read<SettingsCubit>().lineFilter,
-                    onChanged: (String? newValue) async {
-                      await context
-                          .read<SettingsCubit>()
-                          .setLineFilter(newValue);
-                    },
-                    items: <String>[
-                      'Only First Line',
-                      'First Two Lines',
-                      'All Lines'
-                    ].map<MacosPopupMenuItem<String>>((String value) {
-                      return MacosPopupMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(height: 32),
-                ],
-              );
-            },
-          ),
+          top: FilterSettings(),
           builder: (context, scrollController) => SidebarItems(
             currentIndex: _pageIndex,
             onChanged: (index) {
@@ -227,3 +154,5 @@ class _MainViewState extends State<MainView> {
     );
   }
 }
+
+
