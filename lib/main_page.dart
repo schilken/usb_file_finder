@@ -138,6 +138,16 @@ ToolBar getCustomToolBar(BuildContext context) {
         tooltipMessage: "Perform tasks with the selected items",
         items: [
           MacosPulldownMenuItem(
+            title: const Text("Scan My Projects Folder for Dart Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().myProjectsFolder;
+              await context
+                  .read<AppCubit>()
+                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
+            },
+          ),
+          MacosPulldownMenuItem(
             title: const Text("Scan Examples Folder for Dart Files"),
             onTap: () async {
               String selectedDirectory =

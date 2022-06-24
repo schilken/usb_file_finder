@@ -26,6 +26,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     return this;
   }
 
+  String get myProjectsFolder =>
+      _prefs.getString('myProjectsFolder') ??
+      '/Users/aschilken/flutterdev/my_projects';
+
   String get examplesFolder =>
       _prefs.getString('examplesFolder') ??
       '/Users/aschilken/flutterdev/examples';
@@ -58,7 +62,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(SettingsLoaded(
       examplesFolder: examplesFolder,
       flutterFolder: flutterSourceFolder,
-      myProjectsFolder: '',
+      myProjectsFolder: myProjectsFolder,
       packagesFolder: packagesFolder,
       exampleFileFilter: exampleFileFilter,
       lineFilter: lineFilter,
