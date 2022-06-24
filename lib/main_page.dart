@@ -67,7 +67,30 @@ class MainPage extends StatelessWidget {
                           folderPath: selectedDirectory, type: 'dart');
                     },
                   ),
+                  MacosPulldownMenuItem(
+                    title: const Text("Open Folder to scan for Dart Files"),
+                    onTap: () async {
+                      String? selectedDirectory =
+                          await FilePicker.platform.getDirectoryPath();
+                      if (selectedDirectory != null) {
+                        context.read<AppCubit>().scanFolder(
+                            folderPath: selectedDirectory, type: 'dart');
+                      }
+                    },
+                  ),
                   const MacosPulldownMenuDivider(),
+                  
+                  MacosPulldownMenuItem(
+                    title: const Text("Scan Examples Folder for YAML Files"),
+                    onTap: () async {
+                      String selectedDirectory =
+                          context.read<SettingsCubit>().examplesFolder;
+                      await context.read<AppCubit>().scanFolder(
+                          folderPath: selectedDirectory, type: 'pubspec.yaml');
+                      context.read<AppCubit>().setPrimarySearchWord('name:');
+                      context.read<AppCubit>().search();
+                    },
+                  ),
                   MacosPulldownMenuItem(
                     title: const Text("Scan Packages Folder for YAML Files"),
                     onTap: () async {
@@ -81,7 +104,7 @@ class MainPage extends StatelessWidget {
                   ),
 
                   MacosPulldownMenuItem(
-                    title: const Text("Scan Folder for YAML Files"),
+                    title: const Text("Open Folder to scan for YAML Files"),
                     onTap: () async {
                       String? selectedDirectory =
                           await FilePicker.platform.getDirectoryPath();
@@ -97,21 +120,9 @@ class MainPage extends StatelessWidget {
                     },
                   ),
                   const MacosPulldownMenuDivider(),
+
                   MacosPulldownMenuItem(
-                    title: const Text("Scan Folder for Dart Files"),
-                    onTap: () async {
-                      String? selectedDirectory =
-                          await FilePicker.platform.getDirectoryPath();
-                      if (selectedDirectory != null) {
-                        context
-                            .read<AppCubit>()
-                            .scanFolder(
-                            folderPath: selectedDirectory, type: 'dart');
-                      }
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Scan Folder for SVG Files"),
+                    title: const Text("Open Folder to scan for SVG Files"),
                     onTap: () async {
                       String? selectedDirectory =
                           await FilePicker.platform.getDirectoryPath();
@@ -124,13 +135,13 @@ class MainPage extends StatelessWidget {
                     },
                   ),
                   MacosPulldownMenuItem(
-                    title: const Text("Open File List"),
+                    title: const Text("Open saved File of Pathnames"),
                     onTap: () {
                       context.read<AppCubit>().loadFileList();
                     },
                   ),
                   MacosPulldownMenuItem(
-                    title: const Text("Save File List"),
+                    title: const Text("Save List of Pathnames"),
                     onTap: () {
                       context.read<AppCubit>().saveFileList();
                     },
@@ -312,14 +323,14 @@ class MainPage extends StatelessWidget {
                   );
               },
             ),
-            ResizablePane(
-                minWidth: 300,
-                startWidth: 300,
-                windowBreakpoint: 500,
-                resizableSide: ResizableSide.left,
-                builder: (_, __) {
-                  return const Center(child: Text('Details'));
-                })
+            // ResizablePane(
+            //     minWidth: 300,
+            //     startWidth: 300,
+            //     windowBreakpoint: 500,
+            //     resizableSide: ResizableSide.left,
+            //     builder: (_, __) {
+            //       return const Center(child: Text('Details'));
+            //     })
           ],
         );
       }
