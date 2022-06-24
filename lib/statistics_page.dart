@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
-import 'package:open_source_browser/cubit/settings_cubit.dart';
-import 'package:open_source_browser/detail_tile.dart';
-import 'package:open_source_browser/highlighted_text.dart';
+import 'package:open_source_browser/cubit/statistics_cubit.dart';
 import 'package:open_source_browser/main_page.dart';
 
 class StatisticsPage extends StatelessWidget {
@@ -13,40 +11,36 @@ class StatisticsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AppCubit>(
-      create: (context) => AppCubit(context.read<SettingsCubit>()),
+    return BlocProvider<StatisticsCubit>(
+      create: (context) => StatisticsCubit(),
       child: Builder(builder: (context) {
         return MacosScaffold(
           toolBar: getCustomToolBar(context),
           children: [
             ContentArea(
               builder: (context, scrollController) {
-                return BlocBuilder<AppCubit, AppState>(
+                return BlocBuilder<StatisticsCubit, StatisticsState>(
                   builder: (context, state) {
                     if (state is DetailsLoaded) {
-                      return Column(
-                        children: [
-                          Container(
-                            color: Colors.blueGrey[100],
-                            padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                if (state.fileType == null)
-                                  const Text('Paths from File: ')
-                                else
-                                  Text('${state.fileType} Files in Folder: '),
-                                Text(state.currentPathname),
-                                const Spacer(),
-                                Text(
-                                    '${state.fileCount}|${state.primaryHitCount}|${state.secondaryHitCount}'),
-                              ],
+                      return SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              color: Colors.blueGrey[100],
+                              padding:
+                                  const EdgeInsets.fromLTRB(12, 20, 20, 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                    const Text('Paths from File: ')
+                                ],
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: Center(child: Text('statistics')),
-                          ),
-                        ],
+                            Expanded(
+                              child: Center(child: Text('statistics')),
+                            ),
+                          ],
+                        ),
                       );
                     } else if (state is DetailsLoading) {
                       return const CupertinoActivityIndicator();
@@ -56,14 +50,6 @@ class StatisticsPage extends StatelessWidget {
                 );
               },
             ),
-            // ResizablePane(
-            //     minWidth: 300,
-            //     startWidth: 300,
-            //     windowBreakpoint: 500,
-            //     resizableSide: ResizableSide.left,
-            //     builder: (_, __) {
-            //       return const Center(child: Text('Details'));
-            //     })
           ],
         );
       }),

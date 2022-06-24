@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/about_window.dart';
+import 'package:open_source_browser/cubit/app_cubit.dart';
 import 'package:open_source_browser/cubit/settings_cubit.dart';
 import 'package:open_source_browser/filter_settings.dart';
 import 'package:open_source_browser/main_page.dart';
@@ -49,8 +50,15 @@ class App extends StatelessWidget {
           if (!snapshot.hasData) {
             return Container();
           }
-          return BlocProvider.value(
-            value: snapshot.data!,
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: snapshot.data!,
+              ),
+              BlocProvider(
+                create: (context) => AppCubit(context.read<SettingsCubit>()),
+              ),
+            ],
             child: MacosApp(
               title: 'open_source_browser',
               theme: MacosThemeData.light(),
@@ -160,5 +168,3 @@ class _MainViewState extends State<MainView> {
     );
   }
 }
-
-
