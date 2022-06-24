@@ -294,10 +294,11 @@ class AppCubit extends Cubit<AppState> {
     } else {
       _maxLinesToBuffer = 10;
     }
-    _allFilePaths = (await _runFindCommand(folderPath, type))
-        .where((path) => path.isNotEmpty)
-        .toList();
+    
     if (folderPath != null) {
+      filesRepository.currentFolderPath = folderPath;
+      filesRepository.runFindCommand(type);
+      _allFilePaths = filesRepository.allFilePaths;
       _currentPathname = folderPath;
       _fileCount = _allFilePaths?.length ?? 0;
     } else {

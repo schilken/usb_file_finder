@@ -1,24 +1,19 @@
 import 'dart:io';
 
 class FilesRepository {
-  String? _currentFolderPath;
+  String? currentFolderPath;
   String? _fileType;
   List<String> _allFilePaths = [];
 
-  set folderPath(String path) {
-    _currentFolderPath = path;
-  }
-
-  String? get currentFolderPath => _currentFolderPath;
 
   Future<int> runFindCommand(String fileType) async {
     _fileType = fileType;
-    print('scanFolder: $_currentFolderPath for $fileType');
-    if (_currentFolderPath == null || _fileType == null) {
+    print('scanFolder: $currentFolderPath for $fileType');
+    if (currentFolderPath == null || _fileType == null) {
       _allFilePaths = [];
       return 0;
     }
-    _allFilePaths = (await _runFindCommand(_currentFolderPath!, _fileType!))
+    _allFilePaths = (await _runFindCommand(currentFolderPath!, _fileType!))
         .where((path) => path.isNotEmpty)
         .toList();
     return _allFilePaths.length;

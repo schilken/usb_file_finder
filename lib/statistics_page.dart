@@ -12,6 +12,7 @@ class StatisticsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('StatisticsPage.build');
     return BlocProvider<StatisticsCubit>(
       create: (context) => StatisticsCubit(context.read<FilesRepository>()),
       child: Builder(builder: (context) {
@@ -22,8 +23,10 @@ class StatisticsPage extends StatelessWidget {
               builder: (context, scrollController) {
                 return BlocBuilder<StatisticsCubit, StatisticsState>(
                   builder: (context, state) {
-                    if (state is DetailsLoaded) {
+                    print('builder: $state');
+                    if (state is StatisticsLoaded) {
                       return SingleChildScrollView(
+//                        controller: ScrollController(),
                         child: Column(
                           children: [
                             Container(
@@ -33,20 +36,27 @@ class StatisticsPage extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                    const Text('Paths from File: ')
+                                  const Text('Paths from File: '),
+                                  Text(state.currentPathname),
                                 ],
                               ),
                             ),
-                            Expanded(
-                              child: Center(child: Text('statistics')),
-                            ),
+                            Center(
+                                child: TextButton(
+                                    onPressed: () =>
+                                        context.read<StatisticsCubit>().load(),
+                                    child: Text('refresh'))),
                           ],
                         ),
                       );
-                    } else if (state is DetailsLoading) {
+                    } else if (state is StatisticsLoading) {
                       return const CupertinoActivityIndicator();
                     }
-                    return const Center(child: Text('No file selected'));
+                    return Center(
+                        child: TextButton(
+                            onPressed: () =>
+                                context.read<StatisticsCubit>().load(),
+                            child: Text('refresh')));
                   },
                 );
               },

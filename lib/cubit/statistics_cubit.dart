@@ -11,4 +11,11 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     this.filesRepository,
   ) : super(StatisticsInitial());
   final FilesRepository filesRepository;
+
+  Future<void> load() async {
+    emit(StatisticsLoading());
+    await Future.delayed(Duration(milliseconds: 2000));
+    emit(StatisticsLoaded(
+        currentPathname: filesRepository.currentFolderPath ?? 'no path'));
+  }
 }
