@@ -11,6 +11,7 @@ import 'package:open_source_browser/cubit/settings_cubit.dart';
 import 'package:open_source_browser/filter_settings.dart';
 import 'package:open_source_browser/main_page.dart';
 import 'package:open_source_browser/settings_window.dart';
+import 'package:open_source_browser/statistics_page.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -133,8 +134,12 @@ class _MainViewState extends State<MainView> {
             },
             items: [
               const SidebarItem(
-                leading: MacosIcon(CupertinoIcons.home),
-                label: Text('Home'),
+                leading: MacosIcon(CupertinoIcons.search),
+                label: Text('Search Result'),
+              ),
+              const SidebarItem(
+                leading: MacosIcon(CupertinoIcons.graph_square),
+                label: Text('Package Statistics'),
               ),
             ],
           ),
@@ -148,6 +153,7 @@ class _MainViewState extends State<MainView> {
           index: _pageIndex,
           children: const [
             MainPage(),
+            StatisticsPage(),
           ],
         ),
       ),

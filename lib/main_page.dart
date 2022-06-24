@@ -18,172 +18,7 @@ class MainPage extends StatelessWidget {
       create: (context) => AppCubit(context.read<SettingsCubit>()),
       child: Builder(builder: (context) {
         return MacosScaffold(
-          toolBar: ToolBar(
-            title: const Text('Open Source Browser'),
-            titleWidth: 250.0,
-            actions: [
-              ToolBarIconButton(
-                label: 'Toggle Sidebar',
-                icon: const MacosIcon(CupertinoIcons.sidebar_left),
-                showLabel: false,
-                tooltipMessage: 'Toggle Sidebar',
-                onPressed: () {
-                  MacosWindowScope.of(context).toggleSidebar();
-                },
-              ),
-              ToolBarSpacer(spacerUnits: 3),
-              ToolBarPullDownButton(
-                label: "Actions",
-                icon: CupertinoIcons.ellipsis_circle,
-                tooltipMessage: "Perform tasks with the selected items",
-                items: [
-                  MacosPulldownMenuItem(
-                    title: const Text("Scan Examples Folder for Dart Files"),
-                    onTap: () async {
-                      String selectedDirectory =
-                          context.read<SettingsCubit>().examplesFolder;
-                      await context.read<AppCubit>().scanFolder(
-                          folderPath: selectedDirectory, type: 'dart');
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Scan Packages Folder for Dart Files"),
-                    onTap: () async {
-                      String selectedDirectory =
-                          context.read<SettingsCubit>().packagesFolder;
-                      await context.read<AppCubit>().scanFolder(
-                          folderPath: selectedDirectory, type: 'dart');
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title:
-                        const Text("Scan Flutter Source Folder for Dart Files"),
-                    onTap: () async {
-                      String selectedDirectory =
-                          context.read<SettingsCubit>().flutterSourceFolder;
-                      await context.read<AppCubit>().scanFolder(
-                          folderPath: selectedDirectory, type: 'dart');
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Open Folder to scan for Dart Files"),
-                    onTap: () async {
-                      String? selectedDirectory =
-                          await FilePicker.platform.getDirectoryPath();
-                      if (selectedDirectory != null) {
-                        context.read<AppCubit>().scanFolder(
-                            folderPath: selectedDirectory, type: 'dart');
-                      }
-                    },
-                  ),
-                  const MacosPulldownMenuDivider(),
-                  MacosPulldownMenuItem(
-                    title: const Text("Scan Examples Folder for YAML Files"),
-                    onTap: () async {
-                      String selectedDirectory =
-                          context.read<SettingsCubit>().examplesFolder;
-                      await context.read<AppCubit>().scanFolder(
-                          folderPath: selectedDirectory, type: 'pubspec.yaml');
-                      context.read<AppCubit>().setPrimarySearchWord('name:');
-                      context.read<AppCubit>().search();
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Scan Packages Folder for YAML Files"),
-                    onTap: () async {
-                      String selectedDirectory =
-                          context.read<SettingsCubit>().packagesFolder;
-                      await context.read<AppCubit>().scanFolder(
-                          folderPath: selectedDirectory, type: 'pubspec.yaml');
-                      context.read<AppCubit>().setPrimarySearchWord('name:');
-                      context.read<AppCubit>().search();
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Open Folder to scan for YAML Files"),
-                    onTap: () async {
-                      String? selectedDirectory =
-                          await FilePicker.platform.getDirectoryPath();
-                      if (selectedDirectory != null) {
-                        await context.read<AppCubit>().scanFolder(
-                            folderPath: selectedDirectory,
-                            type: 'pubspec.yaml');
-                        context.read<AppCubit>().setPrimarySearchWord('name:');
-                        context.read<AppCubit>().search();
-                      }
-                    },
-                  ),
-                  const MacosPulldownMenuDivider(),
-                  MacosPulldownMenuItem(
-                    title: const Text("Open Folder to scan for SVG Files"),
-                    onTap: () async {
-                      String? selectedDirectory =
-                          await FilePicker.platform.getDirectoryPath();
-                      if (selectedDirectory != null) {
-                        context.read<AppCubit>().scanFolder(
-                            folderPath: selectedDirectory, type: 'svg');
-                      }
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Open saved File of Pathnames"),
-                    onTap: () {
-                      context.read<AppCubit>().loadFileList();
-                    },
-                  ),
-                  MacosPulldownMenuItem(
-                    title: const Text("Save List of Pathnames"),
-                    onTap: () {
-                      context.read<AppCubit>().saveFileList();
-                    },
-                  ),
-                  const MacosPulldownMenuDivider(),
-                  MacosPulldownMenuItem(
-                    label: "Remove",
-                    enabled: false,
-                    title: const Text('Remove'),
-                    onTap: () => debugPrint("Deleting..."),
-                  ),
-                ],
-              ),
-              const ToolBarDivider(),
-              ToolbarSearchfield(
-                placeholder: 'Primary word',
-                onChanged: (word) =>
-                    context.read<AppCubit>().setPrimarySearchWord(word),
-                onSubmitted: (word) {
-                  context.read<AppCubit>().setPrimarySearchWord(word);
-                  context.read<AppCubit>().search();
-                },
-              ),
-              ToolbarSearchfield(
-                placeholder: 'Secondary word',
-                onChanged: (word) =>
-                    context.read<AppCubit>().setSecondarySearchWord(word),
-                onSubmitted: (word) {
-                  context.read<AppCubit>().setSecondarySearchWord(word);
-                  context.read<AppCubit>().search();
-                },
-              ),
-              ToolBarIconButton(
-                label: "Search",
-                icon: const MacosIcon(
-                  CupertinoIcons.search,
-                ),
-                onPressed: () => context.read<AppCubit>().search(),
-                showLabel: false,
-              ),
-              const ToolBarDivider(),
-              ToolBarIconButton(
-                label: "Share",
-                icon: const MacosIcon(
-                  CupertinoIcons.share,
-                ),
-                onPressed: () => debugPrint("pressed"),
-                showLabel: false,
-              ),
-            ],
-          ),
+          toolBar: getCustomToolBar(context),
           children: [
             ContentArea(
               builder: (context, scrollController) {
@@ -284,5 +119,178 @@ class MainPage extends StatelessWidget {
     );
   }
 }
+
+ToolBar getCustomToolBar(BuildContext context) {
+  return ToolBar(
+    title: const Text('Open Source Browser'),
+    titleWidth: 250.0,
+    actions: [
+      ToolBarIconButton(
+        label: 'Toggle Sidebar',
+        icon: const MacosIcon(CupertinoIcons.sidebar_left),
+        showLabel: false,
+        tooltipMessage: 'Toggle Sidebar',
+        onPressed: () {
+          MacosWindowScope.of(context).toggleSidebar();
+        },
+      ),
+      ToolBarSpacer(spacerUnits: 3),
+      ToolBarPullDownButton(
+        label: "Actions",
+        icon: CupertinoIcons.ellipsis_circle,
+        tooltipMessage: "Perform tasks with the selected items",
+        items: [
+          MacosPulldownMenuItem(
+            title: const Text("Scan Examples Folder for Dart Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().examplesFolder;
+              await context
+                  .read<AppCubit>()
+                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Scan Packages Folder for Dart Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().packagesFolder;
+              await context
+                  .read<AppCubit>()
+                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Scan Flutter Source Folder for Dart Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().flutterSourceFolder;
+              await context
+                  .read<AppCubit>()
+                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Open Folder to scan for Dart Files"),
+            onTap: () async {
+              String? selectedDirectory =
+                  await FilePicker.platform.getDirectoryPath();
+              if (selectedDirectory != null) {
+                context
+                    .read<AppCubit>()
+                    .scanFolder(folderPath: selectedDirectory, type: 'dart');
+              }
+            },
+          ),
+          const MacosPulldownMenuDivider(),
+          MacosPulldownMenuItem(
+            title: const Text("Scan Examples Folder for YAML Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().examplesFolder;
+              await context.read<AppCubit>().scanFolder(
+                  folderPath: selectedDirectory, type: 'pubspec.yaml');
+              context.read<AppCubit>().setPrimarySearchWord('name:');
+              context.read<AppCubit>().search();
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Scan Packages Folder for YAML Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().packagesFolder;
+              await context.read<AppCubit>().scanFolder(
+                  folderPath: selectedDirectory, type: 'pubspec.yaml');
+              context.read<AppCubit>().setPrimarySearchWord('name:');
+              context.read<AppCubit>().search();
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Open Folder to scan for YAML Files"),
+            onTap: () async {
+              String? selectedDirectory =
+                  await FilePicker.platform.getDirectoryPath();
+              if (selectedDirectory != null) {
+                await context.read<AppCubit>().scanFolder(
+                    folderPath: selectedDirectory, type: 'pubspec.yaml');
+                context.read<AppCubit>().setPrimarySearchWord('name:');
+                context.read<AppCubit>().search();
+              }
+            },
+          ),
+          const MacosPulldownMenuDivider(),
+          MacosPulldownMenuItem(
+            title: const Text("Open Folder to scan for SVG Files"),
+            onTap: () async {
+              String? selectedDirectory =
+                  await FilePicker.platform.getDirectoryPath();
+              if (selectedDirectory != null) {
+                context
+                    .read<AppCubit>()
+                    .scanFolder(folderPath: selectedDirectory, type: 'svg');
+              }
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Open saved File of Pathnames"),
+            onTap: () {
+              context.read<AppCubit>().loadFileList();
+            },
+          ),
+          MacosPulldownMenuItem(
+            title: const Text("Save List of Pathnames"),
+            onTap: () {
+              context.read<AppCubit>().saveFileList();
+            },
+          ),
+          const MacosPulldownMenuDivider(),
+          MacosPulldownMenuItem(
+            label: "Remove",
+            enabled: false,
+            title: const Text('Remove'),
+            onTap: () => debugPrint("Deleting..."),
+          ),
+        ],
+      ),
+      const ToolBarDivider(),
+      ToolbarSearchfield(
+        placeholder: 'Primary word',
+        onChanged: (word) =>
+            context.read<AppCubit>().setPrimarySearchWord(word),
+        onSubmitted: (word) {
+          context.read<AppCubit>().setPrimarySearchWord(word);
+          context.read<AppCubit>().search();
+        },
+      ),
+      ToolbarSearchfield(
+        placeholder: 'Secondary word',
+        onChanged: (word) =>
+            context.read<AppCubit>().setSecondarySearchWord(word),
+        onSubmitted: (word) {
+          context.read<AppCubit>().setSecondarySearchWord(word);
+          context.read<AppCubit>().search();
+        },
+      ),
+      ToolBarIconButton(
+        label: "Search",
+        icon: const MacosIcon(
+          CupertinoIcons.search,
+        ),
+        onPressed: () => context.read<AppCubit>().search(),
+        showLabel: false,
+      ),
+      const ToolBarDivider(),
+      ToolBarIconButton(
+        label: "Share",
+        icon: const MacosIcon(
+          CupertinoIcons.share,
+        ),
+        onPressed: () => debugPrint("pressed"),
+        showLabel: false,
+      ),
+    ],
+    );
+  }
+
 
 
