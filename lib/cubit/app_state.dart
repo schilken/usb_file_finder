@@ -63,6 +63,7 @@ class DetailsLoaded extends AppState {
   final int primaryHitCount;
   final int secondaryHitCount;
   final String? message;
+  final int? displayLineCount;
 
   DetailsLoaded({
     this.fileType,
@@ -74,6 +75,7 @@ class DetailsLoaded extends AppState {
     this.message,
     String? primaryWord,
     String? secondaryWord,
+    this.displayLineCount,
   }) : super(primaryWord: primaryWord, secondaryWord: secondaryWord);
 
   DetailsLoaded copyWith({
@@ -84,15 +86,17 @@ class DetailsLoaded extends AppState {
     int? primaryHitCount,
     int? secondaryHitCount,
     String? message,
+    int? displayLineCount,
   }) {
     return DetailsLoaded(
       fileType: fileType ?? this.fileType,
       details: details ?? this.details,
       currentPathname: currentPathname ?? this.currentPathname,
-      message: message ?? this.message,
       fileCount: fileCount ?? this.fileCount,
       primaryHitCount: primaryHitCount ?? this.primaryHitCount,
       secondaryHitCount: secondaryHitCount ?? this.secondaryHitCount,
+      message: message ?? this.message,
+      displayLineCount: displayLineCount ?? this.displayLineCount,
     );
   }
 }

@@ -12,8 +12,11 @@ class AppCubit extends Cubit<AppState> {
   AppCubit(SettingsCubit settingsCubit)
       : _settingsCubit = settingsCubit,
         super(AppInitial()) {
+    print('create AppCubit');
+    if (settingsCubit.state is SettingsLoaded) {
+      _applyFilters(_settingsCubit.state as SettingsLoaded);
+    }
     _settingsCubit.stream.listen((settings) {
-      print('_settingsCubit.stream.listen : $settings');
       if (settings is SettingsLoaded) {
         _applyFilters(settings);
       }
@@ -104,7 +107,7 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
-    if (_primaryWord == null || (_primaryWord ?? '').length < 4) {
+    if (_primaryWord == null || (_primaryWord ?? '').length < 3) {
       emit(
         DetailsLoaded(
             currentPathname: _currentPathname,
@@ -113,7 +116,7 @@ class AppCubit extends Cubit<AppState> {
             primaryHitCount: _primaryHitCount,
             secondaryHitCount: _secondaryHitCount,
             details: [],
-            message: 'Primary Search Word must be at least 4 characters'),
+            message: 'Primary Search Word must be at least 3 characters'),
       );
       return;
     }
@@ -171,6 +174,7 @@ class AppCubit extends Cubit<AppState> {
         details: primaryResult,
         primaryWord: _primaryWord,
         secondaryWord: _secondaryWord,
+        displayLineCount: _displayLineCount,
       ),
     );
   }
@@ -212,6 +216,7 @@ class AppCubit extends Cubit<AppState> {
         details: secondaryResult,
         primaryWord: _primaryWord,
         secondaryWord: _secondaryWord,
+        displayLineCount: _displayLineCount,
       ),
     );
   }
@@ -317,6 +322,8 @@ class AppCubit extends Cubit<AppState> {
   void saveFileList() {}
   
   void _applyFilters(SettingsLoaded settings) {
+    print('_applyFilters: $settings');
+
     _onlyExampleFiles = settings.exampleFileFilter.startsWith('Only');
     _removeExampleFiles = settings.exampleFileFilter.startsWith('Without');
     _onlyTestFiles = settings.testFileFilter.startsWith('Only');

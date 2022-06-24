@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit() : super(SettingsInitial());
+  SettingsCubit() : super(SettingsInitial()) {
+    print('create SettingsCubit');
+  }
   late SharedPreferences _prefs;
 
   get lineFilter => _prefs.getString('lineFilter') ?? 'All Lines';
@@ -20,6 +22,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<SettingsCubit> initialize() async {
     await Future.delayed(Duration(milliseconds: 1000));
     _prefs = await SharedPreferences.getInstance();
+    emitSettingsLoaded();
     return this;
   }
 
@@ -37,32 +40,21 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> setTestFileFilter(value) async {
     await _prefs.setString('testFileFilter', value);
-    emit(SettingsLoaded(
-      examplesFolder: examplesFolder,
-      flutterFolder: flutterSourceFolder,
-      myProjectsFolder: '',
-      packagesFolder: packagesFolder,
-      exampleFileFilter: exampleFileFilter,
-      lineFilter: lineFilter,
-      testFileFilter: testFileFilter,
-    ));
+    emitSettingsLoaded();
   }
 
   Future<void> setExampleFileFilter(value) async {
     await _prefs.setString('exampleFileFilter', value);
-    emit(SettingsLoaded(
-      examplesFolder: examplesFolder,
-      flutterFolder: flutterSourceFolder,
-      myProjectsFolder: '',
-      packagesFolder: packagesFolder,
-      exampleFileFilter: exampleFileFilter,
-      lineFilter: lineFilter,
-      testFileFilter: testFileFilter,
-    ));
+    emitSettingsLoaded();
   }
 
   Future<void> setLineFilter(value) async {
     await _prefs.setString('lineFilter', value);
+    emitSettingsLoaded();
+  }
+
+  void emitSettingsLoaded() {
+    print('SettingsCubit emit');
     emit(SettingsLoaded(
       examplesFolder: examplesFolder,
       flutterFolder: flutterSourceFolder,

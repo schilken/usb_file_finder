@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
 import 'package:open_source_browser/cubit/settings_cubit.dart';
+import 'package:open_source_browser/detail_tile.dart';
 import 'package:open_source_browser/highlighted_text.dart';
 import 'package:open_source_browser/toolbar_searchfield.dart';
 
@@ -79,7 +77,6 @@ class MainPage extends StatelessWidget {
                     },
                   ),
                   const MacosPulldownMenuDivider(),
-                  
                   MacosPulldownMenuItem(
                     title: const Text("Scan Examples Folder for YAML Files"),
                     onTap: () async {
@@ -102,16 +99,13 @@ class MainPage extends StatelessWidget {
                       context.read<AppCubit>().search();
                     },
                   ),
-
                   MacosPulldownMenuItem(
                     title: const Text("Open Folder to scan for YAML Files"),
                     onTap: () async {
                       String? selectedDirectory =
                           await FilePicker.platform.getDirectoryPath();
                       if (selectedDirectory != null) {
-                        await context
-                            .read<AppCubit>()
-                            .scanFolder(
+                        await context.read<AppCubit>().scanFolder(
                             folderPath: selectedDirectory,
                             type: 'pubspec.yaml');
                         context.read<AppCubit>().setPrimarySearchWord('name:');
@@ -120,16 +114,13 @@ class MainPage extends StatelessWidget {
                     },
                   ),
                   const MacosPulldownMenuDivider(),
-
                   MacosPulldownMenuItem(
                     title: const Text("Open Folder to scan for SVG Files"),
                     onTap: () async {
                       String? selectedDirectory =
                           await FilePicker.platform.getDirectoryPath();
                       if (selectedDirectory != null) {
-                        context
-                            .read<AppCubit>()
-                            .scanFolder(
+                        context.read<AppCubit>().scanFolder(
                             folderPath: selectedDirectory, type: 'svg');
                       }
                     },
@@ -228,81 +219,37 @@ class MainPage extends StatelessWidget {
                               controller: ScrollController(),
                               itemCount: state.details.length,
                               itemBuilder: (context, index) {
+                                final highlights = [
+                                  state.primaryWord ?? '@',
+                                  state.secondaryWord ?? '@',
+                                ];
+
                                 final detail = state.details[index];
-                                return MacosListTile(
-                                  title: HighlightedText(
-                                      text: detail.previewText ?? 'no preview',
-                                      highlights: [
-                                        state.primaryWord ?? '@',
-                                        state.secondaryWord ?? '@',
-                                    ],
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(
-                                        height: 12,
+                                if (state.displayLineCount == 1) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8),
+                                    child: Row(children: [
+                                      HighlightedText(
+                                        text:
+                                            detail.previewText ?? 'no preview',
+                                        highlights: highlights,
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            detail.projectName ?? 'no project',
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                          MacosIconButton(
-                                            icon: const MacosIcon(
-                                              CupertinoIcons.link,
-                                            ),
-                                            shape: BoxShape.circle,
-                                            onPressed: () {
-                                              context
-                                                  .read<AppCubit>()
-                                                  .openEditor(
-                                                      detail.projectPathName);
-                                            },
-                                          ),
-                                        ],
+                                      SizedBox(width: 12),
+                                      Spacer(),
+                                      NameWithOpenInEditor(
+                                        name: detail.title ?? 'no name',
+                                        path: detail.filePathName,
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            detail.title ?? 'no title',
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                          MacosIconButton(
-                                            icon: const MacosIcon(
-                                              CupertinoIcons.link,
-                                            ),
-                                            shape: BoxShape.circle,
-                                            onPressed: () {
-                                              context
-                                                  .read<AppCubit>()
-                                                  .openEditor(
-                                                      detail.filePathName);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      if (detail.imageUrl != null)
-                                        FutureBuilder<String?>(
-                                            future:
-                                                _loadSvgFile(detail.imageUrl!),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.hasData) {
-                                                return SvgPicture.string(
-                                                    height: 100,
-                                                    width: 100,
-                                                    snapshot.data ?? '');
-                                              }
-                                              return const CircularProgressIndicator();
-                                            })
-                                    ],
-                                  ),
+                                    ]),
+                                  );
+                                }
+                                return DetailTile(
+                                  detail: detail,
+                                  highlights: highlights,
+                                  displayLinesCount:
+                                      state.displayLineCount ?? 1,
+                                  fileType: state.fileType,
                                 );
                               },
                               separatorBuilder:
@@ -320,7 +267,7 @@ class MainPage extends StatelessWidget {
                     }
                     return const Center(child: Text('No file selected'));
                   },
-                  );
+                );
               },
             ),
             // ResizablePane(
@@ -333,13 +280,9 @@ class MainPage extends StatelessWidget {
             //     })
           ],
         );
-      }
-          ),
+      }),
     );
   }
-  
-  Future<String?> _loadSvgFile(String imageUrl) async {
-    final svgAsString = await File(imageUrl).readAsString();
-    return svgAsString;
-  }
 }
+
+
