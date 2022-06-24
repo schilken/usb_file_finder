@@ -9,6 +9,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/about_window.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
 import 'package:open_source_browser/cubit/settings_cubit.dart';
+import 'package:open_source_browser/files_repository.dart';
 import 'package:open_source_browser/filter_settings.dart';
 import 'package:open_source_browser/main_page.dart';
 import 'package:open_source_browser/settings_window.dart';
@@ -50,22 +51,26 @@ class App extends StatelessWidget {
           if (!snapshot.hasData) {
             return Container();
           }
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider.value(
-                value: snapshot.data!,
+          return RepositoryProvider(
+            create: (context) => FilesRepository(),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider.value(
+                  value: snapshot.data!,
+                ),
+                BlocProvider(
+                  create: (context) => AppCubit(context.read<SettingsCubit>(),
+                      context.read<FilesRepository>()),
+                ),
+              ],
+              child: MacosApp(
+                title: 'open_source_browser',
+                theme: MacosThemeData.light(),
+                darkTheme: MacosThemeData.dark(),
+                themeMode: ThemeMode.system,
+                home: const MainView(),
+                debugShowCheckedModeBanner: false,
               ),
-              BlocProvider(
-                create: (context) => AppCubit(context.read<SettingsCubit>()),
-              ),
-            ],
-            child: MacosApp(
-              title: 'open_source_browser',
-              theme: MacosThemeData.light(),
-              darkTheme: MacosThemeData.dark(),
-              themeMode: ThemeMode.system,
-              home: const MainView(),
-              debugShowCheckedModeBanner: false,
             ),
           );
         });

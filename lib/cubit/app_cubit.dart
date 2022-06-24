@@ -5,11 +5,15 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:open_source_browser/cubit/settings_cubit.dart';
+import 'package:open_source_browser/files_repository.dart';
 
 part 'app_state.dart';
 
 class AppCubit extends Cubit<AppState> {
-  AppCubit(SettingsCubit settingsCubit)
+  AppCubit(
+    SettingsCubit settingsCubit,
+    this.filesRepository,
+  )
       : _settingsCubit = settingsCubit,
         super(AppInitial()) {
     print('create AppCubit');
@@ -21,7 +25,8 @@ class AppCubit extends Cubit<AppState> {
         _applyFilters(settings);
       }
     });
-  } 
+  }
+  final FilesRepository filesRepository; 
   String? _primaryWord;
   String? _secondaryWord;
   String _currentPathname = "no file selected";
@@ -289,12 +294,11 @@ class AppCubit extends Cubit<AppState> {
     } else {
       _maxLinesToBuffer = 10;
     }
-    _allFilePaths = (await runFindCommand(folderPath, type))
+    _allFilePaths = (await _runFindCommand(folderPath, type))
         .where((path) => path.isNotEmpty)
         .toList();
     if (folderPath != null) {
       _currentPathname = folderPath;
-      File data = File(_currentPathname);
       _fileCount = _allFilePaths?.length ?? 0;
     } else {
       _currentPathname = "no file selected";
@@ -312,7 +316,7 @@ class AppCubit extends Cubit<AppState> {
     ));
   }
 
-  Future<List<String>> runFindCommand(
+  Future<List<String>> _runFindCommand(
       String workingDir, String extension) async {
     var process = await Process.run(
         'find', [workingDir, '-name', '*$extension', '-type', 'f']);

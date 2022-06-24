@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:open_source_browser/cubit/app_cubit.dart';
 import 'package:open_source_browser/cubit/statistics_cubit.dart';
+import 'package:open_source_browser/files_repository.dart';
 import 'package:open_source_browser/main_page.dart';
 
 class StatisticsPage extends StatelessWidget {
@@ -12,7 +13,7 @@ class StatisticsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<StatisticsCubit>(
-      create: (context) => StatisticsCubit(),
+      create: (context) => StatisticsCubit(context.read<FilesRepository>()),
       child: Builder(builder: (context) {
         return MacosScaffold(
           toolBar: getCustomToolBar(context),
