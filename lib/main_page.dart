@@ -191,6 +191,17 @@ ToolBar getCustomToolBar(BuildContext context) {
           ),
           const MacosPulldownMenuDivider(),
           MacosPulldownMenuItem(
+            title: const Text("Scan My Projects Folder for YAML Files"),
+            onTap: () async {
+              String selectedDirectory =
+                  context.read<SettingsCubit>().myProjectsFolder;
+              await context.read<AppCubit>().scanFolder(
+                  folderPath: selectedDirectory, type: 'pubspec.yaml');
+              context.read<AppCubit>().setPrimarySearchWord('name:');
+              context.read<AppCubit>().search();
+            },
+          ),
+          MacosPulldownMenuItem(
             title: const Text("Scan Examples Folder for YAML Files"),
             onTap: () async {
               String selectedDirectory =
