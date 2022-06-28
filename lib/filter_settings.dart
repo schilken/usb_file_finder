@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
@@ -32,7 +31,6 @@ class FilterSettings extends StatelessWidget {
                 'Image Files',
                 'Misc Files',
                 'ZIP Files',
-
               ].map<MacosPopupMenuItem<String>>((String value) {
                 return MacosPopupMenuItem<String>(
                   value: value,
@@ -41,6 +39,64 @@ class FilterSettings extends StatelessWidget {
               }).toList(),
             ),
             const SizedBox(height: 16),
+            SizedBox(
+              height: 500,
+              child: Material(
+                child: ListView(
+                  controller: ScrollController(),
+                  children: [
+                    CheckboxListTile(
+                        title: const Text('128GB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('WD1TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('GE5TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('128GB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('WD1TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('GE5TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('128GB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('WD1TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('GE5TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('128GB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('WD1TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                    CheckboxListTile(
+                        title: const Text('GE5TB'),
+                        value: true,
+                        onChanged: (_) {}),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 32),
             // Text('Filter Lines', style: TextStyle(fontWeight: FontWeight.bold)),
             // SizedBox(height: 16),
