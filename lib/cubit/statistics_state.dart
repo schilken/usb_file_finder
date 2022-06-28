@@ -25,7 +25,7 @@ class StatisticsLoaded extends StatisticsState {
   final String currentPathname;
   final int fileCount;
   final List<Frequency> frequencies;
-  StatisticsLoaded({
+  const StatisticsLoaded({
     required this.currentPathname,
     required this.fileCount,
     required this.frequencies,

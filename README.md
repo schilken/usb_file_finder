@@ -1,4 +1,4 @@
-# open_source_browser
+# usb_file_finder
 
 A starter Flutter app for macOS with `macos_ui`.
 

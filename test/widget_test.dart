@@ -8,7 +8,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macos_ui/macos_ui.dart';
 
-import 'package:open_source_browser/main.dart';
+import 'package:usb_file_finder/main.dart';
 
 void main() {
   testWidgets('App is built with a MacosWindow parent widget',

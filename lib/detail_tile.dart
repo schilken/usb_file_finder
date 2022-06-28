@@ -7,8 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:macos_ui/macos_ui.dart';
 
-import 'package:open_source_browser/cubit/app_cubit.dart';
-import 'package:open_source_browser/highlighted_text.dart';
+import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/highlighted_text.dart';
 
 class DetailTile extends StatelessWidget {
   const DetailTile({

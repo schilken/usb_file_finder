@@ -3,11 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:open_source_browser/cubit/app_cubit.dart';
-import 'package:open_source_browser/cubit/settings_cubit.dart';
-import 'package:open_source_browser/detail_tile.dart';
-import 'package:open_source_browser/highlighted_text.dart';
-import 'package:open_source_browser/toolbar_searchfield.dart';
+import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/detail_tile.dart';
+import 'package:usb_file_finder/highlighted_text.dart';
+import 'package:usb_file_finder/toolbar_searchfield.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -68,8 +67,8 @@ class MainPage extends StatelessWidget {
                                             detail.previewText ?? 'no preview',
                                         highlights: highlights,
                                       ),
-                                      SizedBox(width: 12),
-                                      Spacer(),
+                                    const SizedBox(width: 12),
+                                    const Spacer(),
                                       NameWithOpenInEditor(
                                         name: detail.title ?? 'no name',
                                         path: detail.filePathName,
@@ -102,15 +101,7 @@ class MainPage extends StatelessWidget {
                   },
                 );
               },
-            ),
-            // ResizablePane(
-            //     minWidth: 300,
-            //     startWidth: 300,
-            //     windowBreakpoint: 500,
-            //     resizableSide: ResizableSide.left,
-            //     builder: (_, __) {
-            //       return const Center(child: Text('Details'));
-            //     })
+          ),
           ],
         );
     });
@@ -119,7 +110,7 @@ class MainPage extends StatelessWidget {
 
 ToolBar getCustomToolBar(BuildContext context) {
   return ToolBar(
-    title: const Text('Open Source Browser'),
+    title: const Text('USB File Finder'),
     titleWidth: 250.0,
     actions: [
       ToolBarIconButton(
@@ -131,146 +122,32 @@ ToolBar getCustomToolBar(BuildContext context) {
           MacosWindowScope.of(context).toggleSidebar();
         },
       ),
-      ToolBarSpacer(spacerUnits: 3),
+      const ToolBarSpacer(spacerUnits: 3),
       ToolBarPullDownButton(
         label: "Actions",
         icon: CupertinoIcons.ellipsis_circle,
         tooltipMessage: "Perform tasks with the selected items",
         items: [
+
           MacosPulldownMenuItem(
-            title: const Text("Scan My Projects Folder for Dart Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().myProjectsFolder;
-              await context
-                  .read<AppCubit>()
-                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Scan Examples Folder for Dart Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().examplesFolder;
-              await context
-                  .read<AppCubit>()
-                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Scan Packages Folder for Dart Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().packagesFolder;
-              await context
-                  .read<AppCubit>()
-                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Scan Flutter Source Folder for Dart Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().flutterSourceFolder;
-              await context
-                  .read<AppCubit>()
-                  .scanFolder(folderPath: selectedDirectory, type: 'dart');
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Open Folder to scan for Dart Files"),
+            title: const Text("Open Folder to scan all Files"),
             onTap: () async {
               String? selectedDirectory =
-                  await FilePicker.platform.getDirectoryPath();
+                  await FilePicker.platform
+                  .getDirectoryPath(initialDirectory: '/Volumes');
               if (selectedDirectory != null) {
                 context
                     .read<AppCubit>()
-                    .scanFolder(folderPath: selectedDirectory, type: 'dart');
+                    .scanFolder(folderPath: selectedDirectory);
               }
             },
           ),
-          const MacosPulldownMenuDivider(),
-          MacosPulldownMenuItem(
-            title: const Text("Scan My Projects Folder for YAML Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().myProjectsFolder;
-              await context.read<AppCubit>().scanFolder(
-                  folderPath: selectedDirectory, type: 'pubspec.yaml');
-              context.read<AppCubit>().setPrimarySearchWord('name:');
-              context.read<AppCubit>().search();
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Scan Examples Folder for YAML Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().examplesFolder;
-              await context.read<AppCubit>().scanFolder(
-                  folderPath: selectedDirectory, type: 'pubspec.yaml');
-              context.read<AppCubit>().setPrimarySearchWord('name:');
-              context.read<AppCubit>().search();
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Scan Packages Folder for YAML Files"),
-            onTap: () async {
-              String selectedDirectory =
-                  context.read<SettingsCubit>().packagesFolder;
-              await context.read<AppCubit>().scanFolder(
-                  folderPath: selectedDirectory, type: 'pubspec.yaml');
-              context.read<AppCubit>().setPrimarySearchWord('name:');
-              context.read<AppCubit>().search();
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Open Folder to scan for YAML Files"),
-            onTap: () async {
-              String? selectedDirectory =
-                  await FilePicker.platform.getDirectoryPath();
-              if (selectedDirectory != null) {
-                await context.read<AppCubit>().scanFolder(
-                    folderPath: selectedDirectory, type: 'pubspec.yaml');
-                context.read<AppCubit>().setPrimarySearchWord('name:');
-                context.read<AppCubit>().search();
-              }
-            },
-          ),
-          const MacosPulldownMenuDivider(),
-          MacosPulldownMenuItem(
-            title: const Text("Open Folder to scan for SVG Files"),
-            onTap: () async {
-              String? selectedDirectory =
-                  await FilePicker.platform.getDirectoryPath();
-              if (selectedDirectory != null) {
-                context
-                    .read<AppCubit>()
-                    .scanFolder(folderPath: selectedDirectory, type: 'svg');
-              }
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Open saved File of Pathnames"),
-            onTap: () {
-              context.read<AppCubit>().loadFileList();
-            },
-          ),
-          MacosPulldownMenuItem(
-            title: const Text("Save List of Pathnames"),
-            onTap: () {
-              context.read<AppCubit>().saveFileList();
-            },
-          ),
-          const MacosPulldownMenuDivider(),
-          MacosPulldownMenuItem(
-            label: "Remove",
-            enabled: false,
-            title: const Text('Remove'),
-            onTap: () => debugPrint("Deleting..."),
-          ),
+
         ],
       ),
+      const ToolBarSpacer(spacerUnits: 1),
       const ToolBarDivider(),
+      const ToolBarSpacer(spacerUnits: 1),
       ToolbarSearchfield(
         placeholder: 'Primary word',
         onChanged: (word) =>

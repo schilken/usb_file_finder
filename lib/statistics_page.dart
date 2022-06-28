@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:open_source_browser/cubit/app_cubit.dart';
-import 'package:open_source_browser/cubit/statistics_cubit.dart';
-import 'package:open_source_browser/files_repository.dart';
-import 'package:open_source_browser/main_page.dart';
+import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/cubit/statistics_cubit.dart';
+import 'package:usb_file_finder/files_repository.dart';
+import 'package:usb_file_finder/main_page.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});

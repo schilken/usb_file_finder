@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import 'package:open_source_browser/files_repository.dart';
+import 'package:usb_file_finder/files_repository.dart';
 import 'package:yaml/yaml.dart';
 
 part 'statistics_state.dart';
@@ -18,12 +18,12 @@ class StatisticsCubit extends Cubit<StatisticsState> {
 
   Future<void> load() async {
     emit(StatisticsLoading());
-    await Future.delayed(Duration(milliseconds: 500));
-    final frequencies = await buildStatistics(filesRepository.allFilePaths);
-    emit(StatisticsLoaded(
-      currentPathname: filesRepository.currentFolderPath ?? 'no path',
-      fileCount: filesRepository.allFilePaths.length,
-      frequencies: frequencies,
+    await Future.delayed(const Duration(milliseconds: 500));
+//    final frequencies = await buildStatistics(filesRepository.allFilePaths);
+    emit(const StatisticsLoaded(
+      currentPathname: 'no path',
+      fileCount: -1,
+      frequencies: [],
     ));
   }
 

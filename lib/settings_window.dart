@@ -17,7 +17,7 @@ class SettingsWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MacosApp(
-      title: 'open_source_browser',
+      title: 'usb_file_finder',
       theme: MacosThemeData.light(),
       darkTheme: MacosThemeData.dark(),
       themeMode: ThemeMode.system,

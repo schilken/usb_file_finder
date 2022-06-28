@@ -6,14 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:open_source_browser/about_window.dart';
-import 'package:open_source_browser/cubit/app_cubit.dart';
-import 'package:open_source_browser/cubit/settings_cubit.dart';
-import 'package:open_source_browser/files_repository.dart';
-import 'package:open_source_browser/filter_settings.dart';
-import 'package:open_source_browser/main_page.dart';
-import 'package:open_source_browser/settings_window.dart';
-import 'package:open_source_browser/statistics_page.dart';
+import 'package:usb_file_finder/about_window.dart';
+import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/files_repository.dart';
+import 'package:usb_file_finder/filter_settings.dart';
+import 'package:usb_file_finder/main_page.dart';
+import 'package:usb_file_finder/settings_window.dart';
+import 'package:usb_file_finder/statistics_page.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -64,7 +64,7 @@ class App extends StatelessWidget {
                 ),
               ],
               child: MacosApp(
-                title: 'open_source_browser',
+                title: 'usb_file_finder',
                 theme: MacosThemeData.light(),
                 darkTheme: MacosThemeData.dark(),
                 themeMode: ThemeMode.system,
@@ -108,7 +108,7 @@ class _MainViewState extends State<MainView> {
                 window
                   ..setFrame(const Offset(0, 0) & const Size(350, 350))
                   ..center()
-                  ..setTitle('About open_source_browser')
+                  ..setTitle('About usb_file_finder')
                   ..show();
               },
             ),
