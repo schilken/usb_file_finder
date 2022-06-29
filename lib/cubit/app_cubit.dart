@@ -269,7 +269,7 @@ final ignoredFolders = <String>{
   void _applyFilters(SettingsLoaded settings) {
     print('_applyFilters: $settings');
     _selectedFileType = settings.fileTypeFilter;
-    search();
+//    search();
   }
 
   void openEditor(String? filePathName) {

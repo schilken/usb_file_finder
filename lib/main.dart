@@ -139,18 +139,18 @@ class _MainViewState extends State<MainView> {
       body: MacosWindow(
         sidebar: Sidebar(
           minWidth: 200,
-          top: FilterSettings(),
+          top: const FilterSettings(),
           builder: (context, scrollController) => SidebarItems(
             currentIndex: _pageIndex,
             onChanged: (index) {
               setState(() => _pageIndex = index);
             },
-            items: [
-              const SidebarItem(
+            items: const [
+              SidebarItem(
                 leading: MacosIcon(CupertinoIcons.search),
                 label: Text('Search Result'),
               ),
-              const SidebarItem(
+              SidebarItem(
                 leading: MacosIcon(CupertinoIcons.graph_square),
                 label: Text('Package Statistics'),
               ),

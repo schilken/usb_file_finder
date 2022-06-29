@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/device_list_view.dart';
 
 class FilterSettings extends StatelessWidget {
   const FilterSettings({
@@ -39,62 +40,10 @@ class FilterSettings extends StatelessWidget {
               }).toList(),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              height: 500,
+            const SizedBox(
+              height: 400,
               child: Material(
-                child: ListView(
-                  controller: ScrollController(),
-                  children: [
-                    CheckboxListTile(
-                        title: const Text('128GB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('WD1TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('GE5TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('128GB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('WD1TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('GE5TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('128GB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('WD1TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('GE5TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('128GB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('WD1TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                    CheckboxListTile(
-                        title: const Text('GE5TB'),
-                        value: true,
-                        onChanged: (_) {}),
-                  ],
-                ),
+                child: DeviceListView(),
               ),
             ),
             const SizedBox(height: 32),
@@ -120,3 +69,4 @@ class FilterSettings extends StatelessWidget {
     );
   }
 }
+
