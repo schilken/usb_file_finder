@@ -36,11 +36,21 @@ class FilesRepository {
   List<FileSystemEntity> _entities = [];
   List<StorageDetails> _devices = [];
 
-  Future<List<String>> loadFileList(
+
+  Future<List<String>> loadTotalFileList(String fileType) async {
+    List<String> files = [];
+    await for (StorageDetails device in Stream.fromIterable(_devices)) {
+      if (device.isSelected) {
+        files.addAll(await _loadFileList(device.name, fileType));
+      }
+    }
+    return files;
+  }
+
+  Future<List<String>> _loadFileList(
     String storageName,
     String fileType,
   ) async {
-    print('loadFileList: $storageName for $fileType');
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final inputFilePath = p.join(
       appDocDir.path,
@@ -49,9 +59,12 @@ class FilesRepository {
       filenameFromType(fileType),
     );
     print('inputFilePath: $inputFilePath');
-    File data = File(inputFilePath);
-    final allFilePaths = await data.readAsLines();
-    return allFilePaths;
+    try {
+      File data = File(inputFilePath);
+      return await data.readAsLines();
+    } on Exception {
+      return [];
+    }
   }
 
   String filenameFromType(String type) {

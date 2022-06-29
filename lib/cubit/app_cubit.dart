@@ -39,8 +39,8 @@ class AppCubit extends Cubit<AppState> {
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
 
-  List<String>? _allFilePaths;
-  List<String>? _filteredFilePaths;
+  List<String> _allFilePaths = [];
+  List<String> _filteredFilePaths = [];
 
   // pathname → loist of 10 lines following hit
   final sectionsMap = <String, List<String>>{};
@@ -80,11 +80,11 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
-    _filteredFilePaths =
-        await filesRepository.loadFileList(storageName, _selectedFileType);
-
+    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
+    _fileCount = _allFilePaths.length;
+    _filteredFilePaths = _allFilePaths;
     final primaryResult = <Detail>[];
-    for (final path in _filteredFilePaths!) {
+    for (final path in _filteredFilePaths) {
       if (path.contains(_primaryWord!)) {
         _primaryHitCount++;
         var shortPath = path;
@@ -104,7 +104,7 @@ class AppCubit extends Cubit<AppState> {
       DetailsLoaded(
         currentPathname: _currentPathname,
         fileType: _selectedFileType,
-        fileCount: _filteredFilePaths?.length ?? 0,
+        fileCount: _filteredFilePaths.length,
         primaryHitCount: _primaryHitCount,
         secondaryHitCount: 0,
         details: primaryResult,
@@ -203,10 +203,7 @@ final ignoredFolders = <String>{
   }
 
   Future<void> scanFolder({required String folderPath}) async {
-    print('scanFolder: $folderPath');
-
     var dir = Directory(folderPath);
-
     final deviceName = p.basename(folderPath);
     Map<String, File> extensionMap = await buildExtensionMap(deviceName);
 
