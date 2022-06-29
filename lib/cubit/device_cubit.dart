@@ -1,21 +1,22 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:usb_file_finder/files_repository.dart';
 
 part 'device_state.dart';
 
 class DeviceCubit extends Cubit<DeviceState> {
-  DeviceCubit() : super(DeviceInitial());
+  DeviceCubit(this.filesRepository) : super(DeviceInitial());
+
+  final FilesRepository filesRepository;
 
   Future<DeviceCubit> initialize() async {
     emit(DeviceLoading());
     await Future.delayed(const Duration(milliseconds: 1000));
+    await filesRepository.readDeviceData();
     emit(
       DeviceLoaded(
-        devices: [
-          Device('128GB', 1, false),
-          Device('XXXGB', 1, true),
-        ],
-        deviceCount: 2,
+        devices: filesRepository.devices,
+        deviceCount: filesRepository.devices.length,
       ),
     );
     return this;
@@ -27,10 +28,10 @@ class DeviceCubit extends Cubit<DeviceState> {
       DeviceLoaded(
         devices: currentState.devices.map((device) {
           if (device.name == currentState.devices[index].name) {
-            return Device(
-              device.name,
-              device.fileCount,
-              value ?? !device.isSelected,
+            return StorageDetails(
+              name: device.name,
+              fileCount: device.fileCount,
+              isSelected: value ?? !device.isSelected,
             );
           }
           return device;
