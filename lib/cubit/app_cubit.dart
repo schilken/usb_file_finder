@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as p;
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,11 +32,12 @@ class AppCubit extends Cubit<AppState> {
   String? _secondaryWord;
   final String _currentPathname = "no file selected";
   String? _fileType;
-  final int _fileCount = 0;
+  int _fileCount = 0;
   int _primaryHitCount = 0;
   String? _folderPath;
   final SettingsCubit _settingsCubit;
   String _selectedFileType = '';
+  StreamSubscription<File>? _subscription;
 
   List<String>? _allFilePaths;
   List<String>? _filteredFilePaths;
@@ -71,7 +74,9 @@ class AppCubit extends Cubit<AppState> {
             primaryHitCount: _primaryHitCount,
             secondaryHitCount: 0,
             details: const [],
-            message: 'Primary Search Word must be at least 3 characters'),
+          message: 'Primary Search Word must be at least 3 characters',
+          isScanRunning: false,
+        ),
       );
       return;
     }
@@ -105,6 +110,7 @@ class AppCubit extends Cubit<AppState> {
         details: primaryResult,
         primaryWord: _primaryWord,
         secondaryWord: _secondaryWord,
+        isScanRunning: false,
       ),
     );
   }
@@ -170,6 +176,13 @@ class AppCubit extends Cubit<AppState> {
     };
   }
 
+final ignoredFolders = <String>{
+    'Backups.backupdb',
+    '.Spotlight-V100',
+    '.Trashes',
+    'Contents',
+  };
+
 //async* + yield* for recursive functions
   Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
     //dirList is FileSystemEntity list for every directories/subdirectories
@@ -179,7 +192,8 @@ class AppCubit extends Cubit<AppState> {
       await for (final FileSystemEntity entity in dirList) {
         if (entity is File) {
           yield entity;
-        } else if (entity is Directory) {
+        } else if (entity is Directory &&
+            !ignoredFolders.contains(p.basename(entity.path))) {
           yield* scanningFilesWithAsyncRecursive(Directory(entity.path));
         }
       }
@@ -198,38 +212,58 @@ class AppCubit extends Cubit<AppState> {
 
     Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
 
-    int fileCounter = 0;
-    scannedFiles.listen((File file) async {
+    _fileCount = 0;
+    _subscription = scannedFiles.listen((File file) async {
       final listfile = extensionMap[p.extension(file.path)];
       if (listfile != null) {
         listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
-//      print(file.path);
-        if (++fileCounter % 100 == 0) {
-          print('files: $fileCounter');
+        if (++_fileCount % 100 == 0) {
+          print('files: $_fileCount');
           emit(DetailsLoaded(
             currentPathname: folderPath,
             fileType: _fileType,
-            fileCount: fileCounter,
+            fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
             secondaryHitCount: 0,
-            details: [
-              Detail(title: 'nothing...'),
-            ],
+            isScanRunning: true,
+            details: const [],
           ));
         }
       }
     });
+    _subscription?.onDone(
+      () {
+        emit(
+          DetailsLoaded(
+            currentPathname: folderPath,
+            fileType: _fileType,
+            fileCount: _fileCount,
+            primaryHitCount: _primaryHitCount,
+            secondaryHitCount: 0,
+            isScanRunning: false,
+            details: const [],
+          ),
+        );
+      },
+    );
+    _subscription?.onError((Object error) {
+      print('error: $error');
+    });
+  }
 
-    emit(DetailsLoaded(
-      currentPathname: folderPath,
+  Future<void> cancelScan() async {
+    await _subscription?.cancel();
+    emit(
+      DetailsLoaded(
+        currentPathname: '',
       fileType: _fileType,
-      fileCount: _fileCount,
+        fileCount: _fileCount,
       primaryHitCount: _primaryHitCount,
       secondaryHitCount: 0,
-      details: [
-        Detail(title: 'nothing...'),
-      ],
-    ));
+        isScanRunning: false,
+        details: const [],
+      ),
+    );
   }
 
   void _applyFilters(SettingsLoaded settings) {

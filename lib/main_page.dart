@@ -36,6 +36,11 @@ class MainPage extends StatelessWidget {
                                   Text('${state.fileType} Files in Folder: '),
                                 Text(state.currentPathname),
                                 const Spacer(),
+                              if (state.isScanRunning)
+                                TextButton(
+                                    onPressed:
+                                        context.read<AppCubit>().cancelScan,
+                                    child: const Text('Cancel Scan')),
                                 Text(
                                     '${state.fileCount}|${state.primaryHitCount}|${state.secondaryHitCount}'),
                               ],

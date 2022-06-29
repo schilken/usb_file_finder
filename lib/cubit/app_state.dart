@@ -2,7 +2,7 @@
 part of 'app_cubit.dart';
 
 @immutable
-abstract class AppState {
+abstract class AppState extends Equatable {
   final String? primaryWord;
   final String? secondaryWord;
   const AppState({
@@ -11,7 +11,10 @@ abstract class AppState {
   });
 }
 
-class AppInitial extends AppState {}
+class AppInitial extends AppState {
+  @override
+  List<Object?> get props => [];
+}
 
 class Detail {
   final String? title;
@@ -53,7 +56,10 @@ class Detail {
   }
 }
 
-class DetailsLoading extends AppState {}
+class DetailsLoading extends AppState {
+  @override
+  List<Object?> get props => [];
+}
 
 class DetailsLoaded extends AppState {
   final String? fileType;
@@ -64,6 +70,7 @@ class DetailsLoaded extends AppState {
   final int secondaryHitCount;
   final String? message;
   final int? displayLineCount;
+  final bool isScanRunning;
 
   const DetailsLoaded({
     this.fileType,
@@ -72,6 +79,7 @@ class DetailsLoaded extends AppState {
     required this.fileCount,
     required this.primaryHitCount,
     required this.secondaryHitCount,
+    required this.isScanRunning,
     this.message,
     super.primaryWord,
     super.secondaryWord,
@@ -87,6 +95,7 @@ class DetailsLoaded extends AppState {
     int? secondaryHitCount,
     String? message,
     int? displayLineCount,
+    bool? isScanRunning,
   }) {
     return DetailsLoaded(
       fileType: fileType ?? this.fileType,
@@ -97,6 +106,20 @@ class DetailsLoaded extends AppState {
       secondaryHitCount: secondaryHitCount ?? this.secondaryHitCount,
       message: message ?? this.message,
       displayLineCount: displayLineCount ?? this.displayLineCount,
+      isScanRunning: isScanRunning ?? this.isScanRunning,
     );
   }
+  
+  @override
+  List<Object?> get props => [
+        fileCount,
+        isScanRunning,
+        message,
+        currentPathname,
+        fileType,
+        details,
+        primaryHitCount,
+        secondaryHitCount,
+        displayLineCount
+      ];
 }
