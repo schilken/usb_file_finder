@@ -34,7 +34,7 @@ class AppCubit extends Cubit<AppState> {
   String? _fileType;
   int _fileCount = 0;
   int _primaryHitCount = 0;
-  String? _folderPath;
+  int _secondaryHitCount = 0;
   final SettingsCubit _settingsCubit;
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
@@ -46,7 +46,6 @@ class AppCubit extends Cubit<AppState> {
   final sectionsMap = <String, List<String>>{};
 
   void setPrimarySearchWord(String? word) {
-    print('setPrimarySearchWord: $word');
     _primaryWord = word;
     if (_primaryWord != null && (_primaryWord ?? '').isEmpty) {
       _primaryWord = null;
@@ -54,7 +53,6 @@ class AppCubit extends Cubit<AppState> {
   }
 
   void setSecondarySearchWord(String? word) {
-    print('setSecondarySearchWord: $word');
     _secondaryWord = word;
     if (_secondaryWord != null && (_secondaryWord ?? '').isEmpty) {
       _secondaryWord = null;
@@ -62,7 +60,6 @@ class AppCubit extends Cubit<AppState> {
   }
 
   Future<void> search() async {
-    const storageName = '128GB';
     emit(DetailsLoading());
     print('search: $_primaryWord $_secondaryWord');
     if (_primaryWord == null || (_primaryWord ?? '').length < 3) {
@@ -72,7 +69,7 @@ class AppCubit extends Cubit<AppState> {
             fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
-            secondaryHitCount: 0,
+          secondaryHitCount: _secondaryHitCount,
             details: const [],
           message: 'Primary Search Word must be at least 3 characters',
           isScanRunning: false,
@@ -83,21 +80,28 @@ class AppCubit extends Cubit<AppState> {
     _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
     _fileCount = _allFilePaths.length;
     _filteredFilePaths = _allFilePaths;
+    _primaryHitCount = 0;
+    _secondaryHitCount = 0;
     final primaryResult = <Detail>[];
     for (final path in _filteredFilePaths) {
       if (path.contains(_primaryWord!)) {
         _primaryHitCount++;
-        var shortPath = path;
-        if (_folderPath != null) {
-          shortPath = path.replaceFirst('${_folderPath!}/', '');
-        }
+        if (_secondaryWord == null || path.contains(_secondaryWord!)) {
+          _secondaryHitCount++;
+          final components = p.split(path);
+          final storageName = components[2];
+          final filename = p.basename(path);
+          var folderPath = path;
+          folderPath =
+              components.sublist(3).join('/').replaceFirst(filename, '');
         primaryResult.add(Detail(
-          title: path,
-          filePathName: path,
-          previewText: p.basename(shortPath),
-          projectName: storageName,
+            filePath: filename,
+            storageName: storageName,
+            folderPath: folderPath,
+            filePathName: path,
           projectPathName: '/Volumes/$storageName',
         ));
+        }
       }
     }
     emit(
@@ -106,7 +110,7 @@ class AppCubit extends Cubit<AppState> {
         fileType: _selectedFileType,
         fileCount: _filteredFilePaths.length,
         primaryHitCount: _primaryHitCount,
-        secondaryHitCount: 0,
+        secondaryHitCount: _secondaryHitCount,
         details: primaryResult,
         primaryWord: _primaryWord,
         secondaryWord: _secondaryWord,

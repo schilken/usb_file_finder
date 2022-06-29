@@ -17,18 +17,18 @@ class AppInitial extends AppState {
 }
 
 class Detail {
-  final String? title;
-  final String? projectName;
-  final String? previewText;
+  final String? folderPath;
+  final String? storageName;
+  final String? filePath;
   final String? imageUrl;
   final int? lineNumber;
   final String? filePathName;
   final String? projectPathName;
 
   Detail({
-    this.title,
-    this.projectName,
-    this.previewText,
+    this.folderPath,
+    this.storageName,
+    this.filePath,
     this.imageUrl,
     this.lineNumber,
     this.filePathName,
@@ -36,18 +36,18 @@ class Detail {
   });
 
   Detail copyWith({
-    String? title,
-    String? projectName,
-    String? previewText,
+    String? folderPath,
+    String? storageName,
+    String? filePath,
     String? imageUrl,
     int? lineNumber,
     String? filePathName,
     String? projectPathName,
   }) {
     return Detail(
-      title: title ?? this.title,
-      projectName: projectName ?? this.projectName,
-      previewText: previewText ?? this.previewText,
+      folderPath: folderPath ?? folderPath,
+      storageName: storageName ?? storageName,
+      filePath: filePath ?? filePath,
       imageUrl: imageUrl ?? this.imageUrl,
       lineNumber: lineNumber ?? this.lineNumber,
       filePathName: filePathName ?? this.filePathName,

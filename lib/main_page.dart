@@ -69,13 +69,13 @@ class MainPage extends StatelessWidget {
                                     child: Row(children: [
                                       HighlightedText(
                                         text:
-                                            detail.previewText ?? 'no preview',
+                                            detail.filePath ?? 'no preview',
                                         highlights: highlights,
                                       ),
                                     const SizedBox(width: 12),
                                     const Spacer(),
                                       NameWithOpenInEditor(
-                                        name: detail.title ?? 'no name',
+                                      name: detail.folderPath ?? 'no name',
                                         path: detail.filePathName,
                                       ),
                                     ]),
