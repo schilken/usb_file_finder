@@ -1,22 +1,40 @@
 import 'dart:io';
+import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-class StorageDetails {
-  final String name;
-  final int fileCount;
-  final bool isSelected;
+class StorageDetails extends Equatable {
 
-  StorageDetails({
+  const StorageDetails({
     required this.name,
     required this.fileCount,
     required this.isSelected,
   });
+
+  final String name;
+  final int fileCount;
+  final bool isSelected;
+
+  StorageDetails copyWith({
+    String? name,
+    int? fileCount,
+    bool? isSelected,
+  }) {
+    return StorageDetails(
+      name: name ?? this.name,
+      fileCount: fileCount ?? this.fileCount,
+      isSelected: isSelected ?? this.isSelected,
+    );
+  }
+
+  @override
+  List<Object?> get props => [name, fileCount, isSelected];
+
 }
 
 class FilesRepository {
   List<FileSystemEntity> _entities = [];
-  List<StorageDetails> devices = [];
+  List<StorageDetails> _devices = [];
 
   Future<List<String>> loadFileList(
     String storageName,
@@ -41,7 +59,7 @@ class FilesRepository {
     return '$replaced.txt';
   }
 
-  Future<void> readDeviceData() async {
+  Future<List<StorageDetails>> readDeviceData() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final deviceDataFolder = p.join(
       appDocDir.path,
@@ -49,12 +67,22 @@ class FilesRepository {
     );
     var dir = Directory(deviceDataFolder);
     _entities = await dir.list().toList();
-    devices = _entities.whereType<Directory>().map((entity) {
+    _devices = _entities.whereType<Directory>().map((entity) {
       return StorageDetails(
         name: p.basename(entity.path),
         fileCount: 0,
         isSelected: false,
       );
     }).toList();
+    return _devices;
+  }
+
+  List<StorageDetails> toggleDevice(int index, bool? value) {
+    _devices = _devices
+        .map((device) => device.name == _devices[index].name
+            ? device.copyWith(isSelected: value)
+            : device)
+        .toList();
+    return _devices;
   }
 }

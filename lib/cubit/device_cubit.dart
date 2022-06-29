@@ -12,30 +12,24 @@ class DeviceCubit extends Cubit<DeviceState> {
   Future<DeviceCubit> initialize() async {
     emit(DeviceLoading());
     await Future.delayed(const Duration(milliseconds: 1000));
-    await filesRepository.readDeviceData();
+    final devices = await filesRepository.readDeviceData();
     emit(
       DeviceLoaded(
-        devices: filesRepository.devices,
-        deviceCount: filesRepository.devices.length,
+        devices: devices,
+        deviceCount: devices.length,
       ),
     );
     return this;
   }
 
-  void toggleDevice(bool? value, int index) {
+  void toggleDevice(
+    int index,
+    bool? value,
+  ) {
     final currentState = state as DeviceLoaded;
     emit(
       DeviceLoaded(
-        devices: currentState.devices.map((device) {
-          if (device.name == currentState.devices[index].name) {
-            return StorageDetails(
-              name: device.name,
-              fileCount: device.fileCount,
-              isSelected: value ?? !device.isSelected,
-            );
-          }
-          return device;
-        }).toList(),
+        devices: filesRepository.toggleDevice(index, value),
         deviceCount: currentState.deviceCount,
       ),
     );

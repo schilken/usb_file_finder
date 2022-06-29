@@ -22,7 +22,7 @@ class DeviceListView extends StatelessWidget {
                   return CheckboxListTile(
                     title: Text(state.devices[index].name),
                     onChanged: (value) =>
-                        context.read<DeviceCubit>().toggleDevice(value, index),
+                        context.read<DeviceCubit>().toggleDevice(index, value),
                     value: state.devices[index].isSelected,
                   );
                 });
