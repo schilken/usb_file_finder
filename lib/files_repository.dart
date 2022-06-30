@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as p;
@@ -45,6 +46,37 @@ class FilesRepository {
       }
     }
     return files;
+  }
+
+  Stream<String> allLinesAsStream(String fileType) async* {
+    await for (StorageDetails device in Stream.fromIterable(_devices)) {
+      if (device.isSelected) {
+        yield* await _fileListStream(device.name, fileType);
+      }
+    }
+  }
+
+  Future<Stream<String>> _fileListStream(
+    String storageName,
+    String fileType,
+  ) async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final inputFilePath = p.join(
+      appDocDir.path,
+      'UsbFileFinder-Data',
+      storageName,
+      filenameFromType(fileType),
+    );
+//    print('_fileListStream inputFilePath: $inputFilePath');
+    final file = File(inputFilePath);
+    if (file.existsSync()) {
+      return file
+          .openRead()
+          .transform(utf8.decoder) // Decode bytes to UTF-8.
+          .transform(const LineSplitter());
+    } else {
+      return const Stream.empty();
+    }
   }
 
   Future<List<String>> _loadFileList(
