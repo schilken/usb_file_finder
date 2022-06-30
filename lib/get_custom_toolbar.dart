@@ -62,10 +62,9 @@ ToolBar getCustomToolBar(BuildContext context) {
         },
       ),
       ToolbarWidgetToggle(
-        onChanged: (value) {
-          print('onChanged: $value');
-        },
+          onChanged: context.read<AppCubit>().setCaseSentitiv,
         child: const Text('Aa'),
+          tooltipMessage: 'Search case sentitiv'
       ),
       ToolBarIconButton(
         label: "Search",
@@ -74,6 +73,7 @@ ToolBar getCustomToolBar(BuildContext context) {
         ),
         onPressed: () => context.read<AppCubit>().search(),
         showLabel: false,
+          tooltipMessage: 'Start new Search'
       ),
       const ToolBarDivider(),
       ToolBarIconButton(

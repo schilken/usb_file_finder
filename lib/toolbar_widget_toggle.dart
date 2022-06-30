@@ -10,14 +10,16 @@ class ToolbarWidgetToggle extends ToolbarItem {
     this.value = false,
     required this.onChanged,
     required this.child,
+    this.tooltipMessage,
   });
   final bool value;
   final BoolCallback onChanged;
   final Widget child;
+  final String? tooltipMessage; 
 
   @override
   Widget build(BuildContext context, ToolbarItemDisplayMode displayMode) {
-    return SizedBox(
+    Widget widgetToggleButton = SizedBox(
       width: 40,
       child: WidgetToggleButton(
         value: value,
@@ -25,6 +27,13 @@ class ToolbarWidgetToggle extends ToolbarItem {
         child: child,
       ),
     );
+    if (tooltipMessage != null) {
+      widgetToggleButton = MacosTooltip(
+        message: tooltipMessage!,
+        child: widgetToggleButton,
+      );
+    }
+    return widgetToggleButton;
   }
 }
 

@@ -27,12 +27,8 @@ class MainPage extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                if (state.fileType == null)
-                                  const Text('Paths from File: ')
-                                else
-                                  Text('${state.fileType} Files in Folder: '),
-                                Text(state.currentPathname),
+                            children: [
+                              Text(state.currentSearchParameters),
                                 const Spacer(),
                               if (state.isScanRunning)
                                 TextButton(

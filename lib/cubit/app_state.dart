@@ -64,7 +64,7 @@ class DetailsLoading extends AppState {
 class DetailsLoaded extends AppState {
   final String? fileType;
   final List<Detail> details;
-  final String currentPathname;
+  final String currentSearchParameters;
   final int fileCount;
   final int primaryHitCount;
   final int secondaryHitCount;
@@ -75,7 +75,7 @@ class DetailsLoaded extends AppState {
   const DetailsLoaded({
     this.fileType,
     required this.details,
-    required this.currentPathname,
+    required this.currentSearchParameters,
     required this.fileCount,
     required this.primaryHitCount,
     required this.secondaryHitCount,
@@ -89,7 +89,7 @@ class DetailsLoaded extends AppState {
   DetailsLoaded copyWith({
     String? fileType,
     List<Detail>? details,
-    String? currentPathname,
+    String? currentSearchParameters,
     int? fileCount,
     int? primaryHitCount,
     int? secondaryHitCount,
@@ -100,7 +100,8 @@ class DetailsLoaded extends AppState {
     return DetailsLoaded(
       fileType: fileType ?? this.fileType,
       details: details ?? this.details,
-      currentPathname: currentPathname ?? this.currentPathname,
+      currentSearchParameters:
+          currentSearchParameters ?? this.currentSearchParameters,
       fileCount: fileCount ?? this.fileCount,
       primaryHitCount: primaryHitCount ?? this.primaryHitCount,
       secondaryHitCount: secondaryHitCount ?? this.secondaryHitCount,
@@ -115,7 +116,7 @@ class DetailsLoaded extends AppState {
         fileCount,
         isScanRunning,
         message,
-        currentPathname,
+        currentSearchParameters,
         fileType,
         details,
         primaryHitCount,

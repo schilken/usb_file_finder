@@ -38,6 +38,7 @@ class AppCubit extends Cubit<AppState> {
   final SettingsCubit _settingsCubit;
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
+  bool _searchCaseSensitiv = false;
 
   List<String> _allFilePaths = [];
   List<String> _filteredFilePaths = [];
@@ -65,7 +66,7 @@ class AppCubit extends Cubit<AppState> {
     if (_primaryWord == null || (_primaryWord ?? '').length < 3) {
       emit(
         DetailsLoaded(
-            currentPathname: _currentPathname,
+          currentSearchParameters: _currentPathname,
             fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
@@ -107,7 +108,7 @@ class AppCubit extends Cubit<AppState> {
     }
     emit(
       DetailsLoaded(
-        currentPathname: _currentPathname,
+        currentSearchParameters: _currentPathname,
         fileType: _selectedFileType,
         fileCount: _filteredFilePaths.length,
         primaryHitCount: _primaryHitCount,
@@ -222,7 +223,7 @@ final ignoredFolders = <String>{
         if (++_fileCount % 100 == 0) {
           print('files: $_fileCount');
           emit(DetailsLoaded(
-            currentPathname: folderPath,
+            currentSearchParameters: folderPath,
             fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
@@ -237,7 +238,7 @@ final ignoredFolders = <String>{
       () {
         emit(
           DetailsLoaded(
-            currentPathname: folderPath,
+            currentSearchParameters: folderPath,
             fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
@@ -257,7 +258,7 @@ final ignoredFolders = <String>{
     await _subscription?.cancel();
     emit(
       DetailsLoaded(
-        currentPathname: '',
+        currentSearchParameters: '',
       fileType: _fileType,
         fileCount: _fileCount,
       primaryHitCount: _primaryHitCount,
@@ -276,5 +277,9 @@ final ignoredFolders = <String>{
 
   void openEditor(String? filePathName) {
     Process.run('code', [filePathName!]);
+  }
+
+  void setCaseSentitiv(bool caseSensitiv) {
+    _searchCaseSensitiv = caseSensitiv;
   }
 }
