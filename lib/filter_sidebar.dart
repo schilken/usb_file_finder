@@ -4,8 +4,8 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
 import 'package:usb_file_finder/device_list_view.dart';
 
-class FilterSettings extends StatelessWidget {
-  const FilterSettings({
+class FilterSidebar extends StatelessWidget {
+  const FilterSidebar({
     super.key,
   });
 
@@ -69,4 +69,3 @@ class FilterSettings extends StatelessWidget {
     );
   }
 }
-
