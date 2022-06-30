@@ -6,6 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/detail_tile.dart';
 import 'package:usb_file_finder/highlighted_text.dart';
+import 'package:usb_file_finder/toolbar_widget_toggle.dart';
 import 'package:usb_file_finder/toolbar_searchfield.dart';
 
 class MainPage extends StatelessWidget {
@@ -170,6 +171,12 @@ ToolBar getCustomToolBar(BuildContext context) {
           context.read<AppCubit>().setSecondarySearchWord(word);
           context.read<AppCubit>().search();
         },
+      ),
+      ToolbarWidgetToggle(
+        onChanged: (value) {
+          print('onChanged: $value');
+        },
+        child: const Text('Aa'),
       ),
       ToolBarIconButton(
         label: "Search",
