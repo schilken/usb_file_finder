@@ -43,35 +43,21 @@ class DetailTile extends StatelessWidget {
               icon: CupertinoIcons.ellipsis_circle,
               items: [
                 MacosPulldownMenuItem(
-                  title: const Text('New Folder'),
-                  onTap: () => debugPrint("Creating new folder..."),
+                  title: const Text('hide selected file'),
+                  onTap: () => debugPrint("hide selected file"),
                 ),
                 MacosPulldownMenuItem(
-                  title: const Text('Open'),
-                  onTap: () => debugPrint("Opening..."),
+                  title: const Text('hide all in same folder'),
+                  onTap: () => debugPrint("hide all in same folder"),
                 ),
                 MacosPulldownMenuItem(
-                  title: const Text('Open with...'),
-                  onTap: () => debugPrint("Opening with..."),
-                ),
-                MacosPulldownMenuItem(
-                  title: const Text('Import from iPhone...'),
-                  onTap: () => debugPrint("Importing..."),
+                  title: const Text('hide all with same extension'),
+                  onTap: () => debugPrint("hide all with same extension"),
                 ),
                 const MacosPulldownMenuDivider(),
                 MacosPulldownMenuItem(
-                  enabled: false,
-                  title: const Text('Remove'),
-                  onTap: () => debugPrint("Deleting..."),
-                ),
-                MacosPulldownMenuItem(
-                  title: const Text('Move to Bin'),
-                  onTap: () => debugPrint("Moving to Bin..."),
-                ),
-                const MacosPulldownMenuDivider(),
-                MacosPulldownMenuItem(
-                  title: const Text('Tags...'),
-                  onTap: () => debugPrint("Tags..."),
+                  title: const Text('show only files of this folder'),
+                  onTap: () => debugPrint("show only files of this folder"),
                 ),
               ],
             ),
