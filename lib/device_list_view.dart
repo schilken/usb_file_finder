@@ -17,6 +17,7 @@ class DeviceListView extends StatelessWidget {
         builder: (context, state) {
           if (state is DeviceLoaded) {
             return ListView.builder(
+                controller: ScrollController(),
                 itemCount: state.devices.length,
                 itemBuilder: (context, index) {
                   return CheckboxListTile(

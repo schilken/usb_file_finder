@@ -53,14 +53,14 @@ class AppCubit extends Cubit<AppState> {
   }
 
   void setPrimarySearchWord(String? word) {
-    _primaryWord = word;
+    _primaryWord = _searchCaseSensitiv ? word : word?.toLowerCase(); 
     if (_primaryWord != null && (_primaryWord ?? '').isEmpty) {
       _primaryWord = null;
     }
   }
 
   void setSecondarySearchWord(String? word) {
-    _secondaryWord = word;
+    _secondaryWord = _searchCaseSensitiv ? word : word?.toLowerCase(); 
     if (_secondaryWord != null && (_secondaryWord ?? '').isEmpty) {
       _secondaryWord = null;
     }
@@ -85,11 +85,13 @@ class AppCubit extends Cubit<AppState> {
       return;
     }
 
-    final linesAsStream = filesRepository.allLinesAsStream(_selectedFileType);
-    _allFilePaths = await linesAsStream.toList();
+    final linesAsStream = filesRepository
+        .allLinesAsStream(_selectedFileType)
+        .where((path) => !path.contains('XXX'))
+        .map((path) => _searchCaseSensitiv ? path : path.toLowerCase());
+
+    _filteredFilePaths = await linesAsStream.toList();
 //    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
-    _filteredFilePaths =
-        _allFilePaths.where((filePath) => !filePath.contains('XXX')).toList();
     _fileCount = _filteredFilePaths.length;
     _primaryHitCount = 0;
     _secondaryHitCount = 0;
