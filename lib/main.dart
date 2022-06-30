@@ -10,7 +10,7 @@ import 'package:usb_file_finder/about_window.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
-import 'package:usb_file_finder/filter_settings.dart';
+import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/settings_window.dart';
 import 'package:usb_file_finder/statistics_page.dart';
@@ -139,7 +139,7 @@ class _MainViewState extends State<MainView> {
       body: MacosWindow(
         sidebar: Sidebar(
           minWidth: 240,
-          top: const FilterSettings(),
+          top: const FilterSidebar(),
           builder: (context, scrollController) => SidebarItems(
             currentIndex: _pageIndex,
             onChanged: (index) {
