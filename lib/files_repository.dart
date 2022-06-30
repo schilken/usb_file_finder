@@ -78,7 +78,9 @@ class FilesRepository {
       appDocDir.path,
       'UsbFileFinder-Data',
     );
-    var dir = Directory(deviceDataFolder);
+    final Directory dir =
+        await Directory(deviceDataFolder).create(recursive: true);
+//    var dir = Directory(deviceDataFolder);
     _entities = await dir.list().toList();
     _devices = _entities.whereType<Directory>().map((entity) {
       return StorageDetails(

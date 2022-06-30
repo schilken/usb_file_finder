@@ -27,44 +27,68 @@ class DetailTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return MacosListTile(
       title: HighlightedText(
-        text: detail.filePath ?? 'no preview',
+        text: detail.filePath ?? 'no filepath',
         highlights: highlights,
       ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 12,
-          ),
-          NameWithOpenInEditor(
-            name: detail.storageName ?? 'no project',
-            path: detail.projectPathName,
-          ),
-          if (fileType != null && fileType != 'pubspec.yaml')
-            NameWithOpenInEditor(
-              name: detail.folderPath ?? 'no filename',
-              path: detail.filePathName,
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              detail.storageName ?? 'no storage',
+            ),
+            const SizedBox(width: 12),
+            MacosPulldownButton(
+              icon: CupertinoIcons.ellipsis_circle,
+              items: [
+                MacosPulldownMenuItem(
+                  title: const Text('New Folder'),
+                  onTap: () => debugPrint("Creating new folder..."),
+                ),
+                MacosPulldownMenuItem(
+                  title: const Text('Open'),
+                  onTap: () => debugPrint("Opening..."),
+                ),
+                MacosPulldownMenuItem(
+                  title: const Text('Open with...'),
+                  onTap: () => debugPrint("Opening with..."),
+                ),
+                MacosPulldownMenuItem(
+                  title: const Text('Import from iPhone...'),
+                  onTap: () => debugPrint("Importing..."),
+                ),
+                const MacosPulldownMenuDivider(),
+                MacosPulldownMenuItem(
+                  enabled: false,
+                  title: const Text('Remove'),
+                  onTap: () => debugPrint("Deleting..."),
+                ),
+                MacosPulldownMenuItem(
+                  title: const Text('Move to Bin'),
+                  onTap: () => debugPrint("Moving to Bin..."),
+                ),
+                const MacosPulldownMenuDivider(),
+                MacosPulldownMenuItem(
+                  title: const Text('Tags...'),
+                  onTap: () => debugPrint("Tags..."),
+                ),
+              ],
+            ),
+            const SizedBox(width: 12),
+            HighlightedText(
+              text: detail.folderPath ?? 'no filename',
+              style: const TextStyle(
+                color: Colors.blueGrey,
+              ),
               highlights: highlights,
             ),
-          if (detail.imageUrl != null)
-            FutureBuilder<String?>(
-                future: _loadSvgFile(detail.imageUrl!),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return SvgPicture.string(
-                        height: 100, width: 100, snapshot.data ?? '');
-                  }
-                  return const CircularProgressIndicator();
-                })
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Future<String?> _loadSvgFile(String imageUrl) async {
-    final svgAsString = await File(imageUrl).readAsString();
-    return svgAsString;
-  }
 }
 
 class NameWithOpenInEditor extends StatelessWidget {
