@@ -84,7 +84,10 @@ class AppCubit extends Cubit<AppState> {
       );
       return;
     }
-    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
+
+    final linesAsStream = filesRepository.allLinesAsStream(_selectedFileType);
+    _allFilePaths = await linesAsStream.toList();
+//    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
     _filteredFilePaths =
         _allFilePaths.where((filePath) => !filePath.contains('XXX')).toList();
     _fileCount = _filteredFilePaths.length;
