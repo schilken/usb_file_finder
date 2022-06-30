@@ -36,7 +36,7 @@ class MainPage extends StatelessWidget {
                                         context.read<AppCubit>().cancelScan,
                                     child: const Text('Cancel Scan')),
                                 Text(
-                                    '${state.fileCount}|${state.primaryHitCount}|${state.secondaryHitCount}'),
+                                  'found ${state.primaryHitCount}(${state.secondaryHitCount}) of ${state.fileCount} Files'),
                               ],
                             ),
                           ),

@@ -45,6 +45,12 @@ class AppCubit extends Cubit<AppState> {
 
   // pathname → loist of 10 lines following hit
   final sectionsMap = <String, List<String>>{};
+  
+  String get _searchParameters {
+    final parameters = <String>[];
+    parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
+    return parameters.join(' - ');
+  }
 
   void setPrimarySearchWord(String? word) {
     _primaryWord = word;
@@ -108,7 +114,7 @@ class AppCubit extends Cubit<AppState> {
     }
     emit(
       DetailsLoaded(
-        currentSearchParameters: _currentPathname,
+        currentSearchParameters: _searchParameters,
         fileType: _selectedFileType,
         fileCount: _filteredFilePaths.length,
         primaryHitCount: _primaryHitCount,
