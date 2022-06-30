@@ -30,6 +30,7 @@ class AppCubit extends Cubit<AppState> {
   final FilesRepository filesRepository;
   String? _primaryWord;
   String? _secondaryWord;
+  String? _exclusionWord;
   final String _currentPathname = "no file selected";
   String? _fileType;
   int _fileCount = 0;
@@ -49,6 +50,9 @@ class AppCubit extends Cubit<AppState> {
   String get _searchParameters {
     final parameters = <String>[];
     parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
+    if (_exclusionWord != null) {
+      parameters.add('excluded $_exclusionWord');
+    }
     return parameters.join(' - ');
   }
 
@@ -292,5 +296,10 @@ final ignoredFolders = <String>{
 
   void setCaseSentitiv(bool caseSensitiv) {
     _searchCaseSensitiv = caseSensitiv;
+  }
+
+  addExclusionWord(String exclusionWord) {
+    print('addExclusionWord: $exclusionWord');
+    _exclusionWord = exclusionWord;
   }
 }

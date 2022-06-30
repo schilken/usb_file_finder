@@ -6,8 +6,64 @@ import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/detail_tile.dart';
 import 'package:usb_file_finder/get_custom_toolbar.dart';
 import 'package:usb_file_finder/highlighted_text.dart';
+import 'package:usb_file_finder/textfield_dialog.dart';
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
+
+
+promptString(BuildContext context) async {
+    final exclusionWord = await textFieldDialog(
+      context,
+      title: const Text('Enter an exclusion word'),
+      description: const Text(
+          'Only lines NOT containing the entered word\nwill remain in the list.'),
+      initialValue: '',
+      textOK: const Text('OK'),
+      textCancel: const Text('Abbrechen'),
+      validator: (String? value) {
+        if (value == null || value.isEmpty || value.length < 3) {
+          return 'Mindestens 3 Buchstaben oder Ziffern';
+        }
+        return null;
+      },
+      barrierDismissible: true,
+      textCapitalization: TextCapitalization.words,
+      textAlign: TextAlign.center,
+    );
+    if (exclusionWord != null) {
+      await context.read<AppCubit>().addExclusionWord(exclusionWord);
+    }
+  }
+
+  macosPromptString(BuildContext context) {
+    showMacosAlertDialog(
+      context: context,
+      builder: (context) => MacosAlertDialog(
+        appIcon: const FlutterLogo(
+          size: 56,
+        ),
+        title: const Text(
+          'Alert Dialog with Secondary Action',
+        ),
+        message: const Text(
+          'This is an alert dialog with primary action and secondary action laid out horizontally',
+          textAlign: TextAlign.center,
+        ),
+        //horizontalActions: false,
+        primaryButton: PushButton(
+          buttonSize: ButtonSize.large,
+          onPressed: Navigator.of(context).pop,
+          child: const Text('Primary'),
+        ),
+        secondaryButton: PushButton(
+          buttonSize: ButtonSize.large,
+          isSecondary: true,
+          onPressed: Navigator.of(context).pop,
+          child: const Text('Secondary'),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +84,14 @@ class MainPage extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              PushButton(
+                                buttonSize: ButtonSize.large,
+                                child: const Text('Exclude'),
+                                onPressed: () => promptString(context),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
                               Text(state.currentSearchParameters),
                                 const Spacer(),
                               if (state.isScanRunning)
