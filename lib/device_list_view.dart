@@ -31,21 +31,33 @@ class DeviceListView extends StatelessWidget {
                         icon: CupertinoIcons.ellipsis_circle,
                         items: [
                           MacosPulldownMenuItem(
-                            title: const Text('select all'),
-                            onTap: () => debugPrint("select all"),
+                            title: const Text('Select all'),
+                            onTap: () => context
+                                .read<DeviceCubit>()
+                                .menuAction(StorageAction.selectAll, index),
                           ),
                           MacosPulldownMenuItem(
-                            title: const Text('select all others'),
-                            onTap: () => debugPrint("select all others"),
+                            title: const Text('Select all others'),
+                            onTap: () => context.read<DeviceCubit>().menuAction(
+                                StorageAction.selectAllOthers, index),
                           ),
                           MacosPulldownMenuItem(
-                            title: const Text('unselect all others'),
-                            onTap: () => debugPrint("unselect all others"),
+                            title: const Text('Unselect all others'),
+                            onTap: () => context.read<DeviceCubit>().menuAction(
+                                StorageAction.unselectAllOthers, index),
                           ),
                           const MacosPulldownMenuDivider(),
                           MacosPulldownMenuItem(
-                            title: const Text('rescan'),
-                            onTap: () => debugPrint("rescan"),
+                            title: const Text('Show Details'),
+                            onTap: () => context
+                                .read<DeviceCubit>()
+                                .menuAction(StorageAction.showDetails, index),
+                          ),
+                          MacosPulldownMenuItem(
+                            title: const Text('Rescan'),
+                            onTap: () => context
+                                .read<DeviceCubit>()
+                                .menuAction(StorageAction.rescan, index),
                           ),
                         ],
                       ) 

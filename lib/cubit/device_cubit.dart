@@ -4,6 +4,14 @@ import 'package:usb_file_finder/files_repository.dart';
 
 part 'device_state.dart';
 
+enum StorageAction {
+  selectAll,
+  selectAllOthers,
+  unselectAllOthers,
+  showDetails,
+  rescan,
+}
+
 class DeviceCubit extends Cubit<DeviceState> {
   DeviceCubit(this.filesRepository) : super(DeviceInitial());
 
@@ -33,5 +41,26 @@ class DeviceCubit extends Cubit<DeviceState> {
         deviceCount: currentState.deviceCount,
       ),
     );
+  }
+
+  menuAction(StorageAction action, int index) {
+    print('menuAction: $action');
+    final currentState = state as DeviceLoaded;
+    switch (action) {
+      case StorageAction.selectAll:
+      case StorageAction.selectAllOthers:
+      case StorageAction.unselectAllOthers:
+        emit(DeviceLoaded(
+          devices: filesRepository.toggleDevices(action, index),
+          deviceCount: currentState.deviceCount,
+        ));
+        break;
+      case StorageAction.showDetails:
+        // TODO: Handle this case.
+        break;
+      case StorageAction.rescan:
+        // TODO: Handle this case.
+        break;
+    }
   }
 }

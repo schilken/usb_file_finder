@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:usb_file_finder/cubit/device_cubit.dart';
 
 class StorageDetails extends Equatable {
 
@@ -130,6 +131,34 @@ class FilesRepository {
             ? device.copyWith(isSelected: value)
             : device)
         .toList();
+    return _devices;
+  }
+
+  toggleDevices(StorageAction action, int index) {
+    switch (action) {
+      case StorageAction.selectAll:
+        _devices = _devices
+            .map((device) => device.copyWith(isSelected: true))
+            .toList();
+        break;
+      case StorageAction.selectAllOthers:
+        _devices = _devices
+            .map((device) => device.name == _devices[index].name
+                ? device.copyWith(isSelected: false)
+                : device.copyWith(isSelected: true))
+            .toList();
+        break;
+      case StorageAction.unselectAllOthers:
+        _devices = _devices
+            .map((device) => device.name == _devices[index].name
+                ? device.copyWith(isSelected: true)
+                : device.copyWith(isSelected: false))
+            .toList();
+        break;
+      case StorageAction.showDetails:
+      case StorageAction.rescan:
+        break;
+    }
     return _devices;
   }
 }
