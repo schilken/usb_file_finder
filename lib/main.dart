@@ -138,7 +138,7 @@ class _MainViewState extends State<MainView> {
       ],
       body: MacosWindow(
         sidebar: Sidebar(
-          minWidth: 200,
+          minWidth: 240,
           top: const FilterSettings(),
           builder: (context, scrollController) => SidebarItems(
             currentIndex: _pageIndex,

@@ -41,7 +41,7 @@ class FilterSettings extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const SizedBox(
-              height: 300,
+              height: 315,
               child: Material(
                 child: DeviceListView(),
               ),
