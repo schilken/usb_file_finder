@@ -153,6 +153,7 @@ class AppCubit extends Cubit<AppState> {
       '.mobi': textListFile,
       '.azw': textListFile,
       '.azw3': textListFile,
+      '.md': textListFile,
       //
       '.mp3': audioListFile,
       '.m4a': audioListFile,
