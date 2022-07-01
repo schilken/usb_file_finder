@@ -30,8 +30,7 @@ class AppCubit extends Cubit<AppState> {
   final FilesRepository filesRepository;
   String? _primaryWord;
   String? _secondaryWord;
-  List<String> _exclusionWords = [];
-  final String _currentPathname = "no file selected";
+  final List<String> _exclusionWords = [];
   String? _fileType;
   int _fileCount = 0;
   int _primaryHitCount = 0;
@@ -40,32 +39,31 @@ class AppCubit extends Cubit<AppState> {
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;
+  String _folderPath = '';
 
-  List<String> _allFilePaths = [];
   List<String> _filteredFilePaths = [];
 
   // pathname → loist of 10 lines following hit
   final sectionsMap = <String, List<String>>{};
-  
+
   String get _searchParameters {
     final parameters = <String>[];
     parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
     if (_exclusionWords.isNotEmpty) {
       parameters.add('excluded: ${_exclusionWords.join(' ')}');
-
     }
     return parameters.join(' - ');
   }
 
   void setPrimarySearchWord(String? word) {
-    _primaryWord = _searchCaseSensitiv ? word : word?.toLowerCase(); 
+    _primaryWord = _searchCaseSensitiv ? word : word?.toLowerCase();
     if (_primaryWord != null && (_primaryWord ?? '').isEmpty) {
       _primaryWord = null;
     }
   }
 
   void setSecondarySearchWord(String? word) {
-    _secondaryWord = _searchCaseSensitiv ? word : word?.toLowerCase(); 
+    _secondaryWord = _searchCaseSensitiv ? word : word?.toLowerCase();
     if (_secondaryWord != null && (_secondaryWord ?? '').isEmpty) {
       _secondaryWord = null;
     }
@@ -81,23 +79,6 @@ class AppCubit extends Cubit<AppState> {
 
   Future<void> search() async {
     emit(DetailsLoading());
-    print('search: $_primaryWord $_secondaryWord');
-    if (_primaryWord == null || (_primaryWord ?? '').length < 3) {
-      emit(
-        DetailsLoaded(
-          currentSearchParameters: _currentPathname,
-            fileType: _fileType,
-            fileCount: _fileCount,
-            primaryHitCount: _primaryHitCount,
-          secondaryHitCount: _secondaryHitCount,
-            details: const [],
-          message: 'Primary Search Word must be at least 3 characters',
-          isScanRunning: false,
-        ),
-      );
-      return;
-    }
-
     final linesAsStream = filesRepository
         .allLinesAsStream(_selectedFileType)
         .map((path) => _searchCaseSensitiv ? path : path.toLowerCase())
@@ -111,7 +92,7 @@ class AppCubit extends Cubit<AppState> {
     _secondaryHitCount = 0;
     final primaryResult = <Detail>[];
     for (final path in _filteredFilePaths) {
-      if (path.contains(_primaryWord!)) {
+      if (path.contains(_primaryWord ?? '')) {
         _primaryHitCount++;
         if (_secondaryWord == null || path.contains(_secondaryWord!)) {
           _secondaryHitCount++;
@@ -121,13 +102,13 @@ class AppCubit extends Cubit<AppState> {
           var folderPath = path;
           folderPath =
               components.sublist(3).join('/').replaceFirst(filename, '');
-        primaryResult.add(Detail(
+          primaryResult.add(Detail(
             filePath: filename,
             storageName: storageName,
             folderPath: folderPath,
             filePathName: path,
-          projectPathName: '/Volumes/$storageName',
-        ));
+            projectPathName: '/Volumes/$storageName',
+          ));
         }
       }
     }
@@ -150,7 +131,7 @@ class AppCubit extends Cubit<AppState> {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final outputFolder =
         p.join(appDocDir.path, 'UsbFileFinder-Data', deviceName);
-    print('outputFolder: $outputFolder');
+//    print('outputFolder: $outputFolder');
 
     final Directory directory =
         await Directory(outputFolder).create(recursive: true);
@@ -207,11 +188,12 @@ class AppCubit extends Cubit<AppState> {
     };
   }
 
-final ignoredFolders = <String>{
+  final ignoredFolders = <String>{
     'Backups.backupdb',
     '.Spotlight-V100',
     '.Trashes',
     'Contents',
+    'BACKUP-ELLENS_MAC',
   };
 
 //async* + yield* for recursive functions
@@ -233,9 +215,9 @@ final ignoredFolders = <String>{
     }
   }
 
-  Future<void> scanFolder({required String folderPath}) async {
-    var dir = Directory(folderPath);
-    final deviceName = p.basename(folderPath);
+  Future<void> scanVolume({required String volumePath}) async {
+    var dir = Directory(volumePath);
+    final deviceName = p.basename(volumePath);
     Map<String, File> extensionMap = await buildExtensionMap(deviceName);
 
     Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
@@ -246,9 +228,11 @@ final ignoredFolders = <String>{
       if (listfile != null) {
         listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
         if (++_fileCount % 100 == 0) {
-          print('files: $_fileCount');
+//          print('files: $_fileCount');
+          final components = p.split(file.path);
+          _folderPath = components.length > 3 ? components[3] : '';
           emit(DetailsLoaded(
-            currentSearchParameters: folderPath,
+            currentSearchParameters: '$volumePath - $_folderPath',
             fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
@@ -263,7 +247,7 @@ final ignoredFolders = <String>{
       () {
         emit(
           DetailsLoaded(
-            currentSearchParameters: folderPath,
+            currentSearchParameters: volumePath,
             fileType: _fileType,
             fileCount: _fileCount,
             primaryHitCount: _primaryHitCount,
@@ -284,10 +268,10 @@ final ignoredFolders = <String>{
     emit(
       DetailsLoaded(
         currentSearchParameters: '',
-      fileType: _fileType,
+        fileType: _fileType,
         fileCount: _fileCount,
-      primaryHitCount: _primaryHitCount,
-      secondaryHitCount: 0,
+        primaryHitCount: _primaryHitCount,
+        secondaryHitCount: 0,
         isScanRunning: false,
         details: const [],
       ),
@@ -317,5 +301,9 @@ final ignoredFolders = <String>{
   clearExcludes() {
     _exclusionWords.clear();
     search();
+  }
+
+  void addToIgnoreFolderList() {
+//    _skipFolderPath = _folderPath;
   }
 }

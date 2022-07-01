@@ -174,7 +174,7 @@ class FilesRepository {
       case StorageAction.rescan:
         break;
       case StorageAction.eject:
-        runEjectCommand(_devices[index].name);
+        await runEjectCommand(_devices[index].name);
         break;
       case StorageAction.removeData:
         final dir = await deviceDataDirectory;
