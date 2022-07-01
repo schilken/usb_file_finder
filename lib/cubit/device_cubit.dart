@@ -9,7 +9,7 @@ enum StorageAction {
   selectAll,
   selectAllOthers,
   unselectAllOthers,
-  showDetails,
+  showInfo,
   rescan,
   removeData,
   eject,
@@ -70,8 +70,9 @@ class DeviceCubit extends Cubit<DeviceState> {
           deviceCount: currentState.deviceCount,
         ));
         break;
-      case StorageAction.showDetails:
-        // TODO: Handle this case.
+      case StorageAction.showInfo:
+        final storageInfo = await filesRepository.createStorageInfoForDevice(
+            filesRepository.storageDetailsForIndex(index));
         break;
       case StorageAction.rescan:
         eventBus.fire(RescanDevice(index));

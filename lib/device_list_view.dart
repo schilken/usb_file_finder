@@ -66,7 +66,7 @@ class DeviceListView extends StatelessWidget {
                                   onTap: () => context
                                       .read<DeviceCubit>()
                                       .menuAction(
-                                          StorageAction.showDetails, index),
+                                          StorageAction.showInfo, index),
                                 ),
                                 MacosPulldownMenuItem(
                                   title: const Text('Eject Storage'),
