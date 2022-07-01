@@ -7,6 +7,11 @@ class DevicesChanged {
   const DevicesChanged();
 }
 
+class SettingsChanged {
+  final String fileTypeFilter;
+  const SettingsChanged(this.fileTypeFilter);
+}
+
 class RescanDevice {
   final int index;
 

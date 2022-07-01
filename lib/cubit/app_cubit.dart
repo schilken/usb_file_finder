@@ -19,13 +19,8 @@ class AppCubit extends Cubit<AppState> {
   )   : _settingsCubit = settingsCubit,
         super(AppInitial()) {
     print('create AppCubit');
-    if (settingsCubit.state is SettingsLoaded) {
-      _applyFilters(_settingsCubit.state as SettingsLoaded);
-    }
-    _settingsCubit.stream.listen((settings) {
-      if (settings is SettingsLoaded) {
-        _applyFilters(settings);
-      }
+    eventBus.on<SettingsChanged>().listen((event) async {
+      _applyFilters(event.fileTypeFilter);
     });
     eventBus.on<RescanDevice>().listen((event) async {
       print('AppCubit event: $event');
@@ -294,10 +289,10 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  void _applyFilters(SettingsLoaded settings) {
-    print('_applyFilters: $settings');
-    _selectedFileType = settings.fileTypeFilter;
-//    search();
+  void _applyFilters(String fileTypeFilter) {
+    print('_applyFilters: $fileTypeFilter');
+    _selectedFileType = fileTypeFilter;
+    search();
   }
 
   void openEditor(String? filePathName) {

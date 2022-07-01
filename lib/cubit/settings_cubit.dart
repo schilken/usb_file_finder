@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:usb_file_finder/event_bus.dart';
 
 part 'settings_state.dart';
 
@@ -26,10 +27,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void emitSettingsLoaded() {
-    print('SettingsCubit emit');
     emit(SettingsLoaded(
       fileTypeFilter: fileTypeFilter,
     ));
+    eventBus.fire(SettingsChanged(fileTypeFilter));
   }
 
 }
