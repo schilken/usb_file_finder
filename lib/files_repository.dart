@@ -36,20 +36,60 @@ class StorageDetails extends Equatable {
   List<Object?> get props => [name, fileCount, isSelected, isMounted];
 }
 
+
+class StorageInfo extends Equatable {
+  const StorageInfo({
+    required this.name,
+    required this.totalFileCount,
+    required this.fileCountMap,
+    required this.isSelected,
+    required this.isMounted,
+    this.dateOfLastScan,
+    this.scanDuration,
+    this.scanSpeed,
+  });
+
+  final String name;
+  final int totalFileCount;
+  final Map<String, int> fileCountMap;
+  final DateTime? dateOfLastScan;
+  final int? scanDuration;
+  final int? scanSpeed;
+  final bool isSelected;
+  final bool isMounted;
+
+  // StorageDetails copyWith({
+  //   String? name,
+  //   int? fileCount,
+  //   bool? isSelected,
+  //   bool? isMounted,
+  // }) {
+  //   return StorageDetails(
+  //     name: name ?? this.name,
+  //     fileCount: fileCount ?? this.fileCount,
+  //     isSelected: isSelected ?? this.isSelected,
+  //     isMounted: isMounted ?? this.isMounted,
+  //   );
+  // }
+
+  @override
+  List<Object?> get props => [
+        name,
+        totalFileCount,
+        isSelected,
+        isMounted,
+        fileCountMap,
+        dateOfLastScan,
+        scanDuration,
+        scanSpeed
+      ];
+}
+
+
 class FilesRepository {
   List<FileSystemEntity> _entities = [];
   List<StorageDetails> _devices = [];
   List<String> _mountedVolumes = [];
-
-  // Future<List<String>> loadTotalFileList(String fileType) async {
-  //   List<String> files = [];
-  //   await for (StorageDetails device in Stream.fromIterable(_devices)) {
-  //     if (device.isSelected) {
-  //       files.addAll(await _loadFileList(device.name, fileType));
-  //     }
-  //   }
-  //   return files;
-  // }
 
   Stream<String> allLinesAsStream(String fileType) async* {
     await for (StorageDetails device in Stream.fromIterable(_devices)) {
@@ -81,26 +121,6 @@ class FilesRepository {
       return const Stream.empty();
     }
   }
-
-  // Future<List<String>> _loadFileList(
-  //   String storageName,
-  //   String fileType,
-  // ) async {
-  //   Directory appDocDir = await getApplicationDocumentsDirectory();
-  //   final inputFilePath = p.join(
-  //     appDocDir.path,
-  //     'UsbFileFinder-Data',
-  //     storageName,
-  //     filenameFromType(fileType),
-  //   );
-  //   print('inputFilePath: $inputFilePath');
-  //   try {
-  //     File data = File(inputFilePath);
-  //     return await data.readAsLines();
-  //   } on Exception {
-  //     return [];
-  //   }
-  // }
 
   String filenameFromType(String type) {
     final replaced = type.toLowerCase().replaceAll(' ', '-');
