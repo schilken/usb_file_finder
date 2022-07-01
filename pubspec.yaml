@@ -26,6 +26,7 @@ dependencies:
   path_provider: ^2.0.11
   bloc: ^8.0.3
   meta: ^1.7.0
+  event_bus: ^2.0.0
 
 dev_dependencies:
   flutter_test:

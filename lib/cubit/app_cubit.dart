@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
 part 'app_state.dart';
@@ -26,6 +27,12 @@ class AppCubit extends Cubit<AppState> {
         _applyFilters(settings);
       }
     });
+    eventBus.on<RescanDevice>().listen((event) async {
+      print('AppCubit event: $event');
+      final volumePath = filesRepository.volumePathForIndex(event.index);
+      scanVolume(volumePath: volumePath);
+    });
+
   }
   final FilesRepository filesRepository;
   String? _primaryWord;
@@ -188,13 +195,22 @@ class AppCubit extends Cubit<AppState> {
     };
   }
 
-  final ignoredFolders = <String>{
+  final _ignoredFolders = <String>{
     'Backups.backupdb',
-    '.Spotlight-V100',
-    '.Trashes',
     'Contents',
     'BACKUP-ELLENS_MAC',
   };
+
+  bool ignoreFolder(String folderPath) {
+    final folderName = p.basename(folderPath);
+    if (folderName.startsWith('.')) {
+      return true;
+    }
+    if (_ignoredFolders.contains(folderName)) {
+      return true;
+    }
+    return false;
+  }
 
 //async* + yield* for recursive functions
   Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
@@ -205,8 +221,7 @@ class AppCubit extends Cubit<AppState> {
       await for (final FileSystemEntity entity in dirList) {
         if (entity is File) {
           yield entity;
-        } else if (entity is Directory &&
-            !ignoredFolders.contains(p.basename(entity.path))) {
+        } else if (entity is Directory && !ignoreFolder(entity.path)) {
           yield* scanningFilesWithAsyncRecursive(Directory(entity.path));
         }
       }
@@ -256,6 +271,7 @@ class AppCubit extends Cubit<AppState> {
             details: const [],
           ),
         );
+        eventBus.fire(const DevicesChanged());
       },
     );
     _subscription?.onError((Object error) {

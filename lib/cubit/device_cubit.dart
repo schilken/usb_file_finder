@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
 part 'device_state.dart';
@@ -29,6 +30,16 @@ class DeviceCubit extends Cubit<DeviceState> {
         deviceCount: devices.length,
       ),
     );
+    eventBus.on<DevicesChanged>().listen((event) async {
+      print('DeviceCubit event: $event');
+      final updatedDevices = await filesRepository.readDeviceData();
+      emit(
+        DeviceLoaded(
+          devices: updatedDevices,
+          deviceCount: updatedDevices.length,
+        ),
+      );
+    });
     return this;
   }
 
@@ -63,7 +74,7 @@ class DeviceCubit extends Cubit<DeviceState> {
         // TODO: Handle this case.
         break;
       case StorageAction.rescan:
-        // TODO: Handle this case.
+        eventBus.fire(RescanDevice(index));
         break;
     }
   }

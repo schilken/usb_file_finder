@@ -197,5 +197,9 @@ class FilesRepository {
     print('runEjectCommand: stdout:  ${process.stdout} err: ${process.stderr}');
   }
 
+  String volumePathForIndex(int index) {
+    return '/Volumes/${_devices[index].name}';
+  }
+
 
 }
