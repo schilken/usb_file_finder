@@ -318,4 +318,8 @@ class AppCubit extends Cubit<AppState> {
   void addToIgnoreFolderList() {
 //    _skipFolderPath = _folderPath;
   }
+
+  showInFinder(String filePath) {
+    Process.run('open', ['-R', filePath]);
+  }
 }

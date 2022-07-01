@@ -60,7 +60,11 @@ class DetailTile extends StatelessWidget {
                 const MacosPulldownMenuDivider(),
                 MacosPulldownMenuItem(
                   title: const Text('Show in Finder'),
-                  onTap: () => debugPrint("Show in Finder"),
+                  onTap: () => detail.filePathName == null
+                      ? null
+                      : context
+                          .read<AppCubit>()
+                          .showInFinder(detail.filePathName!),
                 ),
               ],
             ),
