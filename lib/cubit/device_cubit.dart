@@ -63,4 +63,8 @@ class DeviceCubit extends Cubit<DeviceState> {
         break;
     }
   }
+
+  refreshDevices() {
+    print('refreshDevices');
+  }
 }
