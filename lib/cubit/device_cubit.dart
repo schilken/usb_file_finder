@@ -10,6 +10,7 @@ enum StorageAction {
   unselectAllOthers,
   showDetails,
   rescan,
+  eject,
 }
 
 class DeviceCubit extends Cubit<DeviceState> {
@@ -50,6 +51,7 @@ class DeviceCubit extends Cubit<DeviceState> {
       case StorageAction.selectAll:
       case StorageAction.selectAllOthers:
       case StorageAction.unselectAllOthers:
+      case StorageAction.eject:
         emit(DeviceLoaded(
           devices: filesRepository.toggleDevices(action, index),
           deviceCount: currentState.deviceCount,
@@ -64,7 +66,4 @@ class DeviceCubit extends Cubit<DeviceState> {
     }
   }
 
-  refreshDevices() {
-    print('refreshDevices');
-  }
 }

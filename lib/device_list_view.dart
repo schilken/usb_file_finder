@@ -25,12 +25,16 @@ class DeviceListView extends StatelessWidget {
                       controller: ScrollController(),
                       itemCount: state.devices.length,
                       itemBuilder: (context, index) {
+                        final device = state.devices[index];
                         return CheckboxListTile(
-                            title: Text(state.devices[index].name),
+                            tileColor: device.isMounted
+                                ? Colors.green[100]
+                                : Colors.transparent,
+                            title: Text(device.name),
                             onChanged: (value) => context
                                 .read<DeviceCubit>()
                                 .toggleDevice(index, value),
-                            value: state.devices[index].isSelected,
+                            value: device.isSelected,
                             secondary: MacosPulldownButton(
                               icon: CupertinoIcons.ellipsis_circle,
                               items: [
@@ -65,10 +69,16 @@ class DeviceListView extends StatelessWidget {
                                           StorageAction.showDetails, index),
                                 ),
                                 MacosPulldownMenuItem(
-                                  title: const Text('Rescan'),
+                                  title: const Text('Rescan Storage'),
                                   onTap: () => context
                                       .read<DeviceCubit>()
                                       .menuAction(StorageAction.rescan, index),
+                                ),
+                                MacosPulldownMenuItem(
+                                  title: const Text('Remove Data'),
+                                  onTap: () => context
+                                      .read<DeviceCubit>()
+                                      .menuAction(StorageAction.eject, index),
                                 ),
                               ],
                             ));
@@ -87,7 +97,7 @@ class DeviceListView extends StatelessWidget {
                       ),
                       shape: BoxShape.circle,
                       onPressed: () =>
-                          context.read<DeviceCubit>().refreshDevices(),
+                          context.read<DeviceCubit>().initialize(),
                     ),
                   ],
                 ),

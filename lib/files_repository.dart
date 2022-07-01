@@ -6,48 +6,50 @@ import 'package:path_provider/path_provider.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 
 class StorageDetails extends Equatable {
-
   const StorageDetails({
     required this.name,
     required this.fileCount,
     required this.isSelected,
+    required this.isMounted,
   });
 
   final String name;
   final int fileCount;
   final bool isSelected;
+  final bool isMounted;
 
   StorageDetails copyWith({
     String? name,
     int? fileCount,
     bool? isSelected,
+    bool? isMounted,
   }) {
     return StorageDetails(
       name: name ?? this.name,
       fileCount: fileCount ?? this.fileCount,
       isSelected: isSelected ?? this.isSelected,
+      isMounted: isMounted ?? this.isMounted,
     );
   }
 
   @override
-  List<Object?> get props => [name, fileCount, isSelected];
-
+  List<Object?> get props => [name, fileCount, isSelected, isMounted];
 }
 
 class FilesRepository {
   List<FileSystemEntity> _entities = [];
   List<StorageDetails> _devices = [];
+  List<String> _mountedVolumes = [];
 
-
-  Future<List<String>> loadTotalFileList(String fileType) async {
-    List<String> files = [];
-    await for (StorageDetails device in Stream.fromIterable(_devices)) {
-      if (device.isSelected) {
-        files.addAll(await _loadFileList(device.name, fileType));
-      }
-    }
-    return files;
-  }
+  // Future<List<String>> loadTotalFileList(String fileType) async {
+  //   List<String> files = [];
+  //   await for (StorageDetails device in Stream.fromIterable(_devices)) {
+  //     if (device.isSelected) {
+  //       files.addAll(await _loadFileList(device.name, fileType));
+  //     }
+  //   }
+  //   return files;
+  // }
 
   Stream<String> allLinesAsStream(String fileType) async* {
     await for (StorageDetails device in Stream.fromIterable(_devices)) {
@@ -80,32 +82,43 @@ class FilesRepository {
     }
   }
 
-  Future<List<String>> _loadFileList(
-    String storageName,
-    String fileType,
-  ) async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    final inputFilePath = p.join(
-      appDocDir.path,
-      'UsbFileFinder-Data',
-      storageName,
-      filenameFromType(fileType),
-    );
-    print('inputFilePath: $inputFilePath');
-    try {
-      File data = File(inputFilePath);
-      return await data.readAsLines();
-    } on Exception {
-      return [];
-    }
-  }
+  // Future<List<String>> _loadFileList(
+  //   String storageName,
+  //   String fileType,
+  // ) async {
+  //   Directory appDocDir = await getApplicationDocumentsDirectory();
+  //   final inputFilePath = p.join(
+  //     appDocDir.path,
+  //     'UsbFileFinder-Data',
+  //     storageName,
+  //     filenameFromType(fileType),
+  //   );
+  //   print('inputFilePath: $inputFilePath');
+  //   try {
+  //     File data = File(inputFilePath);
+  //     return await data.readAsLines();
+  //   } on Exception {
+  //     return [];
+  //   }
+  // }
 
   String filenameFromType(String type) {
     final replaced = type.toLowerCase().replaceAll(' ', '-');
     return '$replaced.txt';
   }
 
+  bool isMounted(String name) {
+    return _mountedVolumes.contains(name);
+  }
+
+  Future<void> readMountedDevices() async {
+    final Directory dir = Directory('/Volumes');
+    _mountedVolumes =
+        await dir.list().map((entitiy) => p.basename(entitiy.path)).toList();
+  }
+
   Future<List<StorageDetails>> readDeviceData() async {
+    await readMountedDevices();
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final deviceDataFolder = p.join(
       appDocDir.path,
@@ -113,13 +126,14 @@ class FilesRepository {
     );
     final Directory dir =
         await Directory(deviceDataFolder).create(recursive: true);
-//    var dir = Directory(deviceDataFolder);
     _entities = await dir.list().toList();
     _devices = _entities.whereType<Directory>().map((entity) {
+      final storageName = p.basename(entity.path);
       return StorageDetails(
-        name: p.basename(entity.path),
+        name: storageName,
         fileCount: 0,
         isSelected: false,
+        isMounted: isMounted(storageName),
       );
     }).toList();
     return _devices;
@@ -157,6 +171,9 @@ class FilesRepository {
         break;
       case StorageAction.showDetails:
       case StorageAction.rescan:
+        break;
+      case StorageAction.eject:
+        // TODO: Handle this case.
         break;
     }
     return _devices;
