@@ -155,21 +155,21 @@ class FilesRepository {
         _devices = _devices
             .map((device) => device.copyWith(isSelected: true))
             .toList();
-        break;
+        return _devices;
       case StorageAction.selectAllOthers:
         _devices = _devices
             .map((device) => device.name == _devices[index].name
                 ? device.copyWith(isSelected: false)
                 : device.copyWith(isSelected: true))
             .toList();
-        break;
+        return _devices;
       case StorageAction.unselectAllOthers:
         _devices = _devices
             .map((device) => device.name == _devices[index].name
                 ? device.copyWith(isSelected: true)
                 : device.copyWith(isSelected: false))
             .toList();
-        break;
+        return _devices;
       case StorageAction.showDetails:
       case StorageAction.rescan:
         break;
