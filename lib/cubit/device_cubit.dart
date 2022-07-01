@@ -10,6 +10,7 @@ enum StorageAction {
   unselectAllOthers,
   showDetails,
   rescan,
+  removeData,
   eject,
 }
 
@@ -44,7 +45,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     );
   }
 
-  menuAction(StorageAction action, int index) {
+  menuAction(StorageAction action, int index) async {
     print('menuAction: $action');
     final currentState = state as DeviceLoaded;
     switch (action) {
@@ -52,8 +53,9 @@ class DeviceCubit extends Cubit<DeviceState> {
       case StorageAction.selectAllOthers:
       case StorageAction.unselectAllOthers:
       case StorageAction.eject:
+      case StorageAction.removeData:
         emit(DeviceLoaded(
-          devices: filesRepository.toggleDevices(action, index),
+          devices: await filesRepository.executeStorageAction(action, index),
           deviceCount: currentState.deviceCount,
         ));
         break;

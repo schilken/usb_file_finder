@@ -69,6 +69,12 @@ class DeviceListView extends StatelessWidget {
                                           StorageAction.showDetails, index),
                                 ),
                                 MacosPulldownMenuItem(
+                                  title: const Text('Eject Storage'),
+                                  onTap: () => context
+                                      .read<DeviceCubit>()
+                                      .menuAction(StorageAction.eject, index),
+                                ),
+                                MacosPulldownMenuItem(
                                   title: const Text('Rescan Storage'),
                                   onTap: () => context
                                       .read<DeviceCubit>()
@@ -78,7 +84,8 @@ class DeviceListView extends StatelessWidget {
                                   title: const Text('Remove Data'),
                                   onTap: () => context
                                       .read<DeviceCubit>()
-                                      .menuAction(StorageAction.eject, index),
+                                      .menuAction(
+                                          StorageAction.removeData, index),
                                 ),
                               ],
                             ));
@@ -88,11 +95,10 @@ class DeviceListView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('5 Storages'),
+                    Text('${state.devices.length} Storages'),
                     MacosIconButton(
                       backgroundColor: Colors.transparent,
-                      icon: MacosIcon(
-                        size: 32,
+                      icon: const MacosIcon(
                         CupertinoIcons.refresh,
                       ),
                       shape: BoxShape.circle,
@@ -104,7 +110,7 @@ class DeviceListView extends StatelessWidget {
               ],
             );
           } else if (state is DeviceLoading) {
-            return const CircularProgressIndicator();
+            return const Center(child: CupertinoActivityIndicator());
           } else {
             return const Text('No devices');
           }

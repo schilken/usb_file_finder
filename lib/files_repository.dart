@@ -117,15 +117,15 @@ class FilesRepository {
         await dir.list().map((entitiy) => p.basename(entitiy.path)).toList();
   }
 
+  Future<Directory> get deviceDataDirectory async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    return Directory(p.join(appDocDir.path, 'UsbFileFinder-Data'))
+      ..create(recursive: true);
+  }
+
   Future<List<StorageDetails>> readDeviceData() async {
     await readMountedDevices();
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    final deviceDataFolder = p.join(
-      appDocDir.path,
-      'UsbFileFinder-Data',
-    );
-    final Directory dir =
-        await Directory(deviceDataFolder).create(recursive: true);
+    final dir = await deviceDataDirectory;
     _entities = await dir.list().toList();
     _devices = _entities.whereType<Directory>().map((entity) {
       final storageName = p.basename(entity.path);
@@ -148,7 +148,8 @@ class FilesRepository {
     return _devices;
   }
 
-  toggleDevices(StorageAction action, int index) {
+  Future<List<StorageDetails>> executeStorageAction(
+      StorageAction action, int index) async {
     switch (action) {
       case StorageAction.selectAll:
         _devices = _devices
@@ -173,9 +174,28 @@ class FilesRepository {
       case StorageAction.rescan:
         break;
       case StorageAction.eject:
-        // TODO: Handle this case.
+        runEjectCommand(_devices[index].name);
+        break;
+      case StorageAction.removeData:
+        final dir = await deviceDataDirectory;
+        final directoryPath = p.join(dir.path, _devices[index].name);
+        final dataDirectory = Directory(directoryPath);
+        try {
+          if (await dataDirectory.exists()) {
+            await dataDirectory.delete(recursive: true);
+          }
+        } catch (e) {
+          print('StorageAction.removeData: $e');
+        }
         break;
     }
-    return _devices;
+    return readDeviceData();
   }
+
+  Future<void> runEjectCommand(String volumeName) async {
+    var process = await Process.run('diskutil', ['eject', volumeName]);
+    print('runEjectCommand: stdout:  ${process.stdout} err: ${process.stderr}');
+  }
+
+
 }
