@@ -86,6 +86,8 @@ promptString(BuildContext context) async {
                             children: [
                               PushButton(
                                 buttonSize: ButtonSize.large,
+                                isSecondary: true,
+                                color: Colors.white,
                                 child: const Text('Exclude'),
                                 onPressed: () => promptString(context),
                               ),
@@ -93,6 +95,16 @@ promptString(BuildContext context) async {
                                 width: 8,
                               ),
                               Text(state.currentSearchParameters),
+                              if (state.currentSearchParameters.contains(':'))
+                                MacosIconButton(
+                                  backgroundColor: Colors.transparent,
+                                  icon: MacosIcon(
+                                    CupertinoIcons.clear_circled,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  onPressed: () =>
+                                      context.read<AppCubit>().clearExcludes(),
+                                ),
                                 const Spacer(),
                               if (state.isScanRunning)
                                 TextButton(

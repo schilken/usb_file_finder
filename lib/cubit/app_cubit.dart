@@ -30,7 +30,7 @@ class AppCubit extends Cubit<AppState> {
   final FilesRepository filesRepository;
   String? _primaryWord;
   String? _secondaryWord;
-  String? _exclusionWord;
+  List<String> _exclusionWords = [];
   final String _currentPathname = "no file selected";
   String? _fileType;
   int _fileCount = 0;
@@ -50,8 +50,9 @@ class AppCubit extends Cubit<AppState> {
   String get _searchParameters {
     final parameters = <String>[];
     parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
-    if (_exclusionWord != null) {
-      parameters.add('excluded $_exclusionWord');
+    if (_exclusionWords.isNotEmpty) {
+      parameters.add('excluded: ${_exclusionWords.join(' ')}');
+
     }
     return parameters.join(' - ');
   }
@@ -68,6 +69,14 @@ class AppCubit extends Cubit<AppState> {
     if (_secondaryWord != null && (_secondaryWord ?? '').isEmpty) {
       _secondaryWord = null;
     }
+  }
+
+  bool containsAnyExclusionWord(String path) {
+    if (_exclusionWords.isEmpty) {
+      return false;
+    }
+    final result = _exclusionWords.any((word) => path.contains(word));
+    return result;
   }
 
   Future<void> search() async {
@@ -91,8 +100,9 @@ class AppCubit extends Cubit<AppState> {
 
     final linesAsStream = filesRepository
         .allLinesAsStream(_selectedFileType)
+        .map((path) => _searchCaseSensitiv ? path : path.toLowerCase())
         .where((path) => !path.contains('XXX'))
-        .map((path) => _searchCaseSensitiv ? path : path.toLowerCase());
+        .where((path) => !containsAnyExclusionWord(path));
 
     _filteredFilePaths = await linesAsStream.toList();
 //    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
@@ -300,6 +310,12 @@ final ignoredFolders = <String>{
 
   addExclusionWord(String exclusionWord) {
     print('addExclusionWord: $exclusionWord');
-    _exclusionWord = exclusionWord;
+    _exclusionWords.add(exclusionWord);
+    search();
+  }
+
+  clearExcludes() {
+    _exclusionWords.clear();
+    search();
   }
 }
