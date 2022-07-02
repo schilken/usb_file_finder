@@ -66,11 +66,16 @@ class DeviceListView extends StatelessWidget {
                                 const MacosPulldownMenuDivider(),
                                 MacosPulldownMenuItem(
                                   title: const Text('Show Details'),
-                                  onTap: () {
-                                    context.read<DeviceCubit>().menuAction(
-                                        StorageAction.showDetails, index);
-                                    _showOverviewWindow();
-                                  },
+                                  onTap: () => context
+                                      .read<DeviceCubit>()
+                                      .menuAction(
+                                          StorageAction.showInfo, index),
+                                ),
+                                MacosPulldownMenuItem(
+                                  title: const Text('Eject Storage'),
+                                  onTap: () => context
+                                      .read<DeviceCubit>()
+                                      .menuAction(StorageAction.eject, index),
                                 ),
                                 MacosPulldownMenuItem(
                                   title: const Text('Rescan Storage'),
@@ -82,7 +87,8 @@ class DeviceListView extends StatelessWidget {
                                   title: const Text('Remove Data'),
                                   onTap: () => context
                                       .read<DeviceCubit>()
-                                      .menuAction(StorageAction.eject, index),
+                                      .menuAction(
+                                          StorageAction.removeData, index),
                                 ),
                               ],
                             ));
@@ -92,7 +98,7 @@ class DeviceListView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('5 Storages'),
+                    Text('${state.devices.length} Storages'),
                     MacosIconButton(
                       backgroundColor: Colors.transparent,
                       icon: const MacosIcon(
@@ -116,7 +122,7 @@ class DeviceListView extends StatelessWidget {
               ],
             );
           } else if (state is DeviceLoading) {
-            return const CircularProgressIndicator();
+            return const Center(child: CupertinoActivityIndicator());
           } else {
             return const Text('No devices');
           }

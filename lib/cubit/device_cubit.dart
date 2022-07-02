@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
 part 'device_state.dart';
@@ -8,8 +9,9 @@ enum StorageAction {
   selectAll,
   selectAllOthers,
   unselectAllOthers,
-  showDetails,
+  showInfo,
   rescan,
+  removeData,
   eject,
 }
 
@@ -28,6 +30,16 @@ class DeviceCubit extends Cubit<DeviceState> {
         deviceCount: devices.length,
       ),
     );
+    eventBus.on<DevicesChanged>().listen((event) async {
+      print('DeviceCubit event: $event');
+      final updatedDevices = await filesRepository.readDeviceData();
+      emit(
+        DeviceLoaded(
+          devices: updatedDevices,
+          deviceCount: updatedDevices.length,
+        ),
+      );
+    });
     return this;
   }
 
@@ -44,7 +56,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     );
   }
 
-  menuAction(StorageAction action, int index) {
+  menuAction(StorageAction action, int index) async {
     print('menuAction: $action');
     final currentState = state as DeviceLoaded;
     switch (action) {
@@ -52,16 +64,18 @@ class DeviceCubit extends Cubit<DeviceState> {
       case StorageAction.selectAllOthers:
       case StorageAction.unselectAllOthers:
       case StorageAction.eject:
+      case StorageAction.removeData:
         emit(DeviceLoaded(
-          devices: filesRepository.toggleDevices(action, index),
+          devices: await filesRepository.executeStorageAction(action, index),
           deviceCount: currentState.deviceCount,
         ));
         break;
-      case StorageAction.showDetails:
-        // TODO: Handle this case.
+      case StorageAction.showInfo:
+        final storageInfo = await filesRepository.createStorageInfoForDevice(
+            filesRepository.storageDetailsForIndex(index));
         break;
       case StorageAction.rescan:
-        // TODO: Handle this case.
+        eventBus.fire(RescanDevice(index));
         break;
     }
   }

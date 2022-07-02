@@ -91,14 +91,14 @@ promptString(BuildContext context) async {
                                 child: const Text('Exclude'),
                                 onPressed: () => promptString(context),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 8,
                               ),
                               Text(state.currentSearchParameters),
                               if (state.currentSearchParameters.contains(':'))
                                 MacosIconButton(
                                   backgroundColor: Colors.transparent,
-                                  icon: MacosIcon(
+                                  icon: const MacosIcon(
                                     CupertinoIcons.clear_circled,
                                   ),
                                   shape: BoxShape.circle,
@@ -106,6 +106,14 @@ promptString(BuildContext context) async {
                                       context.read<AppCubit>().clearExcludes(),
                                 ),
                                 const Spacer(),
+                              if (state.isScanRunning)
+                                TextButton(
+                                    onPressed:
+                                        context
+                                        .read<AppCubit>()
+                                        .addToIgnoreFolderList,
+                                    child: const Text(
+                                        'Add Folder to Ignore List')),
                               if (state.isScanRunning)
                                 TextButton(
                                     onPressed:

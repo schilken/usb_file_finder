@@ -57,6 +57,15 @@ class DetailTile extends StatelessWidget {
                   title: const Text('show only files of this folder'),
                   onTap: () => debugPrint("show only files of this folder"),
                 ),
+                const MacosPulldownMenuDivider(),
+                MacosPulldownMenuItem(
+                  title: const Text('Show in Finder'),
+                  onTap: () => detail.filePathName == null
+                      ? null
+                      : context
+                          .read<AppCubit>()
+                          .showInFinder(detail.filePathName!),
+                ),
               ],
             ),
             const SizedBox(width: 12),

@@ -42,6 +42,7 @@ class FilterSidebar extends StatelessWidget {
             const SizedBox(height: 16),
             const SizedBox(
               height: 315,
+              width: 220,
               child: Material(
                 child: DeviceListView(),
               ),
