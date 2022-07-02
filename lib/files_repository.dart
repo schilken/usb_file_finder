@@ -1,8 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 
 class StorageDetails extends Equatable {
@@ -83,6 +86,43 @@ class StorageInfo extends Equatable {
         scanDuration,
         scanSpeed
       ];
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'name': name,
+      'totalFileCount': totalFileCount,
+      'fileCountMap': fileCountMap,
+      'dateOfLastScan': dateOfLastScan?.millisecondsSinceEpoch,
+      'scanDuration': scanDuration,
+      'scanSpeed': scanSpeed,
+      'isSelected': isSelected,
+      'isMounted': isMounted,
+    };
+  }
+
+  factory StorageInfo.fromMap(Map<String, dynamic> map) {
+    final fileCountMap = <String, int>{};
+    final inputMap = map['fileCountMap'];
+    inputMap.forEach((k, v) => fileCountMap[k] = v as int);
+    return StorageInfo(
+      name: map['name'] as String,
+      totalFileCount: map['totalFileCount'] as int,
+      fileCountMap: fileCountMap,
+      dateOfLastScan: map['dateOfLastScan'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['dateOfLastScan'] as int)
+          : null,
+      scanDuration:
+          map['scanDuration'] != null ? map['scanDuration'] as int : null,
+      scanSpeed: map['scanSpeed'] != null ? map['scanSpeed'] as int : null,
+      isSelected: map['isSelected'] as bool,
+      isMounted: map['isMounted'] as bool,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory StorageInfo.fromJson(String source) =>
+      StorageInfo.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 

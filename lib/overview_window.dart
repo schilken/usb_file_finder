@@ -1,8 +1,20 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
+
+import 'package:usb_file_finder/files_repository.dart';
+
+class NameValue {
+  final String name;
+  final int value;
+  NameValue(
+    this.name,
+    this.value,
+  );
+}
 
 class OverviewWindow extends StatelessWidget {
   const OverviewWindow({
@@ -12,10 +24,15 @@ class OverviewWindow extends StatelessWidget {
   });
 
   final WindowController windowController;
-  final Map? args;
+  final Map args;
 
   @override
   Widget build(BuildContext context) {
+    print('OverviewWindow args: $args');
+    final storageInfo = StorageInfo.fromJson(args['storageInfo']);
+    final nameValueList = <NameValue>[];
+    storageInfo.fileCountMap.entries
+        .forEach((e) => nameValueList.add(NameValue(e.key, e.value)));
     return MacosApp(
       title: 'usb_file_finder',
       theme: MacosThemeData.light(),
@@ -34,54 +51,21 @@ class OverviewWindow extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Storage Overview',
+                        'Storage Details for ${storageInfo.name}',
                         style: MacosTheme.of(context).typography.largeTitle,
                       ),
                       const SizedBox(height: 8.0),
-                      const Text(
-                        'Choose your Default Folders',
+                      Text(
+                        'Total number of files: ${storageInfo.totalFileCount}',
                       ),
                       SizedBox(height: 20),
-                      const Text(
-                        'Default Examples',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Text(
-                            '/Users/aschilken/flutterdev/examples',
-                          ),
-                          MacosIconButton(
-                            icon: const MacosIcon(
-                              CupertinoIcons.folder_open,
-                            ),
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(7),
-                            onPressed: () async {
-                              String? selectedDirectory =
-                                  await FilePicker.platform.getDirectoryPath();
-                            },
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                      const Text(
-                        'Packages Folder',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      const Text(
-                        '/Users/aschilken/.pub-cache/hosted/pub.dartlang.org',
-                      ),
-                      SizedBox(height: 20),
-                      const Text(
-                        'The Complete Flutter Source Folder',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 4),
-                      const Text(
-                        '/Users/aschilken/flutterdev/flutter',
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: nameValueList.length,
+                            itemBuilder: (context, index) {
+                              return NameValueTile(
+                                  nameValue: nameValueList[index]);
+                            }),
                       ),
                     ],
                   ),
@@ -92,6 +76,35 @@ class OverviewWindow extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class NameValueTile extends StatelessWidget {
+  const NameValueTile({
+    Key? key,
+    required this.nameValue,
+  }) : super(key: key);
+
+  final NameValue nameValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            nameValue.name,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            '${nameValue.value}',
+          ),
+        ],
+      ),
     );
   }
 }

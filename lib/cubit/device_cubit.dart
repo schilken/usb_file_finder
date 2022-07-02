@@ -56,7 +56,13 @@ class DeviceCubit extends Cubit<DeviceState> {
     );
   }
 
-  menuAction(StorageAction action, int index) async {
+  Future<StorageInfo> getStorageInfo(int index) async {
+    final storageInfo = await filesRepository.createStorageInfoForDevice(
+        filesRepository.storageDetailsForIndex(index));
+    return storageInfo;
+  }
+
+  Future<dynamic> menuAction(StorageAction action, int index) async {
     print('menuAction: $action');
     final currentState = state as DeviceLoaded;
     switch (action) {
@@ -71,8 +77,6 @@ class DeviceCubit extends Cubit<DeviceState> {
         ));
         break;
       case StorageAction.showInfo:
-        final storageInfo = await filesRepository.createStorageInfoForDevice(
-            filesRepository.storageDetailsForIndex(index));
         break;
       case StorageAction.rescan:
         eventBus.fire(RescanDevice(index));

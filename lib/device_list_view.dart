@@ -66,10 +66,12 @@ class DeviceListView extends StatelessWidget {
                                 const MacosPulldownMenuDivider(),
                                 MacosPulldownMenuItem(
                                   title: const Text('Show Details'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(
-                                          StorageAction.showInfo, index),
+                                  onTap: () async {
+                                    final storageInfo = await context
+                                        .read<DeviceCubit>()
+                                        .getStorageInfo(index);
+                                    _showOverviewWindow(storageInfo);
+                                  },
                                 ),
                                 MacosPulldownMenuItem(
                                   title: const Text('Eject Storage'),
@@ -108,15 +110,15 @@ class DeviceListView extends StatelessWidget {
                       shape: BoxShape.circle,
                       onPressed: () => context.read<DeviceCubit>().initialize(),
                     ),
-                    MacosIconButton(
-                      backgroundColor: Colors.transparent,
-                      icon: const MacosIcon(
-//                        size: 32,
-                        CupertinoIcons.info,
-                      ),
-                      shape: BoxShape.circle,
-                      onPressed: () => _showOverviewWindow(),
-                    ),
+//                     MacosIconButton(
+//                       backgroundColor: Colors.transparent,
+//                       icon: const MacosIcon(
+// //                        size: 32,
+//                         CupertinoIcons.info,
+//                       ),
+//                       shape: BoxShape.circle,
+//                       onPressed: () => _showOverviewWindow(''),
+//                     ),
                   ],
                 ),
               ],
@@ -131,17 +133,18 @@ class DeviceListView extends StatelessWidget {
     );
   }
 
-  _showOverviewWindow() async {
+  _showOverviewWindow(StorageInfo storageInfo) async {
     final window = await DesktopMultiWindow.createWindow(jsonEncode(
       {
         'args1': 'Overview',
         'args2': 500,
         'args3': true,
+        'storageInfo': storageInfo,
       },
     ));
     debugPrint('$window');
     window
-      ..setFrame(const Offset(0, 0) & const Size(600, 400))
+      ..setFrame(const Offset(0, 0) & const Size(400, 350))
       ..center()
       ..setTitle('Overview')
       ..show();

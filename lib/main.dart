@@ -130,7 +130,7 @@ class _MainViewState extends State<MainView> {
                 ));
                 debugPrint('$window');
                 window
-                  ..setFrame(const Offset(0, 0) & const Size(550, 350))
+                  ..setFrame(const Offset(0, 0) & const Size(500, 400))
                   ..center()
                   ..setTitle('The Preferences')
                   ..show();
