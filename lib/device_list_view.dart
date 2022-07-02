@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,10 +66,11 @@ class DeviceListView extends StatelessWidget {
                                 const MacosPulldownMenuDivider(),
                                 MacosPulldownMenuItem(
                                   title: const Text('Show Details'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(
-                                          StorageAction.showDetails, index),
+                                  onTap: () {
+                                    context.read<DeviceCubit>().menuAction(
+                                        StorageAction.showDetails, index);
+                                    _showOverviewWindow();
+                                  },
                                 ),
                                 MacosPulldownMenuItem(
                                   title: const Text('Rescan Storage'),
@@ -91,13 +95,21 @@ class DeviceListView extends StatelessWidget {
                     Text('5 Storages'),
                     MacosIconButton(
                       backgroundColor: Colors.transparent,
-                      icon: MacosIcon(
-                        size: 32,
+                      icon: const MacosIcon(
+//                        size: 32,
                         CupertinoIcons.refresh,
                       ),
                       shape: BoxShape.circle,
-                      onPressed: () =>
-                          context.read<DeviceCubit>().initialize(),
+                      onPressed: () => context.read<DeviceCubit>().initialize(),
+                    ),
+                    MacosIconButton(
+                      backgroundColor: Colors.transparent,
+                      icon: const MacosIcon(
+//                        size: 32,
+                        CupertinoIcons.info,
+                      ),
+                      shape: BoxShape.circle,
+                      onPressed: () => _showOverviewWindow(),
                     ),
                   ],
                 ),
@@ -111,5 +123,21 @@ class DeviceListView extends StatelessWidget {
         },
       ),
     );
+  }
+
+  _showOverviewWindow() async {
+    final window = await DesktopMultiWindow.createWindow(jsonEncode(
+      {
+        'args1': 'Overview',
+        'args2': 500,
+        'args3': true,
+      },
+    ));
+    debugPrint('$window');
+    window
+      ..setFrame(const Offset(0, 0) & const Size(600, 400))
+      ..center()
+      ..setTitle('Overview')
+      ..show();
   }
 }

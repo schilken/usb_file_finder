@@ -12,6 +12,7 @@ import 'package:usb_file_finder/cubit/settings_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
+import 'package:usb_file_finder/overview_window.dart';
 import 'package:usb_file_finder/settings_window.dart';
 import 'package:usb_file_finder/statistics_page.dart';
 
@@ -29,6 +30,11 @@ void main(List<String> args) {
       ));
     } else if (arguments['args1'] == 'Preferences') {
       runApp(SettingsWindow(
+        windowController: WindowController.fromWindowId(windowId),
+        args: arguments,
+      ));
+    } else if (arguments['args1'] == 'Overview') {
+      runApp(OverviewWindow(
         windowController: WindowController.fromWindowId(windowId),
         args: arguments,
       ));
@@ -124,7 +130,7 @@ class _MainViewState extends State<MainView> {
                 ));
                 debugPrint('$window');
                 window
-                  ..setFrame(const Offset(0, 0) & const Size(350, 350))
+                  ..setFrame(const Offset(0, 0) & const Size(550, 350))
                   ..center()
                   ..setTitle('The Preferences')
                   ..show();
