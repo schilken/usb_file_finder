@@ -30,8 +30,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(SettingsLoaded(
       fileTypeFilter: fileTypeFilter,
       showHiddenFiles: getSearchOption('showHiddenFiles'),
-      searchInFilename: false,
-      searchInFoldername: false,
+      searchInFilename: getSearchOption('searchInFilename'),
+      searchInFoldername: getSearchOption('searchInFoldername'),
     ));
     eventBus.fire(SettingsChanged(fileTypeFilter));
   }
