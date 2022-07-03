@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
+import 'package:usb_file_finder/macos_checkbox_list_tile.dart';
 
 class DeviceListView extends StatelessWidget {
   const DeviceListView({
@@ -29,71 +30,76 @@ class DeviceListView extends StatelessWidget {
                       itemCount: state.devices.length,
                       itemBuilder: (context, index) {
                         final device = state.devices[index];
-                        return CheckboxListTile(
-                            tileColor: device.isMounted
-                                ? Colors.green[100]
-                                : Colors.transparent,
-                            title: Text(device.name),
-                            onChanged: (value) => context
-                                .read<DeviceCubit>()
-                                .toggleDevice(index, value),
-                            value: device.isSelected,
-                            secondary: MacosPulldownButton(
-                              icon: CupertinoIcons.ellipsis_circle,
-                              items: [
-                                MacosPulldownMenuItem(
-                                  title: const Text('Select all'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(
-                                          StorageAction.selectAll, index),
-                                ),
-                                MacosPulldownMenuItem(
-                                  title: const Text('Select all others'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(
-                                          StorageAction.selectAllOthers, index),
-                                ),
-                                MacosPulldownMenuItem(
-                                  title: const Text('Unselect all others'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(
-                                          StorageAction.unselectAllOthers,
-                                          index),
-                                ),
-                                const MacosPulldownMenuDivider(),
-                                MacosPulldownMenuItem(
-                                  title: const Text('Show Details'),
-                                  onTap: () async {
-                                    final storageInfo = await context
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: MacosCheckBoxListTile(
+                              tileColor: device.isMounted
+                                  ? Colors.green[100]
+                                  : Colors.transparent,
+                              title: Text(device.name),
+                              onChanged: (value) => context
+                                  .read<DeviceCubit>()
+                                  .toggleDevice(index, value),
+                              value: device.isSelected,
+                              leading: MacosPulldownButton(
+                                icon: CupertinoIcons.ellipsis_circle,
+                                items: [
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Select all'),
+                                    onTap: () => context
                                         .read<DeviceCubit>()
-                                        .getStorageInfo(index);
-                                    _showOverviewWindow(storageInfo);
-                                  },
-                                ),
-                                MacosPulldownMenuItem(
-                                  title: const Text('Eject Storage'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(StorageAction.eject, index),
-                                ),
-                                MacosPulldownMenuItem(
-                                  title: const Text('Rescan Storage'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(StorageAction.rescan, index),
-                                ),
-                                MacosPulldownMenuItem(
-                                  title: const Text('Remove Data'),
-                                  onTap: () => context
-                                      .read<DeviceCubit>()
-                                      .menuAction(
-                                          StorageAction.removeData, index),
-                                ),
-                              ],
-                            ));
+                                        .menuAction(
+                                            StorageAction.selectAll, index),
+                                  ),
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Select all others'),
+                                    onTap: () => context
+                                        .read<DeviceCubit>()
+                                        .menuAction(
+                                            StorageAction.selectAllOthers,
+                                            index),
+                                  ),
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Unselect all others'),
+                                    onTap: () => context
+                                        .read<DeviceCubit>()
+                                        .menuAction(
+                                            StorageAction.unselectAllOthers,
+                                            index),
+                                  ),
+                                  const MacosPulldownMenuDivider(),
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Show Details'),
+                                    onTap: () async {
+                                      final storageInfo = await context
+                                          .read<DeviceCubit>()
+                                          .getStorageInfo(index);
+                                      _showOverviewWindow(storageInfo);
+                                    },
+                                  ),
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Eject Storage'),
+                                    onTap: () => context
+                                        .read<DeviceCubit>()
+                                        .menuAction(StorageAction.eject, index),
+                                  ),
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Rescan Storage'),
+                                    onTap: () => context
+                                        .read<DeviceCubit>()
+                                        .menuAction(
+                                            StorageAction.rescan, index),
+                                  ),
+                                  MacosPulldownMenuItem(
+                                    title: const Text('Remove Data'),
+                                    onTap: () => context
+                                        .read<DeviceCubit>()
+                                        .menuAction(
+                                            StorageAction.removeData, index),
+                                  ),
+                                ],
+                              )),
+                        );
                       }),
                 ),
                 const SizedBox(height: 4),

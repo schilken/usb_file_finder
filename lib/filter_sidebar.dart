@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
 import 'package:usb_file_finder/device_list_view.dart';
+import 'package:usb_file_finder/macos_checkbox_list_tile.dart';
 
 class FilterSidebar extends StatelessWidget {
   const FilterSidebar({
@@ -13,10 +14,12 @@ class FilterSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
+        print('FilterSidebar builder: ${state}');
+
+        if (state is SettingsLoaded) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
+            children: [
             const Text('Filter Files',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
@@ -39,33 +42,48 @@ class FilterSidebar extends StatelessWidget {
                 );
               }).toList(),
             ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
+                child: MacosCheckBoxListTile(
+                  title: Text('Include Hidden Files'),
+                  onChanged: (value) => context
+                      .read<SettingsCubit>()
+                      .toggleSearchOption('showHiddenFiles', value ?? false),
+                  value: state.showHiddenFiles,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
+                child: MacosCheckBoxListTile(
+                  title: Text('Search in Filename'),
+                  onChanged: (value) => context
+                      .read<SettingsCubit>()
+                      .toggleSearchOption('searchInFilename', value ?? false),
+                  value: state.searchInFilename,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
+                child: MacosCheckBoxListTile(
+                  title: Text('Search in Foldername'),
+                  onChanged: (value) => context
+                      .read<SettingsCubit>()
+                      .toggleSearchOption('searchInFoldername', value ?? false),
+                  value: state.searchInFoldername,
+                ),
+              ),
+              const SizedBox(height: 20),
             const SizedBox(
               height: 315,
-              width: 220,
-              child: Material(
+                width: 220,
                 child: DeviceListView(),
               ),
-            ),
-            const SizedBox(height: 32),
-            // Text('Filter Lines', style: TextStyle(fontWeight: FontWeight.bold)),
-            // SizedBox(height: 16),
-            // MacosPopupButton<String>(
-            //   value: context.read<SettingsCubit>().lineFilter,
-            //   onChanged: (String? newValue) async {
-            //     await context.read<SettingsCubit>().setLineFilter(newValue);
-            //   },
-            //   items: <String>['Only First Line', 'First Two Lines', 'All Lines']
-            //       .map<MacosPopupMenuItem<String>>((String value) {
-            //     return MacosPopupMenuItem<String>(
-            //       value: value,
-            //       child: Text(value),
-            //     );
-            //   }).toList(),
-            // ),
-            const SizedBox(height: 32),
+              const SizedBox(height: 16),
           ],
         );
+        }
+        return Container();
       },
     );
   }

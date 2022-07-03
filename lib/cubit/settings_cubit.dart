@@ -29,8 +29,20 @@ class SettingsCubit extends Cubit<SettingsState> {
   void emitSettingsLoaded() {
     emit(SettingsLoaded(
       fileTypeFilter: fileTypeFilter,
+      showHiddenFiles: getSearchOption('showHiddenFiles'),
+      searchInFilename: false,
+      searchInFoldername: false,
     ));
     eventBus.fire(SettingsChanged(fileTypeFilter));
+  }
+
+  Future<void> toggleSearchOption(String option, bool value) async {
+    await _prefs.setBool(option, value);
+    emitSettingsLoaded();
+  }
+
+  bool getSearchOption(String option) {
+    return _prefs.getBool(option) ?? false;
   }
 
 }
