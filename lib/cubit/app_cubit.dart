@@ -96,7 +96,8 @@ class AppCubit extends Cubit<AppState> {
     final linesAsStream = filesRepository
         .allLinesAsStream(_selectedFileType)
         .map((path) => _searchCaseSensitiv ? path : path.toLowerCase())
-        .where((path) => !path.contains('XXX'))
+        .where((path) => !path.contains('xxx'))
+        .where((path) => !path.contains('clips'))
         .where((path) => !containsAnyExclusionWord(path))
         .where((path) =>
             _onlyInThisFolder == null || path.contains(_onlyInThisFolder!));
