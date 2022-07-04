@@ -44,8 +44,8 @@ class MacosCheckBoxListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: mouseCursor,
+    return Container(
+      color: tileColor,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -79,6 +79,9 @@ class MacosCheckBoxListTile extends StatelessWidget {
             value: value,
             onChanged: onChanged,
             offBorderColor: Colors.black,
+          ),
+          SizedBox(
+            width: 12,
           ),
         ],
       ),
