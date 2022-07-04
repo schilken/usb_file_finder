@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,10 @@ import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
 part 'app_state.dart';
+
+enum SearchResultAction {
+  showOnlyFilesInsameFolder,
+}
 
 class AppCubit extends Cubit<AppState> {
   AppCubit(
@@ -32,6 +37,7 @@ class AppCubit extends Cubit<AppState> {
   final FilesRepository filesRepository;
   String? _primaryWord;
   String? _secondaryWord;
+  String? _onlyInThisFolder;
   final List<String> _exclusionWords = [];
   String? _fileType;
   int _fileCount = 0;
@@ -54,6 +60,9 @@ class AppCubit extends Cubit<AppState> {
     parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
     if (_exclusionWords.isNotEmpty) {
       parameters.add('excluded: ${_exclusionWords.join(' ')}');
+    }
+    if (_onlyInThisFolder != null) {
+      parameters.add('only in: $_onlyInThisFolder');
     }
     return parameters.join(' - ');
   }
@@ -86,7 +95,10 @@ class AppCubit extends Cubit<AppState> {
         .allLinesAsStream(_selectedFileType)
         .map((path) => _searchCaseSensitiv ? path : path.toLowerCase())
         .where((path) => !path.contains('XXX'))
-        .where((path) => !containsAnyExclusionWord(path));
+        .where((path) => !containsAnyExclusionWord(path))
+        .where((path) =>
+            _onlyInThisFolder == null || path.contains(_onlyInThisFolder!));
+
 
     _filteredFilePaths = await linesAsStream.toList();
 //    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
@@ -193,6 +205,7 @@ class AppCubit extends Cubit<AppState> {
 
   clearExcludes() {
     _exclusionWords.clear();
+    _onlyInThisFolder = null;
     search();
   }
 
@@ -202,5 +215,14 @@ class AppCubit extends Cubit<AppState> {
 
   showInFinder(String filePath) {
     Process.run('open', ['-R', filePath]);
+  }
+
+  menuAction(SearchResultAction menuAction, String? folderPath) {
+    _onlyInThisFolder = folderPath;
+    search();
+  }
+
+  copyToClipboard(String path) {
+    Clipboard.setData(ClipboardData(text: path));
   }
 }

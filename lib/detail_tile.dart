@@ -37,37 +37,7 @@ class DetailTile extends StatelessWidget {
               detail.storageName ?? 'no storage',
             ),
             const SizedBox(width: 12),
-            MacosPulldownButton(
-              icon: CupertinoIcons.ellipsis_circle,
-              items: [
-                MacosPulldownMenuItem(
-                  title: const Text('hide selected file'),
-                  onTap: () => debugPrint("hide selected file"),
-                ),
-                MacosPulldownMenuItem(
-                  title: const Text('hide all in same folder'),
-                  onTap: () => debugPrint("hide all in same folder"),
-                ),
-                MacosPulldownMenuItem(
-                  title: const Text('hide all with same extension'),
-                  onTap: () => debugPrint("hide all with same extension"),
-                ),
-                const MacosPulldownMenuDivider(),
-                MacosPulldownMenuItem(
-                  title: const Text('show only files of this folder'),
-                  onTap: () => debugPrint("show only files of this folder"),
-                ),
-                const MacosPulldownMenuDivider(),
-                MacosPulldownMenuItem(
-                  title: const Text('Show in Finder'),
-                  onTap: () => detail.filePathName == null
-                      ? null
-                      : context
-                          .read<AppCubit>()
-                          .showInFinder(detail.filePathName!),
-                ),
-              ],
-            ),
+            ListTilePullDownMenu(detail: detail),
             const SizedBox(width: 12),
             HighlightedText(
               text: detail.folderPath ?? 'no filename',
@@ -82,7 +52,63 @@ class DetailTile extends StatelessWidget {
       ),
     );
   }
+}
 
+class ListTilePullDownMenu extends StatelessWidget {
+  const ListTilePullDownMenu({
+    Key? key,
+    required this.detail,
+  }) : super(key: key);
+
+  final Detail detail;
+
+  @override
+  Widget build(BuildContext context) {
+    return MacosPulldownButton(
+      icon: CupertinoIcons.ellipsis_circle,
+      items: [
+        MacosPulldownMenuItem(
+          title: const Text('hide selected file'),
+          onTap: () => debugPrint("hide selected file"),
+        ),
+        MacosPulldownMenuItem(
+          title: const Text('hide all in same folder'),
+          onTap: () => debugPrint("hide all in same folder"),
+        ),
+        MacosPulldownMenuItem(
+          title: const Text('hide all with same extension'),
+          onTap: () => debugPrint("hide all with same extension"),
+        ),
+        const MacosPulldownMenuDivider(),
+        MacosPulldownMenuItem(
+          title: const Text('show only files of this folder'),
+          onTap: () => context.read<AppCubit>().menuAction(
+                SearchResultAction.showOnlyFilesInsameFolder,
+                detail.folderPath,
+              ),
+        ),
+        const MacosPulldownMenuDivider(),
+        MacosPulldownMenuItem(
+          title: const Text('Show File in Finder'),
+          onTap: () => detail.filePathName == null
+              ? null
+              : context.read<AppCubit>().showInFinder(detail.filePathName!),
+        ),
+        MacosPulldownMenuItem(
+          title: const Text('Copy FilePath to Clipboard'),
+          onTap: () => detail.filePathName == null
+              ? null
+              : context.read<AppCubit>().copyToClipboard(detail.filePathName!),
+        ),
+        MacosPulldownMenuItem(
+          title: const Text('Open File in VScode'),
+          onTap: () => detail.filePathName == null
+              ? null
+              : context.read<AppCubit>().openEditor(detail.filePathName!),
+        ),
+      ],
+    );
+  }
 }
 
 class NameWithOpenInEditor extends StatelessWidget {
