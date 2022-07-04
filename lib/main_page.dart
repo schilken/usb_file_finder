@@ -21,8 +21,8 @@ promptString(BuildContext context) async {
       textOK: const Text('OK'),
       textCancel: const Text('Abbrechen'),
       validator: (String? value) {
-        if (value == null || value.isEmpty || value.length < 3) {
-          return 'Mindestens 3 Buchstaben oder Ziffern';
+        if (value == null || value.isEmpty || value.length < 2) {
+          return 'Mindestens 2 Buchstaben oder Ziffern';
         }
         return null;
       },
@@ -33,36 +33,6 @@ promptString(BuildContext context) async {
     if (exclusionWord != null) {
       await context.read<AppCubit>().addExclusionWord(exclusionWord);
     }
-  }
-
-  macosPromptString(BuildContext context) {
-    showMacosAlertDialog(
-      context: context,
-      builder: (context) => MacosAlertDialog(
-        appIcon: const FlutterLogo(
-          size: 56,
-        ),
-        title: const Text(
-          'Alert Dialog with Secondary Action',
-        ),
-        message: const Text(
-          'This is an alert dialog with primary action and secondary action laid out horizontally',
-          textAlign: TextAlign.center,
-        ),
-        //horizontalActions: false,
-        primaryButton: PushButton(
-          buttonSize: ButtonSize.large,
-          onPressed: Navigator.of(context).pop,
-          child: const Text('Primary'),
-        ),
-        secondaryButton: PushButton(
-          buttonSize: ButtonSize.large,
-          isSecondary: true,
-          onPressed: Navigator.of(context).pop,
-          child: const Text('Secondary'),
-        ),
-      ),
-    );
   }
 
   @override
