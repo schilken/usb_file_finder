@@ -7,6 +7,8 @@ class DevicesChanged {
   const DevicesChanged();
 }
 
+class SettingsTrigger {}
+
 class SettingsChanged {
   final String fileTypeFilter;
   const SettingsChanged(this.fileTypeFilter);

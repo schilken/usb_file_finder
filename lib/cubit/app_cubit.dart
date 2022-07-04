@@ -18,6 +18,7 @@ class AppCubit extends Cubit<AppState> {
   )   : _settingsCubit = settingsCubit,
         super(AppInitial()) {
     print('create AppCubit');
+    eventBus.fire(SettingsTrigger());
     eventBus.on<SettingsChanged>().listen((event) async {
       _applyFilters(event.fileTypeFilter);
     });
@@ -41,6 +42,7 @@ class AppCubit extends Cubit<AppState> {
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;
   String _folderPath = '';
+  var _searchResult = <Detail>[];
 
   List<String> _filteredFilePaths = [];
 
@@ -91,7 +93,7 @@ class AppCubit extends Cubit<AppState> {
     _fileCount = _filteredFilePaths.length;
     _primaryHitCount = 0;
     _secondaryHitCount = 0;
-    final primaryResult = <Detail>[];
+    _searchResult = <Detail>[];
     for (final path in _filteredFilePaths) {
       if (path.contains(_primaryWord ?? '')) {
         _primaryHitCount++;
@@ -103,7 +105,7 @@ class AppCubit extends Cubit<AppState> {
           var folderPath = path;
           folderPath =
               components.sublist(3).join('/').replaceFirst(filename, '');
-          primaryResult.add(Detail(
+          _searchResult.add(Detail(
             filePath: filename,
             storageName: storageName,
             folderPath: folderPath,
@@ -113,54 +115,10 @@ class AppCubit extends Cubit<AppState> {
         }
       }
     }
-    emit(
-      DetailsLoaded(
-        currentSearchParameters: _searchParameters,
-        fileType: _selectedFileType,
-        fileCount: _filteredFilePaths.length,
-        primaryHitCount: _primaryHitCount,
-        secondaryHitCount: _secondaryHitCount,
-        details: primaryResult,
-        primaryWord: _primaryWord,
-        secondaryWord: _secondaryWord,
-        isScanRunning: false,
-      ),
+    emitDetailsLoaded(
+      currentSearchParameters: _searchParameters,
+      details: _searchResult,
     );
-  }
-
-  final _ignoredFolders = <String>{
-    'Backups.backupdb',
-    'Contents',
-    'BACKUP-ELLENS_MAC',
-  };
-
-  bool ignoreFolder(String folderPath) {
-    final folderName = p.basename(folderPath);
-    if (folderName.startsWith('.')) {
-      return true;
-    }
-    if (_ignoredFolders.contains(folderName)) {
-      return true;
-    }
-    return false;
-  }
-
-//async* + yield* for recursive functions
-  Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
-    //dirList is FileSystemEntity list for every directories/subdirectories
-    //entities in this list might be file, directory or link
-    try {
-      var dirList = dir.list();
-      await for (final FileSystemEntity entity in dirList) {
-        if (entity is File) {
-          yield entity;
-        } else if (entity is Directory && !ignoreFolder(entity.path)) {
-          yield* scanningFilesWithAsyncRecursive(Directory(entity.path));
-        }
-      }
-    } on Exception catch (e) {
-      print('exception: $e');
-    }
   }
 
   Future<void> scanVolume({required String volumePath}) async {
@@ -169,7 +127,8 @@ class AppCubit extends Cubit<AppState> {
     Map<String, File> extensionMap =
         await filesRepository.buildExtensionMap(deviceName);
 
-    Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
+    Stream<File> scannedFiles =
+        filesRepository.scanningFilesWithAsyncRecursive(dir);
 
     _fileCount = 0;
     _subscription = scannedFiles.listen((File file) async {
@@ -177,34 +136,16 @@ class AppCubit extends Cubit<AppState> {
       if (listfile != null) {
         listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
         if (++_fileCount % 100 == 0) {
-//          print('files: $_fileCount');
           final components = p.split(file.path);
           _folderPath = components.length > 3 ? components[3] : '';
-          emit(DetailsLoaded(
-            currentSearchParameters: '$volumePath - $_folderPath',
-            fileType: _fileType,
-            fileCount: _fileCount,
-            primaryHitCount: _primaryHitCount,
-            secondaryHitCount: 0,
-            isScanRunning: true,
-            details: const [],
-          ));
+          emitDetailsLoaded(
+              currentSearchParameters: '$volumePath - $_folderPath');
         }
       }
     });
     _subscription?.onDone(
       () {
-        emit(
-          DetailsLoaded(
-            currentSearchParameters: volumePath,
-            fileType: _fileType,
-            fileCount: _fileCount,
-            primaryHitCount: _primaryHitCount,
-            secondaryHitCount: 0,
-            isScanRunning: false,
-            details: const [],
-          ),
-        );
+        emitDetailsLoaded(currentSearchParameters: volumePath);
         eventBus.fire(const DevicesChanged());
       },
     );
@@ -215,15 +156,23 @@ class AppCubit extends Cubit<AppState> {
 
   Future<void> cancelScan() async {
     await _subscription?.cancel();
+    emitDetailsLoaded();
+  }
+
+  void emitDetailsLoaded({
+    bool isScanRunning = false,
+    List<Detail> details = const [],
+    String currentSearchParameters = '',
+  }) {
     emit(
       DetailsLoaded(
-        currentSearchParameters: '',
+        currentSearchParameters: currentSearchParameters,
         fileType: _fileType,
         fileCount: _fileCount,
         primaryHitCount: _primaryHitCount,
-        secondaryHitCount: 0,
-        isScanRunning: false,
-        details: const [],
+        secondaryHitCount: _secondaryHitCount,
+        details: details,
+        isScanRunning: isScanRunning,
       ),
     );
   }

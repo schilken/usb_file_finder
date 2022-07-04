@@ -131,6 +131,41 @@ class FilesRepository {
   List<StorageDetails> _devices = [];
   List<String> _mountedVolumes = [];
 
+  final _ignoredFolders = <String>{
+    'Backups.backupdb',
+    'Contents',
+    'BACKUP-ELLENS_MAC',
+  };
+
+  bool ignoreFolder(String folderPath) {
+    final folderName = p.basename(folderPath);
+    if (folderName.startsWith('.')) {
+      return true;
+    }
+    if (_ignoredFolders.contains(folderName)) {
+      return true;
+    }
+    return false;
+  }
+
+//async* + yield* for recursive functions
+  Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
+    //dirList is FileSystemEntity list for every directories/subdirectories
+    //entities in this list might be file, directory or link
+    try {
+      var dirList = dir.list();
+      await for (final FileSystemEntity entity in dirList) {
+        if (entity is File) {
+          yield entity;
+        } else if (entity is Directory && !ignoreFolder(entity.path)) {
+          yield* scanningFilesWithAsyncRecursive(Directory(entity.path));
+        }
+      }
+    } on Exception catch (e) {
+      print('exception: $e');
+    }
+  }
+
   Stream<String> allLinesAsStream(String fileType) async* {
     await for (StorageDetails device in Stream.fromIterable(_devices)) {
       if (device.isSelected) {
@@ -150,7 +185,7 @@ class FilesRepository {
       storageName,
       filenameFromType(fileType),
     );
-//    print('_fileListStream inputFilePath: $inputFilePath');
+    print('_fileListStream inputFilePath: $inputFilePath');
     final file = File(inputFilePath);
     if (file.existsSync()) {
       return file
@@ -332,11 +367,11 @@ class FilesRepository {
 
     final Directory directory =
         await Directory(outputFolder).create(recursive: true);
-    final File textListFile = File('${directory.path} /text-files.txt');
+    final File textListFile = File('${directory.path}/text-files.txt');
     final File audioListFile = File('${directory.path}/audio-files.txt');
     final File videoListFile = File('${directory.path}/video-files.txt');
-    final File miscListFile = File('${directory.path} /misc-files.txt');
-    final File zipListFile = File('${directory.path}  /zip-files.txt');
+    final File miscListFile = File('${directory.path}/misc-files.txt');
+    final File zipListFile = File('${directory.path}/zip-files.txt');
     final File imageListFile = File('${directory.path}/image-files.txt');
 
     return <String, File>{

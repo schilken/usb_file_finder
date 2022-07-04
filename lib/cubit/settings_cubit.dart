@@ -5,10 +5,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usb_file_finder/event_bus.dart';
 
 part 'settings_state.dart';
-
+ 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(SettingsInitial()) {
     print('create SettingsCubit');
+    eventBus.on<SettingsTrigger>().listen((event) async {
+      eventBus.fire(SettingsChanged(fileTypeFilter));
+    });
+
   }
   late SharedPreferences _prefs;
 
@@ -18,6 +22,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     await Future.delayed(const Duration(milliseconds: 1000));
     _prefs = await SharedPreferences.getInstance();
     emitSettingsLoaded();
+    eventBus.fire(SettingsChanged(fileTypeFilter));
     return this;
   }
 
