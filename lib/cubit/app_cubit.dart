@@ -121,37 +121,29 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  Future<void> scanVolume({required String volumePath}) async {
-    var dir = Directory(volumePath);
-    final deviceName = p.basename(volumePath);
-    Map<String, File> extensionMap =
-        await filesRepository.buildExtensionMap(deviceName);
-
-    Stream<File> scannedFiles =
-        filesRepository.scanningFilesWithAsyncRecursive(dir);
-
-    _fileCount = 0;
-    _subscription = scannedFiles.listen((File file) async {
-      final listfile = extensionMap[p.extension(file.path)];
-      if (listfile != null) {
-        listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
-        if (++_fileCount % 100 == 0) {
-          final components = p.split(file.path);
-          _folderPath = components.length > 3 ? components[3] : '';
-          emitDetailsLoaded(
-              currentSearchParameters: '$volumePath - $_folderPath');
-        }
-      }
-    });
-    _subscription?.onDone(
-      () {
-        emitDetailsLoaded(currentSearchParameters: volumePath);
-        eventBus.fire(const DevicesChanged());
-      },
+  void progressCallback(int fileCount, String volumePath, String folderPath) {
+    _fileCount = fileCount;
+    _folderPath = folderPath;
+    emitDetailsLoaded(
+      currentSearchParameters: '$volumePath - $_folderPath',
+      isScanRunning: true,
     );
-    _subscription?.onError((Object error) {
-      print('error: $error');
-    });
+  }
+
+  void onScanDone(int fileCount, String volumePath) {
+    _fileCount = fileCount;
+    emitDetailsLoaded(currentSearchParameters: volumePath);
+    eventBus.fire(const DevicesChanged());
+  }
+
+  Future<void> scanVolume({required String volumePath}) async {
+    _primaryHitCount = 0;
+    _secondaryHitCount = 0;
+    _subscription = await filesRepository.scanVolume(
+      volumePath: volumePath,
+      progressCallback: progressCallback,
+      onScanDone: onScanDone,
+    );
   }
 
   Future<void> cancelScan() async {

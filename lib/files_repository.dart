@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -9,29 +10,80 @@ import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/models/storage_info.dart';
 
 
-
+typedef IntStringCallback = void Function(
+  int fileCount,
+  String volumePath,
+);
+typedef IntStringStringCallback = void Function(
+  int fileCount,
+  String volumePath,
+  String folderPathPath,
+);
 
 class FilesRepository {
   List<FileSystemEntity> _entities = [];
   List<StorageDetails> _devices = [];
   List<String> _mountedVolumes = [];
+  List<String> _skippedFolderNames = [];
 
   final _ignoredFolders = <String>{
     'Backups.backupdb',
     'Contents',
+    'System',
+    'Library',
+    'opt',
+    'private',
+    'Rescued Items',
     'BACKUP-ELLENS_MAC',
   };
 
-  bool ignoreFolder(String folderPath) {
+  bool _ignoreFolder(String folderPath) {
     final folderName = p.basename(folderPath);
     if (folderName.startsWith('.')) {
+      _skippedFolderNames.add(folderName);
       return true;
     }
     if (_ignoredFolders.contains(folderName)) {
+      _skippedFolderNames.add(folderName);
       return true;
     }
-    return false;
+    // ignore all symboliy links
+    return FileSystemEntity.isLinkSync(folderPath);
   }
+
+  Future<StreamSubscription<File>> scanVolume({
+    required String volumePath,
+    required IntStringStringCallback progressCallback,
+    required IntStringCallback onScanDone,
+  }) async {
+    var dir = Directory(volumePath);
+    final deviceName = p.basename(volumePath);
+    await removeStorageData(deviceName);
+    _skippedFolderNames.clear();
+    Map<String, File> extensionMap = await buildExtensionMap(deviceName);
+    Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
+    var fileCount = 0;
+    String folderPath = '';
+    final subscription = scannedFiles.listen((File file) async {
+      final listfile = extensionMap[p.extension(file.path)];
+      if (listfile != null) {
+        listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
+        if (++fileCount % 1000 == 0) {
+          final components = p.split(file.path);
+          folderPath = components.length > 3 ? components[3] : '';
+          progressCallback(fileCount, volumePath, folderPath);
+        }
+      }
+    });
+    subscription.onDone(
+      () {
+        onScanDone(fileCount, volumePath);
+      },
+    );
+
+    return subscription;
+  }
+
 
 //async* + yield* for recursive functions
   Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
@@ -42,7 +94,7 @@ class FilesRepository {
       await for (final FileSystemEntity entity in dirList) {
         if (entity is File) {
           yield entity;
-        } else if (entity is Directory && !ignoreFolder(entity.path)) {
+        } else if (entity is Directory && !_ignoreFolder(entity.path)) {
           yield* scanningFilesWithAsyncRecursive(Directory(entity.path));
         }
       }
@@ -50,6 +102,7 @@ class FilesRepository {
       print('exception: $e');
     }
   }
+
 
   Stream<String> allLinesAsStream(String fileType) async* {
     await for (StorageDetails device in Stream.fromIterable(_devices)) {
@@ -157,19 +210,23 @@ class FilesRepository {
         await runEjectCommand(_devices[index].name);
         break;
       case StorageAction.removeData:
-        final dir = await deviceDataDirectory;
-        final directoryPath = p.join(dir.path, _devices[index].name);
-        final dataDirectory = Directory(directoryPath);
-        try {
-          if (await dataDirectory.exists()) {
-            await dataDirectory.delete(recursive: true);
-          }
-        } catch (e) {
-          print('StorageAction.removeData: $e');
-        }
+        await removeStorageData(_devices[index].name);
         break;
     }
     return readDeviceData();
+  }
+
+  Future<void> removeStorageData(String name) async {
+    final dir = await deviceDataDirectory;
+    final directoryPath = p.join(dir.path, name);
+    final dataDirectory = Directory(directoryPath);
+    try {
+      if (await dataDirectory.exists()) {
+        await dataDirectory.delete(recursive: true);
+      }
+    } catch (e) {
+      print('StorageAction.removeData: $e');
+    }
   }
 
   Future<void> runEjectCommand(String volumeName) async {
