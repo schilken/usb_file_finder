@@ -109,14 +109,6 @@ promptString(BuildContext context) async {
                               if (state.isScanRunning)
                                 TextButton(
                                     onPressed:
-                                        context
-                                        .read<AppCubit>()
-                                        .addToIgnoreFolderList,
-                                    child: const Text(
-                                        'Add Folder to Ignore List')),
-                              if (state.isScanRunning)
-                                TextButton(
-                                    onPressed:
                                         context.read<AppCubit>().cancelScan,
                                     child: const Text('Cancel Scan')),
                                 Text(
