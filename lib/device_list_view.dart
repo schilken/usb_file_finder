@@ -8,6 +8,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/macos_checkbox_list_tile.dart';
+import 'package:usb_file_finder/models/storage_info.dart';
 
 class DeviceListView extends StatelessWidget {
   const DeviceListView({

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 import 'package:usb_file_finder/files_repository.dart';
+import 'package:usb_file_finder/models/storage_info.dart';
 
 class NameValue {
   final String name;
