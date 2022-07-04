@@ -165,6 +165,8 @@ class AppCubit extends Cubit<AppState> {
         secondaryHitCount: _secondaryHitCount,
         details: details,
         isScanRunning: isScanRunning,
+        primaryWord: _primaryWord,
+        secondaryWord: _secondaryWord,
       ),
     );
   }
