@@ -42,7 +42,7 @@ class FilterSidebar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
                 child: MacosCheckBoxListTile(
-                  title: Text('Include Hidden Files'),
+                  title: Text('Include Hidden Folders'),
                   onChanged: (value) => context
                       .read<SettingsCubit>()
                       .toggleSearchOption('showHiddenFiles', value ?? false),

@@ -25,6 +25,7 @@ class FilesRepository {
   List<StorageDetails> _devices = [];
   List<String> _mountedVolumes = [];
   List<String> _skippedFolderNames = [];
+  bool _includeHiddenFolders = false;
 
   final _ignoredFolders = <String>{
     'Backups.backupdb',
@@ -37,14 +38,16 @@ class FilesRepository {
     'BACKUP-ELLENS_MAC',
   };
 
+  set includeHiddenFolders(bool newValue) => _includeHiddenFolders = newValue;
+
   bool _ignoreFolder(String folderPath) {
     final folderName = p.basename(folderPath);
-    if (folderName.startsWith('.')) {
-      _skippedFolderNames.add(folderName);
+    if (_includeHiddenFolders == false && folderName.startsWith('.')) {
+      _skippedFolderNames.add(folderPath);
       return true;
     }
     if (_ignoredFolders.contains(folderName)) {
-      _skippedFolderNames.add(folderName);
+      _skippedFolderNames.add(folderPath);
       return true;
     }
     // ignore all symboliy links
@@ -76,7 +79,12 @@ class FilesRepository {
       }
     });
     subscription.onDone(
-      () {
+      () async {
+        final dir = await deviceDataDirectory;
+        final filePath = p.join(dir.path, deviceName, 'ignored-folders.txt');
+        final File ignoredFoldersListFile = File(filePath);
+        await ignoredFoldersListFile
+            .writeAsString(_skippedFolderNames.join('\n'));
         onScanDone(fileCount, volumePath);
       },
     );
@@ -90,7 +98,7 @@ class FilesRepository {
     //dirList is FileSystemEntity list for every directories/subdirectories
     //entities in this list might be file, directory or link
     try {
-      var dirList = dir.list();
+      var dirList = dir.list(followLinks: false);
       await for (final FileSystemEntity entity in dirList) {
         if (entity is File) {
           yield entity;

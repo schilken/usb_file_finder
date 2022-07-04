@@ -10,7 +10,8 @@ class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(SettingsInitial()) {
     print('create SettingsCubit');
     eventBus.on<SettingsTrigger>().listen((event) async {
-      eventBus.fire(SettingsChanged(fileTypeFilter));
+      print('SettingsTrigger received');
+      emitSettingsLoaded();
     });
 
   }
@@ -32,7 +33,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     await Future.delayed(const Duration(milliseconds: 1000));
     _prefs = await SharedPreferences.getInstance();
     emitSettingsLoaded();
-    eventBus.fire(SettingsChanged(fileTypeFilter));
     return this;
   }
 
@@ -42,13 +42,14 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void emitSettingsLoaded() {
-    emit(SettingsLoaded(
+    final settingsLoaded = SettingsLoaded(
       fileTypeFilter: fileTypeFilter,
       showHiddenFiles: getSearchOption('showHiddenFiles'),
       searchInFilename: getSearchOption('searchInFilename'),
       searchInFoldername: getSearchOption('searchInFoldername'),
-    ));
-    eventBus.fire(SettingsChanged(fileTypeFilter));
+    );
+    emit(settingsLoaded);
+    eventBus.fire(settingsLoaded);
   }
 
   Future<void> toggleSearchOption(String option, bool value) async {

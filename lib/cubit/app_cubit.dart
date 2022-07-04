@@ -23,10 +23,11 @@ class AppCubit extends Cubit<AppState> {
   )   : _settingsCubit = settingsCubit,
         super(AppInitial()) {
     print('create AppCubit');
-    eventBus.fire(SettingsTrigger());
-    eventBus.on<SettingsChanged>().listen((event) async {
-      _applyFilters(event.fileTypeFilter);
+    eventBus.on<SettingsLoaded>().listen((event) async {
+      _applyFilters(event);
     });
+    Future.delayed(
+        Duration(milliseconds: 100), () => eventBus.fire(SettingsTrigger()));
     eventBus.on<RescanDevice>().listen((event) async {
       print('AppCubit event: $event');
       final volumePath = filesRepository.volumePathForIndex(event.index);
@@ -47,6 +48,7 @@ class AppCubit extends Cubit<AppState> {
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;
+  bool _includeHiddenFolders = false;
   String _folderPath = '';
   var _searchResult = <Detail>[];
 
@@ -183,9 +185,11 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  void _applyFilters(String fileTypeFilter) {
-    print('_applyFilters: $fileTypeFilter');
-    _selectedFileType = fileTypeFilter;
+  void _applyFilters(SettingsLoaded newSettings) {
+    print('_applyFilters: $newSettings');
+    _selectedFileType = newSettings.fileTypeFilter;
+    _includeHiddenFolders = newSettings.showHiddenFiles;
+    filesRepository.includeHiddenFolders = newSettings.showHiddenFiles;
     search();
   }
 
