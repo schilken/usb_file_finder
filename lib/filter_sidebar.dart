@@ -28,14 +28,10 @@ class FilterSidebar extends StatelessWidget {
               onChanged: (String? value) async {
                 await context.read<SettingsCubit>().setFileTypeFilter(value);
               },
-              items: <String>[
-                'Text Files',
-                'Audio Files',
-                'Video Files',
-                'Image Files',
-                'Misc Files',
-                'ZIP Files',
-              ].map<MacosPopupMenuItem<String>>((String value) {
+                items: context
+                    .read<SettingsCubit>()
+                    .allFileTypes
+                    .map<MacosPopupMenuItem<String>>((String value) {
                 return MacosPopupMenuItem<String>(
                   value: value,
                   child: Text(value),

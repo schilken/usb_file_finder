@@ -278,6 +278,7 @@ class FilesRepository {
     'misc-files',
     'zip-files',
     'image-files',
+    'dart-files',
   ];
 
   Future<StorageInfo> createStorageInfoForDevice(StorageDetails device) async {
@@ -315,6 +316,7 @@ class FilesRepository {
     final File miscListFile = File('${directory.path}/misc-files.txt');
     final File zipListFile = File('${directory.path}/zip-files.txt');
     final File imageListFile = File('${directory.path}/image-files.txt');
+    final File dartListFile = File('${directory.path}/dart-files.txt');
 
     return <String, File>{
       '.pdf': textListFile,
@@ -360,6 +362,9 @@ class FilesRepository {
       '.dmg': miscListFile,
       '.pkg': miscListFile,
       '.app': miscListFile,
+      //
+      '.dart': dartListFile,
+      '.yaml': dartListFile,
     };
   }
   

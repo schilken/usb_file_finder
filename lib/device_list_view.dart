@@ -151,7 +151,7 @@ class DeviceListView extends StatelessWidget {
     ));
     debugPrint('$window');
     window
-      ..setFrame(const Offset(0, 0) & const Size(400, 350))
+      ..setFrame(const Offset(0, 0) & const Size(400, 400))
       ..center()
       ..setTitle('Overview')
       ..show();

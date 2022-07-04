@@ -16,6 +16,16 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
   late SharedPreferences _prefs;
 
+  final allFileTypes = <String>[
+    'Text Files',
+    'Audio Files',
+    'Video Files',
+    'Image Files',
+    'Misc Files',
+    'ZIP Files',
+    'Dart Files',
+  ];
+
   get fileTypeFilter => _prefs.getString('fileTypeFilter') ?? 'Text Files';
 
   Future<SettingsCubit> initialize() async {

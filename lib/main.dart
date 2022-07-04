@@ -148,7 +148,7 @@ class _MainViewState extends State<MainView> {
           top: const FilterSidebar(),
           builder: (context, scrollController) => SidebarItems(
             currentIndex: _pageIndex,
-            scrollController: ScrollController(),
+            scrollController: scrollController,
             onChanged: (index) {
               setState(() => _pageIndex = index);
             },
