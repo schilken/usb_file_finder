@@ -225,4 +225,9 @@ class AppCubit extends Cubit<AppState> {
   copyToClipboard(String path) {
     Clipboard.setData(ClipboardData(text: path));
   }
+
+  showInTerminal(String path) {
+    final dirname = p.dirname(path);
+    Process.run('open', ['-a', 'iTerm', dirname]);
+  }
 }

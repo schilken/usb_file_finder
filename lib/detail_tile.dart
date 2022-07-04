@@ -95,6 +95,12 @@ class ListTilePullDownMenu extends StatelessWidget {
               : context.read<AppCubit>().showInFinder(detail.filePathName!),
         ),
         MacosPulldownMenuItem(
+          title: const Text('Open Terminal in Folder'),
+          onTap: () => detail.filePathName == null
+              ? null
+              : context.read<AppCubit>().showInTerminal(detail.filePathName!),
+        ),
+        MacosPulldownMenuItem(
           title: const Text('Copy FilePath to Clipboard'),
           onTap: () => detail.filePathName == null
               ? null
