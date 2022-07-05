@@ -41,6 +41,7 @@ class DeviceCubit extends Cubit<DeviceState> {
         ),
       );
     });
+    await menuAction(StorageAction.selectAll, 0);
     return this;
   }
 
