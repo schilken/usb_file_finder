@@ -8,13 +8,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/about_window.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/cubit/preferences_cubit.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/overview_window.dart';
 import 'package:usb_file_finder/settings_window.dart';
-import 'package:usb_file_finder/statistics_page.dart';
+import 'package:usb_file_finder/preferences_page.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -66,6 +67,11 @@ class App extends StatelessWidget {
                 ),
                 BlocProvider(
                   create: (context) => AppCubit(context.read<SettingsCubit>(),
+                      context.read<FilesRepository>()),
+                ),
+                BlocProvider(
+                  create: (context) => PreferencesCubit(
+                      context.read<SettingsCubit>(),
                       context.read<FilesRepository>()),
                 ),
               ],
@@ -157,10 +163,10 @@ class _MainViewState extends State<MainView> {
                 leading: MacosIcon(CupertinoIcons.search),
                 label: Text('Search Result'),
               ),
-              // SidebarItem(
-              //   leading: MacosIcon(CupertinoIcons.graph_square),
-              //   label: Text('Package Statistics'),
-              // ),
+              SidebarItem(
+                leading: MacosIcon(CupertinoIcons.graph_square),
+                label: Text('Preferences'),
+              ),
             ],
           ),
           bottom: const MacosListTile(
@@ -173,7 +179,7 @@ class _MainViewState extends State<MainView> {
           index: _pageIndex,
           children: const [
             MainPage(),
-//            StatisticsPage(),
+            PreferencesPage(),
           ],
         ),
       ),
