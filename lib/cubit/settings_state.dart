@@ -14,12 +14,16 @@ class SettingsLoaded extends SettingsState {
   bool showHiddenFiles;
   bool searchInFilename;
   bool searchInFoldername;
+  final List<String> ignoredFolders;
+  final List<String> exclusionWords;
 
   SettingsLoaded({
     required this.fileTypeFilter,
     required this.showHiddenFiles,
     required this.searchInFilename,
     required this.searchInFoldername,
+    required this.ignoredFolders,
+    required this.exclusionWords,
   });
 
   @override
@@ -28,5 +32,7 @@ class SettingsLoaded extends SettingsState {
         showHiddenFiles,
         searchInFilename,
         searchInFoldername,
+        ignoredFolders,
+        exclusionWords,
       ];
 }

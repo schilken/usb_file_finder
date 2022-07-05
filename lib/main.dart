@@ -16,6 +16,7 @@ import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/overview_window.dart';
 import 'package:usb_file_finder/settings_window.dart';
 import 'package:usb_file_finder/preferences_page.dart';
+import 'package:usb_file_finder/tabview_page.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -72,7 +73,8 @@ class App extends StatelessWidget {
                 BlocProvider(
                   create: (context) => PreferencesCubit(
                       context.read<SettingsCubit>(),
-                      context.read<FilesRepository>()),
+                    context.read<FilesRepository>(),
+                  )..load(),
                 ),
               ],
               child: MacosApp(
@@ -179,7 +181,8 @@ class _MainViewState extends State<MainView> {
           index: _pageIndex,
           children: const [
             MainPage(),
-            PreferencesPage(),
+            TabViewPage()
+//            PreferencesPage(),
           ],
         ),
       ),

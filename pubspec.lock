@@ -180,10 +180,12 @@ packages:
   macos_ui:
     dependency: "direct main"
     description:
-      name: macos_ui
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.5.1"
+      path: "."
+      ref: tab_view
+      resolved-ref: "477498b2b8b22dc3c7395f5e5c368d12f1a3eee1"
+      url: "https://github.com/GroovinChip/macos_ui.git"
+    source: git
+    version: "1.6.0"
   matcher:
     dependency: transitive
     description:

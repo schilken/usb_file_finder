@@ -13,7 +13,11 @@ dependencies:
   cupertino_icons: ^1.0.4
   collection: ^1.16.0
   desktop_multi_window: ^0.0.2
-  macos_ui: ^1.5.1
+#  macos_ui: ^1.5.1
+  macos_ui:
+    git: 
+      url: https://github.com/GroovinChip/macos_ui.git
+      ref: tab_view  
   provider: ^6.0.2
   flutter_bloc: ^8.0.1
   file_picker: ^4.6.1

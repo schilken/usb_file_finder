@@ -46,6 +46,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       showHiddenFiles: getSearchOption('showHiddenFiles'),
       searchInFilename: getSearchOption('searchInFilename'),
       searchInFoldername: getSearchOption('searchInFoldername'),
+      ignoredFolders: ignoredFolders,
+      exclusionWords: exclusionWords,
     );
     emit(settingsLoaded);
     eventBus.fire(settingsLoaded);
@@ -59,4 +61,43 @@ class SettingsCubit extends Cubit<SettingsState> {
   bool getSearchOption(String option) {
     return _prefs.getBool(option) ?? false;
   }
+
+  List<String> get ignoredFolders {
+    final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
+    return ignoredFolders;
+  }
+
+  List<String> get exclusionWords {
+    final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
+    return exclusionWords;
+  }
+
+  Future<void> addIgnoredFolder(String folder) async {
+    final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
+    ignoredFolders.add(folder);
+    await _prefs.setStringList('ignoredFolders', ignoredFolders);
+    emitSettingsLoaded();
+  }
+
+  Future<void> removeIgnoredFolder(String folder) async {
+    final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
+    ignoredFolders.remove(folder);
+    await _prefs.setStringList('ignoredFolders', ignoredFolders);
+    emitSettingsLoaded();
+  }
+
+  Future<void> addExclusionWord(String exclusionWord) async {
+    final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
+    exclusionWords.add(exclusionWord);
+    await _prefs.setStringList('exclusionWords', exclusionWords);
+    emitSettingsLoaded();
+  }
+
+  Future<void> removeExclusionWord(String exclusionWord) async {
+    final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
+    exclusionWords.remove(exclusionWord);
+    await _prefs.setStringList('exclusionWords', exclusionWords);
+    emitSettingsLoaded();
+  }
+
 }

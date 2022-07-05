@@ -39,6 +39,7 @@ class AppCubit extends Cubit<AppState> {
   String? _secondaryWord;
   String? _onlyInThisFolder;
   final List<String> _exclusionWords = [];
+  List<String> _exclusionWordsFromPreferences = [];
   String? _fileType;
   int _fileCount = 0;
   int _primaryHitCount = 0;
@@ -82,7 +83,16 @@ class AppCubit extends Cubit<AppState> {
     }
   }
 
-  bool containsAnyExclusionWord(String path) {
+  bool containsExclusionWordFromPreferences(String path) {
+    if (_exclusionWordsFromPreferences.isEmpty) {
+      return false;
+    }
+    final result =
+        _exclusionWordsFromPreferences.any((word) => path.contains(word));
+    return result;
+  }
+
+  bool containsTemporaryExclusionWord(String path) {
     if (_exclusionWords.isEmpty) {
       return false;
     }
@@ -95,9 +105,8 @@ class AppCubit extends Cubit<AppState> {
     final linesAsStream = filesRepository
         .allLinesAsStream(_selectedFileType)
         .map((path) => _searchCaseSensitiv ? path : path.toLowerCase())
-        .where((path) => !path.contains('xxx'))
-        .where((path) => !path.contains('clips'))
-        .where((path) => !containsAnyExclusionWord(path))
+        .where((path) => !containsExclusionWordFromPreferences(path))
+        .where((path) => !containsTemporaryExclusionWord(path))
         .where((path) =>
             _onlyInThisFolder == null || path.contains(_onlyInThisFolder!));
 
@@ -189,6 +198,7 @@ class AppCubit extends Cubit<AppState> {
     _selectedFileType = newSettings.fileTypeFilter;
     _includeHiddenFolders = newSettings.showHiddenFiles;
     filesRepository.includeHiddenFolders = newSettings.showHiddenFiles;
+    _exclusionWordsFromPreferences = newSettings.exclusionWords;
     search();
   }
 
