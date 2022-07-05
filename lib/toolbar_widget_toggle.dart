@@ -15,7 +15,7 @@ class ToolbarWidgetToggle extends ToolbarItem {
   final bool value;
   final BoolCallback onChanged;
   final Widget child;
-  final String? tooltipMessage; 
+  final String? tooltipMessage;
 
   @override
   Widget build(BuildContext context, ToolbarItemDisplayMode displayMode) {

@@ -9,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/models/storage_info.dart';
 
-
 typedef IntStringCallback = void Function(
   int fileCount,
   String volumePath,
@@ -92,7 +91,6 @@ class FilesRepository {
     return subscription;
   }
 
-
 //async* + yield* for recursive functions
   Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
     //dirList is FileSystemEntity list for every directories/subdirectories
@@ -110,7 +108,6 @@ class FilesRepository {
       print('exception: $e');
     }
   }
-
 
   Stream<String> allLinesAsStream(String fileType) async* {
     await for (StorageDetails device in Stream.fromIterable(_devices)) {
@@ -375,6 +372,4 @@ class FilesRepository {
       '.yaml': dartListFile,
     };
   }
-  
-
 }

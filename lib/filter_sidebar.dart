@@ -17,27 +17,27 @@ class FilterSidebar extends StatelessWidget {
         print('FilterSidebar builder: ${state}');
 
         if (state is SettingsLoaded) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            const Text('Filter Files',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            MacosPopupButton<String>(
-              value: context.read<SettingsCubit>().fileTypeFilter,
-              onChanged: (String? value) async {
-                await context.read<SettingsCubit>().setFileTypeFilter(value);
-              },
+              const Text('Filter Files',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              MacosPopupButton<String>(
+                value: context.read<SettingsCubit>().fileTypeFilter,
+                onChanged: (String? value) async {
+                  await context.read<SettingsCubit>().setFileTypeFilter(value);
+                },
                 items: context
                     .read<SettingsCubit>()
                     .allFileTypes
                     .map<MacosPopupMenuItem<String>>((String value) {
-                return MacosPopupMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
+                  return MacosPopupMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: 8),
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
@@ -70,14 +70,14 @@ class FilterSidebar extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-            const SizedBox(
-              height: 315,
+              const SizedBox(
+                height: 315,
                 width: 220,
                 child: DeviceListView(),
               ),
               const SizedBox(height: 16),
-          ],
-        );
+            ],
+          );
         }
         return Container();
       },

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usb_file_finder/event_bus.dart';
 
 part 'settings_state.dart';
- 
+
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(SettingsInitial()) {
     print('create SettingsCubit');
@@ -13,7 +13,6 @@ class SettingsCubit extends Cubit<SettingsState> {
       print('SettingsTrigger received');
       emitSettingsLoaded();
     });
-
   }
   late SharedPreferences _prefs;
 
@@ -60,5 +59,4 @@ class SettingsCubit extends Cubit<SettingsState> {
   bool getSearchOption(String option) {
     return _prefs.getBool(option) ?? false;
   }
-
 }

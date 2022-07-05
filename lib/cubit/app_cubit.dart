@@ -33,7 +33,6 @@ class AppCubit extends Cubit<AppState> {
       final volumePath = filesRepository.volumePathForIndex(event.index);
       scanVolume(volumePath: volumePath);
     });
-
   }
   final FilesRepository filesRepository;
   String? _primaryWord;
@@ -101,7 +100,6 @@ class AppCubit extends Cubit<AppState> {
         .where((path) => !containsAnyExclusionWord(path))
         .where((path) =>
             _onlyInThisFolder == null || path.contains(_onlyInThisFolder!));
-
 
     _filteredFilePaths = await linesAsStream.toList();
 //    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);

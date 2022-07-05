@@ -85,5 +85,4 @@ class DeviceCubit extends Cubit<DeviceState> {
         break;
     }
   }
-
 }

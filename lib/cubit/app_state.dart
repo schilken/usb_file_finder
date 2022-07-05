@@ -110,7 +110,7 @@ class DetailsLoaded extends AppState {
       isScanRunning: isScanRunning ?? this.isScanRunning,
     );
   }
-  
+
   @override
   List<Object?> get props => [
         fileCount,

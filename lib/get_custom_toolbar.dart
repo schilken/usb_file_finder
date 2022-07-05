@@ -63,18 +63,16 @@ ToolBar getCustomToolBar(BuildContext context) {
       ),
       ToolbarWidgetToggle(
           onChanged: context.read<AppCubit>().setCaseSentitiv,
-        child: const Text('Aa'),
-          tooltipMessage: 'Search case sentitiv'
-      ),
+          child: const Text('Aa'),
+          tooltipMessage: 'Search case sentitiv'),
       ToolBarIconButton(
-        label: "Search",
-        icon: const MacosIcon(
-          CupertinoIcons.search,
-        ),
-        onPressed: () => context.read<AppCubit>().search(),
-        showLabel: false,
-          tooltipMessage: 'Start new Search'
-      ),
+          label: "Search",
+          icon: const MacosIcon(
+            CupertinoIcons.search,
+          ),
+          onPressed: () => context.read<AppCubit>().search(),
+          showLabel: false,
+          tooltipMessage: 'Start new Search'),
       const ToolBarDivider(),
       ToolBarIconButton(
         label: "Share",

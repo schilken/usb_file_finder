@@ -14,14 +14,14 @@ class SettingsLoaded extends SettingsState {
   bool showHiddenFiles;
   bool searchInFilename;
   bool searchInFoldername;
-  
+
   SettingsLoaded({
     required this.fileTypeFilter,
     required this.showHiddenFiles,
     required this.searchInFilename,
     required this.searchInFoldername,
   });
-  
+
   @override
   List<Object?> get props => [
         fileTypeFilter,

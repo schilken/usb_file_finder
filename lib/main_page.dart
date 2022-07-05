@@ -7,11 +7,11 @@ import 'package:usb_file_finder/detail_tile.dart';
 import 'package:usb_file_finder/get_custom_toolbar.dart';
 import 'package:usb_file_finder/highlighted_text.dart';
 import 'package:usb_file_finder/textfield_dialog.dart';
+
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
 
-
-promptString(BuildContext context) async {
+  promptString(BuildContext context) async {
     final exclusionWord = await textFieldDialog(
       context,
       title: const Text('Enter an exclusion word'),
@@ -38,21 +38,21 @@ promptString(BuildContext context) async {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-        return MacosScaffold(
-          toolBar: getCustomToolBar(context),
-          children: [
-            ContentArea(
-              builder: (context, scrollController) {
-                return BlocBuilder<AppCubit, AppState>(
-                  builder: (context, state) {
-                    if (state is DetailsLoaded) {
-                      return Column(
-                        children: [
-                          Container(
-                            color: Colors.blueGrey[100],
-                            padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+      return MacosScaffold(
+        toolBar: getCustomToolBar(context),
+        children: [
+          ContentArea(
+            builder: (context, scrollController) {
+              return BlocBuilder<AppCubit, AppState>(
+                builder: (context, state) {
+                  if (state is DetailsLoaded) {
+                    return Column(
+                      children: [
+                        Container(
+                          color: Colors.blueGrey[100],
+                          padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               PushButton(
                                 buttonSize: ButtonSize.large,
@@ -75,80 +75,78 @@ promptString(BuildContext context) async {
                                   onPressed: () =>
                                       context.read<AppCubit>().clearExcludes(),
                                 ),
-                                const Spacer(),
+                              const Spacer(),
                               if (state.isScanRunning)
                                 TextButton(
                                     onPressed:
                                         context.read<AppCubit>().cancelScan,
                                     child: const Text('Cancel Scan')),
-                                Text(
+                              Text(
                                   'found ${state.primaryHitCount}(${state.secondaryHitCount}) of ${state.fileCount} Files'),
-                              ],
-                            ),
+                            ],
                           ),
-                          if (state.message != null)
-                            Container(
-                                padding: const EdgeInsets.all(20),
-                                color: Colors.red[100],
-                                child: Text(state.message!)),
-                          Expanded(
-                            child: ListView.separated(
-                              controller: ScrollController(),
-                              itemCount: state.details.length,
-                              itemBuilder: (context, index) {
-                                final highlights = [
-                                  state.primaryWord ?? '@',
-                                  state.secondaryWord ?? '@',
-                                ];
+                        ),
+                        if (state.message != null)
+                          Container(
+                              padding: const EdgeInsets.all(20),
+                              color: Colors.red[100],
+                              child: Text(state.message!)),
+                        Expanded(
+                          child: ListView.separated(
+                            controller: ScrollController(),
+                            itemCount: state.details.length,
+                            itemBuilder: (context, index) {
+                              final highlights = [
+                                state.primaryWord ?? '@',
+                                state.secondaryWord ?? '@',
+                              ];
 
-                                final detail = state.details[index];
-                                if (state.displayLineCount == 1) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0, right: 8),
-                                    child: Row(children: [
-                                      HighlightedText(
-                                        text:
-                                            detail.filePath ?? 'no preview',
-                                        highlights: highlights,
-                                      ),
+                              final detail = state.details[index];
+                              if (state.displayLineCount == 1) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, right: 8),
+                                  child: Row(children: [
+                                    HighlightedText(
+                                      text: detail.filePath ?? 'no preview',
+                                      highlights: highlights,
+                                    ),
                                     const SizedBox(width: 12),
                                     const Spacer(),
-                                      NameWithOpenInEditor(
+                                    NameWithOpenInEditor(
                                       name: detail.folderPath ?? 'no name',
-                                        path: detail.filePathName,
-                                      ),
-                                    ]),
-                                  );
-                                }
-                                return DetailTile(
-                                  detail: detail,
-                                  highlights: highlights,
-                                  displayLinesCount:
-                                      state.displayLineCount ?? 1,
-                                  fileType: state.fileType,
+                                      path: detail.filePathName,
+                                    ),
+                                  ]),
                                 );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) {
-                                return const Divider(
-                                  thickness: 2,
-                                );
-                              },
-                            ),
+                              }
+                              return DetailTile(
+                                detail: detail,
+                                highlights: highlights,
+                                displayLinesCount: state.displayLineCount ?? 1,
+                                fileType: state.fileType,
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return const Divider(
+                                thickness: 2,
+                              );
+                            },
                           ),
-                        ],
-                      );
-                    } else if (state is DetailsLoading) {
-                      return const CupertinoActivityIndicator();
-                    }
-                    return const Center(child: Text('No file selected'));
-                  },
-                );
-              },
+                        ),
+                      ],
+                    );
+                  } else if (state is DetailsLoading) {
+                    return const CupertinoActivityIndicator();
+                  }
+                  return const Center(child: Text('No file selected'));
+                },
+              );
+            },
           ),
-          ],
-        );
+        ],
+      );
     });
   }
 }
