@@ -199,6 +199,7 @@ class AppCubit extends Cubit<AppState> {
     _includeHiddenFolders = newSettings.showHiddenFiles;
     filesRepository.includeHiddenFolders = newSettings.showHiddenFiles;
     _exclusionWordsFromPreferences = newSettings.exclusionWords;
+    filesRepository.ignoredFolders = newSettings.ignoredFolders;
     search();
   }
 

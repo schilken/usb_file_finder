@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart' hide OverlayVisibilityMode;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:usb_file_finder/cubit/preferences_cubit.dart';
 
 class ListEditor extends StatefulWidget {
   const ListEditor({Key? key}) : super(key: key);
@@ -10,7 +12,6 @@ class ListEditor extends StatefulWidget {
 }
 
 class _ListEditorState extends State<ListEditor> {
-  final itemList = <String>['Item 1', 'Item 2', 'Item 3'];
   late TextEditingController _textEditingController;
   late ScrollController _scrollController;
   late FocusNode _focusNode;
@@ -27,12 +28,10 @@ class _ListEditorState extends State<ListEditor> {
     if (newItem.isEmpty) {
       return;
     }
-    setState(() {
-      itemList.add(newItem);
+    context.read<PreferencesCubit>().addIgnoredFolder(newItem);
       _textEditingController.clear();
       Future.delayed(Duration(milliseconds: 100), () => _scrollToEnd());
-      FocusScope.of(context).requestFocus(_focusNode);
-    });
+    FocusScope.of(context).requestFocus(_focusNode);
   }
 
   void _scrollToEnd() {
@@ -41,7 +40,6 @@ class _ListEditorState extends State<ListEditor> {
       curve: Curves.easeOut,
       duration: const Duration(milliseconds: 500),
     );
-//    _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
   }
 
   @override
@@ -59,21 +57,34 @@ class _ListEditorState extends State<ListEditor> {
             ),
             Expanded(
               child: Material(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: itemList.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      visualDensity: VisualDensity.compact,
-                      title: Text(itemList[index]),
-                      trailing: MacosIconButton(
-                        icon: const MacosIcon(CupertinoIcons.delete),
-                        onPressed: () {
-                          setState(() {
-                            itemList.removeAt(index);
-                            FocusScope.of(context).requestFocus(_focusNode);
+                child: BlocBuilder<PreferencesCubit, PreferencesState>(
+                  builder: (context, state) {
+                    if (state is PreferencesLoaded) {
+                      return ListView.builder(
+                          controller: _scrollController,
+                          itemCount: state.ignoredFolders.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              visualDensity: VisualDensity.compact,
+                              title: Text(state.ignoredFolders[index]),
+                              trailing: MacosIconButton(
+                                icon: const MacosIcon(CupertinoIcons.delete),
+                                onPressed: () => context
+                                    .read<PreferencesCubit>()
+                                    .removeIgnoredFolder(
+                                        state.ignoredFolders[index]),
+                              ),
+                            );
                           });
-                        },
+                    } else if (state is PreferencesLoading) {
+                      return Center(
+                        child: const CupertinoActivityIndicator(),
+                      );
+                    }
+                    return Center(
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text('no data'),
                       ),
                     );
                   },
