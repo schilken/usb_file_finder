@@ -157,10 +157,10 @@ class _MainViewState extends State<MainView> {
                 leading: MacosIcon(CupertinoIcons.search),
                 label: Text('Search Result'),
               ),
-              SidebarItem(
-                leading: MacosIcon(CupertinoIcons.graph_square),
-                label: Text('Package Statistics'),
-              ),
+              // SidebarItem(
+              //   leading: MacosIcon(CupertinoIcons.graph_square),
+              //   label: Text('Package Statistics'),
+              // ),
             ],
           ),
           bottom: const MacosListTile(
@@ -173,7 +173,7 @@ class _MainViewState extends State<MainView> {
           index: _pageIndex,
           children: const [
             MainPage(),
-            StatisticsPage(),
+//            StatisticsPage(),
           ],
         ),
       ),
