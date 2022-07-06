@@ -42,7 +42,6 @@ class StorageInfo extends Equatable {
     this.isMounted,
     this.dateOfLastScan,
     this.scanDuration,
-    this.scanSpeed,
   });
 
   final String name;
@@ -50,9 +49,11 @@ class StorageInfo extends Equatable {
   final Map<String, int> fileCountMap;
   final DateTime? dateOfLastScan;
   final int? scanDuration;
-  final int? scanSpeed;
   final bool? isSelected;
   final bool? isMounted;
+
+  int? get scanSpeed =>
+      scanDuration != null ? (1000 * totalFileCount ~/ scanDuration!) : null;
 
   // StorageDetails copyWith({
   //   String? name,
@@ -77,7 +78,6 @@ class StorageInfo extends Equatable {
         fileCountMap,
         dateOfLastScan,
         scanDuration,
-        scanSpeed
       ];
 
   Map<String, dynamic> toMap() {
@@ -87,7 +87,6 @@ class StorageInfo extends Equatable {
       'fileCountMap': fileCountMap,
       'dateOfLastScan': dateOfLastScan?.millisecondsSinceEpoch,
       'scanDuration': scanDuration,
-      'scanSpeed': scanSpeed,
       'isSelected': isSelected,
       'isMounted': isMounted,
     };
@@ -106,9 +105,8 @@ class StorageInfo extends Equatable {
           : null,
       scanDuration:
           map['scanDuration'] != null ? map['scanDuration'] as int : null,
-      scanSpeed: map['scanSpeed'] != null ? map['scanSpeed'] as int : null,
-      isSelected: map['isSelected'] as bool,
-      isMounted: map['isMounted'] as bool,
+      isSelected: map['isSelected'] ?? false,
+      isMounted: map['isMounted'] ?? false,
     );
   }
 

@@ -93,11 +93,14 @@ class FilesRepository {
 
   StorageInfo createStorageInfo(DateTime startTime, String deviceName) {
     final scanDuration = DateTime.now().difference(startTime);
+    final totalFileCount = _fileCountMap.values.reduce((sum, b) => sum + b);
+
     return StorageInfo(
       name: deviceName,
-      totalFileCount: 0,
+      totalFileCount: totalFileCount,
       scanDuration: scanDuration.inMilliseconds,
       fileCountMap: _fileCountMap,
+      dateOfLastScan: DateTime.now(),
     );
   }
 
@@ -107,6 +110,16 @@ class FilesRepository {
     final File infoFile = File(filePath);
     await infoFile.writeAsString(storageInfo.toJson());
   }
+
+  Future<StorageInfo> loadStorageInfo(String deviceName) async {
+    final dir = await deviceDataDirectory;
+    final filePath = p.join(dir.path, deviceName, 'info.json');
+    final File infoFile = File(filePath);
+    final json = await infoFile.readAsString();
+    final info = StorageInfo.fromJson(json);
+    return info;
+  }
+
 
   Future<void> writeIgnoredFoldersFile(String deviceName) async {
     final dir = await deviceDataDirectory;
@@ -274,60 +287,14 @@ class FilesRepository {
   Future<List<StorageInfo>> createFullStorageInfo() async {
     final allStorageInfos = <StorageInfo>[];
     for (final device in _devices) {
-      final storageInfo = await createStorageInfoForDevice(device);
+      final storageInfo = await loadStorageInfoForDevice(device);
       allStorageInfos.add(storageInfo);
     }
     return allStorageInfos;
   }
 
-  Future<int> _lineCountForFileType(
-    String storageName,
-    String fileType,
-  ) async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    final inputFilePath = p.join(
-      appDocDir.path,
-      'UsbFileFinder-Data',
-      storageName,
-      filenameFromType(fileType),
-    );
-    print('inputFilePath: $inputFilePath');
-    try {
-      File data = File(inputFilePath);
-      return (await data.readAsLines()).length;
-    } on Exception {
-      return 0;
-    }
-  }
-
-  final fileTypes = <String>[
-    'text-files',
-    'audio-files',
-    'video-files',
-    'misc-files',
-    'zip-files',
-    'image-files',
-    'dart-files',
-  ];
-
-  Future<StorageInfo> createStorageInfoForDevice(StorageDetails device) async {
-    final fileCountMap = <String, int>{};
-    for (final fileType in fileTypes) {
-      final fileCount = await _lineCountForFileType(device.name, fileType);
-      fileCountMap[fileType] = fileCount;
-    }
-    final totalFileCount = fileCountMap.values.reduce((sum, b) => sum + b);
-    final dateOfLastScan = DateTime.now();
-    final storageInfo = StorageInfo(
-      name: device.name,
-      isMounted: device.isMounted,
-      isSelected: device.isSelected,
-      totalFileCount: totalFileCount,
-      fileCountMap: fileCountMap,
-      dateOfLastScan: dateOfLastScan,
-      scanDuration: 0,
-      scanSpeed: 0,
-    );
+  Future<StorageInfo> loadStorageInfoForDevice(StorageDetails device) async {
+    final storageInfo = loadStorageInfo(device.name);
     return storageInfo;
   }
 

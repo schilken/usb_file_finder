@@ -59,7 +59,7 @@ class DeviceCubit extends Cubit<DeviceState> {
   }
 
   Future<StorageInfo> getStorageInfo(int index) async {
-    final storageInfo = await filesRepository.createStorageInfoForDevice(
+    final storageInfo = await filesRepository.loadStorageInfoForDevice(
         filesRepository.storageDetailsForIndex(index));
     return storageInfo;
   }
