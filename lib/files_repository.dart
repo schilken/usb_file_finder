@@ -24,6 +24,7 @@ class FilesRepository {
   List<StorageDetails> _devices = [];
   List<String> _mountedVolumes = [];
   Map<String, IOSink> _sinkMap = {};
+  final _fileCountMap = <String, int>{};
   final List<String> _skippedFolderNames = [];
   bool _includeHiddenFolders = false;
 
@@ -51,6 +52,7 @@ class FilesRepository {
     required IntStringCallback onScanDone,
   }) async {
     final startTime = DateTime.now();
+    _fileCountMap.clear();
     var dir = Directory(volumePath);
     final deviceName = p.basename(volumePath);
     await removeStorageData(deviceName);
@@ -60,9 +62,13 @@ class FilesRepository {
     var fileCount = 0;
     String folderPath = '';
     final subscription = scannedFiles.listen((File file) async {
-      final listfileSink = _sinkMap[p.extension(file.path)];
+      final extension = p.extension(file.path);
+      final listfileSink = _sinkMap[extension];
       if (listfileSink != null) {
         listfileSink.writeln(file.path);
+        _fileCountMap.update(extension, (value) => value + 1,
+            ifAbsent: () => 1);
+
         if (++fileCount % 1000 == 0) {
           final components = p.split(file.path);
           folderPath = components.length > 3 ? components[3] : '';
@@ -91,7 +97,7 @@ class FilesRepository {
       name: deviceName,
       totalFileCount: 0,
       scanDuration: scanDuration.inMilliseconds,
-      fileCountMap: {},
+      fileCountMap: _fileCountMap,
     );
   }
 
