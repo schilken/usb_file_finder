@@ -26,16 +26,7 @@ class FilesRepository {
   List<String> _skippedFolderNames = [];
   bool _includeHiddenFolders = false;
 
-  var ignoredFolders = <String>[
-    'Backups.backupdb',
-    'Contents',
-    'System',
-    'Library',
-    'opt',
-    'private',
-    'Rescued Items',
-    'BACKUP-ELLENS_MAC',
-  ];
+  var ignoredFolders = <String>[];
 
   set includeHiddenFolders(bool newValue) => _includeHiddenFolders = newValue;
 
