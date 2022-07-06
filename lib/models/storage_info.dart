@@ -38,8 +38,8 @@ class StorageInfo extends Equatable {
     required this.name,
     required this.totalFileCount,
     required this.fileCountMap,
-    required this.isSelected,
-    required this.isMounted,
+    this.isSelected,
+    this.isMounted,
     this.dateOfLastScan,
     this.scanDuration,
     this.scanSpeed,
@@ -51,8 +51,8 @@ class StorageInfo extends Equatable {
   final DateTime? dateOfLastScan;
   final int? scanDuration;
   final int? scanSpeed;
-  final bool isSelected;
-  final bool isMounted;
+  final bool? isSelected;
+  final bool? isMounted;
 
   // StorageDetails copyWith({
   //   String? name,

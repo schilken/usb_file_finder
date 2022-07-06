@@ -23,7 +23,8 @@ class FilesRepository {
   List<FileSystemEntity> _entities = [];
   List<StorageDetails> _devices = [];
   List<String> _mountedVolumes = [];
-  List<String> _skippedFolderNames = [];
+  Map<String, IOSink> _sinkMap = {};
+  final List<String> _skippedFolderNames = [];
   bool _includeHiddenFolders = false;
 
   var ignoredFolders = <String>[];
@@ -49,18 +50,19 @@ class FilesRepository {
     required IntStringStringCallback progressCallback,
     required IntStringCallback onScanDone,
   }) async {
+    final startTime = DateTime.now();
     var dir = Directory(volumePath);
     final deviceName = p.basename(volumePath);
     await removeStorageData(deviceName);
     _skippedFolderNames.clear();
-    Map<String, File> extensionMap = await buildExtensionMap(deviceName);
+    _sinkMap = await buildSinkMap(deviceName);
     Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
     var fileCount = 0;
     String folderPath = '';
     final subscription = scannedFiles.listen((File file) async {
-      final listfile = extensionMap[p.extension(file.path)];
-      if (listfile != null) {
-        listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
+      final listfileSink = _sinkMap[p.extension(file.path)];
+      if (listfileSink != null) {
+        listfileSink.writeln(file.path);
         if (++fileCount % 1000 == 0) {
           final components = p.split(file.path);
           folderPath = components.length > 3 ? components[3] : '';
@@ -70,16 +72,41 @@ class FilesRepository {
     });
     subscription.onDone(
       () async {
-        final dir = await deviceDataDirectory;
-        final filePath = p.join(dir.path, deviceName, 'ignored-folders.txt');
-        final File ignoredFoldersListFile = File(filePath);
-        await ignoredFoldersListFile
-            .writeAsString(_skippedFolderNames.join('\n'));
+        final info = createStorageInfo(startTime, deviceName);
+        await saveStorageInfo(info);
+        await writeIgnoredFoldersFile(deviceName);
+        closeAllSinks();
         onScanDone(fileCount, volumePath);
       },
     );
-
+    subscription.onError((e) {
+      closeAllSinks();
+    });
     return subscription;
+  }
+
+  StorageInfo createStorageInfo(DateTime startTime, String deviceName) {
+    final scanDuration = DateTime.now().difference(startTime);
+    return StorageInfo(
+      name: deviceName,
+      totalFileCount: 0,
+      scanDuration: scanDuration.inMilliseconds,
+      fileCountMap: {},
+    );
+  }
+
+  Future<void> saveStorageInfo(StorageInfo storageInfo) async {
+    final dir = await deviceDataDirectory;
+    final filePath = p.join(dir.path, storageInfo.name, 'info.json');
+    final File infoFile = File(filePath);
+    await infoFile.writeAsString(storageInfo.toJson());
+  }
+
+  Future<void> writeIgnoredFoldersFile(String deviceName) async {
+    final dir = await deviceDataDirectory;
+    final filePath = p.join(dir.path, deviceName, 'ignored-folders.txt');
+    final File ignoredFoldersListFile = File(filePath);
+    await ignoredFoldersListFile.writeAsString(_skippedFolderNames.join('\n'));
   }
 
 //async* + yield* for recursive functions
@@ -298,7 +325,7 @@ class FilesRepository {
     return storageInfo;
   }
 
-  Future<Map<String, File>> buildExtensionMap(String deviceName) async {
+  Future<Map<String, IOSink>> buildSinkMap(String deviceName) async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final outputFolder =
         p.join(appDocDir.path, 'UsbFileFinder-Data', deviceName);
@@ -306,61 +333,74 @@ class FilesRepository {
 
     final Directory directory =
         await Directory(outputFolder).create(recursive: true);
-    final File textListFile = File('${directory.path}/text-files.txt');
-    final File audioListFile = File('${directory.path}/audio-files.txt');
-    final File videoListFile = File('${directory.path}/video-files.txt');
-    final File miscListFile = File('${directory.path}/misc-files.txt');
-    final File zipListFile = File('${directory.path}/zip-files.txt');
-    final File imageListFile = File('${directory.path}/image-files.txt');
-    final File dartListFile = File('${directory.path}/dart-files.txt');
+    final IOSink textListStream =
+        File('${directory.path}/text-files.txt').openWrite();
+    final IOSink audioListStream =
+        File('${directory.path}/audio-files.txt').openWrite();
+    final IOSink videoListStream =
+        File('${directory.path}/video-files.txt').openWrite();
+    final IOSink miscListStream =
+        File('${directory.path}/misc-files.txt').openWrite();
+    final IOSink zipListStream =
+        File('${directory.path}/zip-files.txt').openWrite();
+    final IOSink imageListStream =
+        File('${directory.path}/image-files.txt').openWrite();
+    final IOSink dartListStream =
+        File('${directory.path}/dart-files.txt').openWrite();
 
-    return <String, File>{
-      '.pdf': textListFile,
-      '.txt': textListFile,
-      '.epub': textListFile,
-      '.doc': textListFile,
-      '.odt': textListFile,
-      '.mobi': textListFile,
-      '.azw': textListFile,
-      '.azw3': textListFile,
-      '.md': textListFile,
+    return <String, IOSink>{
+      '.pdf': textListStream,
+      '.txt': textListStream,
+      '.epub': textListStream,
+      '.doc': textListStream,
+      '.odt': textListStream,
+      '.mobi': textListStream,
+      '.azw': textListStream,
+      '.azw3': textListStream,
+      '.md': textListStream,
       //
-      '.mp3': audioListFile,
-      '.m4a': audioListFile,
-      '.m4b': audioListFile,
-      '.wav': audioListFile,
-      '.ogg': audioListFile,
+      '.mp3': audioListStream,
+      '.m4a': audioListStream,
+      '.m4b': audioListStream,
+      '.wav': audioListStream,
+      '.ogg': audioListStream,
       //
-      '.mp4': videoListFile,
-      '.avi': videoListFile,
-      '.mpg': videoListFile,
-      '.mpeg': videoListFile,
-      '.mwv': videoListFile,
-      '.mkv': videoListFile,
+      '.mp4': videoListStream,
+      '.avi': videoListStream,
+      '.mpg': videoListStream,
+      '.mpeg': videoListStream,
+      '.mwv': videoListStream,
+      '.mkv': videoListStream,
       //
-      '.jpg': imageListFile,
-      '.png': imageListFile,
-      '.tiff': imageListFile,
-      '.svg': imageListFile,
-      '.ai': imageListFile,
-      '.psd': imageListFile,
+      '.jpg': imageListStream,
+      '.png': imageListStream,
+      '.tiff': imageListStream,
+      '.svg': imageListStream,
+      '.ai': imageListStream,
+      '.psd': imageListStream,
       //
-      '.zip': zipListFile,
-      '.rar': zipListFile,
-      '.gz': zipListFile,
-      '.bz': zipListFile,
-      '.bz2': zipListFile,
-      '.7z': zipListFile,
-      '.tar': zipListFile,
+      '.zip': zipListStream,
+      '.rar': zipListStream,
+      '.gz': zipListStream,
+      '.bz': zipListStream,
+      '.bz2': zipListStream,
+      '.7z': zipListStream,
+      '.tar': zipListStream,
       //
-      '.iso': miscListFile,
-      '.bin': miscListFile,
-      '.dmg': miscListFile,
-      '.pkg': miscListFile,
-      '.app': miscListFile,
+      '.iso': miscListStream,
+      '.bin': miscListStream,
+      '.dmg': miscListStream,
+      '.pkg': miscListStream,
+      '.app': miscListStream,
       //
-      '.dart': dartListFile,
-      '.yaml': dartListFile,
+      '.dart': dartListStream,
+      '.yaml': dartListStream,
     };
+  }
+
+  void closeAllSinks() {
+    for (var sink in _sinkMap.values) {
+      sink.close();
+    }
   }
 }
