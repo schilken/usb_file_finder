@@ -198,8 +198,9 @@ class FilesRepository {
       ..create(recursive: true);
   }
 
-  Future<List<StorageInfo>> readDeviceInfos() async {
+  Future<List<StorageInfo>> readStorageInfos() async {
     await readMountedDevices();
+    _storageInfos.clear();
     final dir = await deviceDataDirectory;
     _entities = await dir.list().toList();
     final storageNames = _entities.whereType<Directory>().map((entity) {
@@ -255,7 +256,7 @@ class FilesRepository {
         await removeStorageData(_storageInfos[index].name);
         break;
     }
-    return _storageInfos;
+    return readStorageInfos();
   }
 
   Future<void> removeStorageData(String name) async {
