@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/about_window.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/cubit/preferences_cubit.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
@@ -75,6 +76,11 @@ class App extends StatelessWidget {
                       context.read<SettingsCubit>(),
                     context.read<FilesRepository>(),
                   )..load(),
+                ),
+                BlocProvider<DeviceCubit>(
+                  create: (context) =>
+                      DeviceCubit(context.read<FilesRepository>())
+                        ..initialize(),
                 ),
               ],
               child: MacosApp(
