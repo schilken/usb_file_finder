@@ -36,6 +36,7 @@ class StorageDetails extends Equatable {
 class StorageInfo extends Equatable {
   const StorageInfo({
     required this.name,
+    required this.folderPath,
     required this.totalFileCount,
     required this.fileCountMap,
     this.isSelected,
@@ -45,6 +46,7 @@ class StorageInfo extends Equatable {
   });
 
   final String name;
+  final String folderPath;
   final int totalFileCount;
   final Map<String, int> fileCountMap;
   final DateTime? dateOfLastScan;
@@ -72,6 +74,7 @@ class StorageInfo extends Equatable {
   @override
   List<Object?> get props => [
         name,
+        folderPath,
         totalFileCount,
         isSelected,
         isMounted,
@@ -83,6 +86,7 @@ class StorageInfo extends Equatable {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
+      'folderPath': folderPath,
       'totalFileCount': totalFileCount,
       'fileCountMap': fileCountMap,
       'dateOfLastScan': dateOfLastScan?.millisecondsSinceEpoch,
@@ -98,6 +102,7 @@ class StorageInfo extends Equatable {
     inputMap.forEach((k, v) => fileCountMap[k] = v as int);
     return StorageInfo(
       name: map['name'] as String,
+      folderPath: map['folderPath'] as String,
       totalFileCount: map['totalFileCount'] as int,
       fileCountMap: fileCountMap,
       dateOfLastScan: map['dateOfLastScan'] != null

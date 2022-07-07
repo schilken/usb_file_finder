@@ -46,7 +46,7 @@ class FilesRepository {
     return FileSystemEntity.isLinkSync(folderPath);
   }
 
-  Future<StreamSubscription<File>> scanVolume({
+  Future<StreamSubscription<File>> scanFolder({
     required String volumePath,
     required IntStringStringCallback progressCallback,
     required IntStringCallback onScanDone,
@@ -78,7 +78,7 @@ class FilesRepository {
     });
     subscription.onDone(
       () async {
-        final info = createStorageInfo(startTime, deviceName);
+        final info = createStorageInfo(startTime, volumePath);
         await saveStorageInfo(info);
         await writeIgnoredFoldersFile(deviceName);
         closeAllSinks();
@@ -91,12 +91,13 @@ class FilesRepository {
     return subscription;
   }
 
-  StorageInfo createStorageInfo(DateTime startTime, String deviceName) {
+  StorageInfo createStorageInfo(DateTime startTime, String folderPath) {
     final scanDuration = DateTime.now().difference(startTime);
     final totalFileCount = _fileCountMap.values.reduce((sum, b) => sum + b);
-
+    final deviceName = p.basename(folderPath);
     return StorageInfo(
       name: deviceName,
+      folderPath: folderPath,
       totalFileCount: totalFileCount,
       scanDuration: scanDuration.inMilliseconds,
       fileCountMap: _fileCountMap,
@@ -119,7 +120,6 @@ class FilesRepository {
     final info = StorageInfo.fromJson(json);
     return info;
   }
-
 
   Future<void> writeIgnoredFoldersFile(String deviceName) async {
     final dir = await deviceDataDirectory;

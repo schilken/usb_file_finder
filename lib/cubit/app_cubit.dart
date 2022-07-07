@@ -31,7 +31,7 @@ class AppCubit extends Cubit<AppState> {
     eventBus.on<RescanDevice>().listen((event) async {
       print('AppCubit event: $event');
       final volumePath = filesRepository.volumePathForIndex(event.index);
-      scanVolume(volumePath: volumePath);
+      scanFolder(volumePath: volumePath);
     });
   }
   final FilesRepository filesRepository;
@@ -158,10 +158,10 @@ class AppCubit extends Cubit<AppState> {
     eventBus.fire(const DevicesChanged());
   }
 
-  Future<void> scanVolume({required String volumePath}) async {
+  Future<void> scanFolder({required String volumePath}) async {
     _primaryHitCount = 0;
     _secondaryHitCount = 0;
-    _subscription = await filesRepository.scanVolume(
+    _subscription = await filesRepository.scanFolder(
       volumePath: volumePath,
       progressCallback: progressCallback,
       onScanDone: onScanDone,
