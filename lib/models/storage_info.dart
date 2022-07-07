@@ -2,45 +2,14 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
-class StorageDetails extends Equatable {
-  const StorageDetails({
-    required this.name,
-    required this.fileCount,
-    required this.isSelected,
-    required this.isMounted,
-  });
-
-  final String name;
-  final int fileCount;
-  final bool isSelected;
-  final bool isMounted;
-
-  StorageDetails copyWith({
-    String? name,
-    int? fileCount,
-    bool? isSelected,
-    bool? isMounted,
-  }) {
-    return StorageDetails(
-      name: name ?? this.name,
-      fileCount: fileCount ?? this.fileCount,
-      isSelected: isSelected ?? this.isSelected,
-      isMounted: isMounted ?? this.isMounted,
-    );
-  }
-
-  @override
-  List<Object?> get props => [name, fileCount, isSelected, isMounted];
-}
-
 class StorageInfo extends Equatable {
   const StorageInfo({
     required this.name,
     required this.folderPath,
     required this.totalFileCount,
     required this.fileCountMap,
-    this.isSelected,
-    this.isMounted,
+    this.isSelected = false,
+    this.isMounted = false,
     this.dateOfLastScan,
     this.scanDuration,
   });
@@ -51,25 +20,33 @@ class StorageInfo extends Equatable {
   final Map<String, int> fileCountMap;
   final DateTime? dateOfLastScan;
   final int? scanDuration;
-  final bool? isSelected;
-  final bool? isMounted;
+  final bool isSelected;
+  final bool isMounted;
 
   int? get scanSpeed =>
       scanDuration != null ? (1000 * totalFileCount ~/ scanDuration!) : null;
 
-  // StorageDetails copyWith({
-  //   String? name,
-  //   int? fileCount,
-  //   bool? isSelected,
-  //   bool? isMounted,
-  // }) {
-  //   return StorageDetails(
-  //     name: name ?? this.name,
-  //     fileCount: fileCount ?? this.fileCount,
-  //     isSelected: isSelected ?? this.isSelected,
-  //     isMounted: isMounted ?? this.isMounted,
-  //   );
-  // }
+  StorageInfo copyWith({
+    String? name,
+    String? folderPath,
+    int? totalFileCount,
+    Map<String, int>? fileCountMap,
+    DateTime? dateOfLastScan,
+    int? scanDuration,
+    bool? isSelected,
+    bool? isMounted,
+  }) {
+    return StorageInfo(
+      name: name ?? this.name,
+      folderPath: folderPath ?? this.folderPath,
+      totalFileCount: totalFileCount ?? this.totalFileCount,
+      fileCountMap: fileCountMap ?? this.fileCountMap,
+      dateOfLastScan: dateOfLastScan ?? this.dateOfLastScan,
+      scanDuration: scanDuration ?? this.scanDuration,
+      isSelected: isSelected ?? this.isSelected,
+      isMounted: isMounted ?? this.isMounted,
+    );
+  }
 
   @override
   List<Object?> get props => [

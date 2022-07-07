@@ -24,7 +24,7 @@ class DeviceCubit extends Cubit<DeviceState> {
   Future<DeviceCubit> initialize() async {
     emit(DeviceLoading());
     await Future.delayed(const Duration(milliseconds: 1000));
-    final devices = await filesRepository.readDeviceData();
+    final devices = await filesRepository.readDeviceInfos();
     emit(
       DeviceLoaded(
         devices: devices,
@@ -33,7 +33,7 @@ class DeviceCubit extends Cubit<DeviceState> {
     );
     eventBus.on<DevicesChanged>().listen((event) async {
       print('DeviceCubit event: $event');
-      final updatedDevices = await filesRepository.readDeviceData();
+      final updatedDevices = await filesRepository.readDeviceInfos();
       emit(
         DeviceLoaded(
           devices: updatedDevices,
@@ -60,7 +60,7 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   Future<StorageInfo> getStorageInfo(int index) async {
     final storageInfo = await filesRepository.loadStorageInfoForDevice(
-        filesRepository.storageDetailsForIndex(index));
+        filesRepository.storageInfoForIndex(index));
     return storageInfo;
   }
 

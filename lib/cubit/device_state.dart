@@ -12,7 +12,7 @@ class DeviceInitial extends DeviceState {}
 class DeviceLoading extends DeviceState {}
 
 class DeviceLoaded extends DeviceState {
-  final List<StorageDetails> devices;
+  final List<StorageInfo> devices;
   final int deviceCount;
 
   const DeviceLoaded({

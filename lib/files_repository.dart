@@ -21,7 +21,7 @@ typedef IntStringStringCallback = void Function(
 
 class FilesRepository {
   List<FileSystemEntity> _entities = [];
-  List<StorageDetails> _devices = [];
+  List<StorageInfo> _storageInfos = [];
   List<String> _mountedVolumes = [];
   Map<String, IOSink> _sinkMap = {};
   final _fileCountMap = <String, int>{};
@@ -147,7 +147,7 @@ class FilesRepository {
   }
 
   Stream<String> allLinesAsStream(String fileType) async* {
-    await for (StorageDetails device in Stream.fromIterable(_devices)) {
+    await for (StorageInfo device in Stream.fromIterable(_storageInfos)) {
       if (device.isSelected) {
         yield* await _fileListStream(device.name, fileType);
       }
@@ -198,64 +198,64 @@ class FilesRepository {
       ..create(recursive: true);
   }
 
-  Future<List<StorageDetails>> readDeviceData() async {
+  Future<List<StorageInfo>> readDeviceInfos() async {
     await readMountedDevices();
     final dir = await deviceDataDirectory;
     _entities = await dir.list().toList();
-    _devices = _entities.whereType<Directory>().map((entity) {
-      final storageName = p.basename(entity.path);
-      return StorageDetails(
-        name: storageName,
-        fileCount: 0,
-        isSelected: false,
-        isMounted: isMounted(storageName),
-      );
+    final storageNames = _entities.whereType<Directory>().map((entity) {
+      return p.basename(entity.path);
     }).toList();
-    return _devices;
+    for (final name in storageNames) {
+      final info = await loadStorageInfo(name);
+      _storageInfos.add(info.copyWith(
+        isMounted: isMounted(info.name),
+      ));
+    }
+    return _storageInfos;
   }
 
-  List<StorageDetails> toggleDevice(int index, bool? value) {
-    _devices = _devices
-        .map((device) => device.name == _devices[index].name
+  List<StorageInfo> toggleDevice(int index, bool? value) {
+    _storageInfos = _storageInfos
+        .map((device) => device.name == _storageInfos[index].name
             ? device.copyWith(isSelected: value)
             : device)
         .toList();
-    return _devices;
+    return _storageInfos;
   }
 
-  Future<List<StorageDetails>> executeStorageAction(
+  Future<List<StorageInfo>> executeStorageAction(
       StorageAction action, int index) async {
     switch (action) {
       case StorageAction.selectAll:
-        _devices = _devices
+        _storageInfos = _storageInfos
             .map((device) => device.copyWith(isSelected: true))
             .toList();
-        return _devices;
+        return _storageInfos;
       case StorageAction.selectAllOthers:
-        _devices = _devices
-            .map((device) => device.name == _devices[index].name
+        _storageInfos = _storageInfos
+            .map((device) => device.name == _storageInfos[index].name
                 ? device.copyWith(isSelected: false)
                 : device.copyWith(isSelected: true))
             .toList();
-        return _devices;
+        return _storageInfos;
       case StorageAction.unselectAllOthers:
-        _devices = _devices
-            .map((device) => device.name == _devices[index].name
+        _storageInfos = _storageInfos
+            .map((device) => device.name == _storageInfos[index].name
                 ? device.copyWith(isSelected: true)
                 : device.copyWith(isSelected: false))
             .toList();
-        return _devices;
+        return _storageInfos;
       case StorageAction.showInfo:
       case StorageAction.rescan:
         break;
       case StorageAction.eject:
-        await runEjectCommand(_devices[index].name);
+        await runEjectCommand(_storageInfos[index].name);
         break;
       case StorageAction.removeData:
-        await removeStorageData(_devices[index].name);
+        await removeStorageData(_storageInfos[index].name);
         break;
     }
-    return readDeviceData();
+    return _storageInfos;
   }
 
   Future<void> removeStorageData(String name) async {
@@ -277,23 +277,18 @@ class FilesRepository {
   }
 
   String volumePathForIndex(int index) {
-    return '/Volumes/${_devices[index].name}';
+    return '/Volumes/${_storageInfos[index].name}';
   }
 
-  StorageDetails storageDetailsForIndex(int index) {
-    return _devices[index];
+  StorageInfo storageInfoForIndex(int index) {
+    return _storageInfos[index];
   }
 
-  Future<List<StorageInfo>> createFullStorageInfo() async {
-    final allStorageInfos = <StorageInfo>[];
-    for (final device in _devices) {
-      final storageInfo = await loadStorageInfoForDevice(device);
-      allStorageInfos.add(storageInfo);
-    }
-    return allStorageInfos;
+  List<StorageInfo> createFullStorageInfo() {
+    return _storageInfos;
   }
 
-  Future<StorageInfo> loadStorageInfoForDevice(StorageDetails device) async {
+  Future<StorageInfo> loadStorageInfoForDevice(StorageInfo device) async {
     final storageInfo = loadStorageInfo(device.name);
     return storageInfo;
   }
