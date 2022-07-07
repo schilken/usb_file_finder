@@ -34,7 +34,7 @@ ToolBar getCustomToolBar(BuildContext context) {
               if (selectedDirectory != null) {
                 context
                     .read<AppCubit>()
-                    .scanFolder(volumePath: selectedDirectory);
+                    .scanFolder(folderPath: selectedDirectory);
               }
             },
           ),

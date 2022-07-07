@@ -11,6 +11,7 @@ class MacosCheckBoxListTile extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.leading,
+    this.icon,
     required this.title,
     this.subtitle,
     this.leadingWhitespace = 8,
@@ -27,6 +28,9 @@ class MacosCheckBoxListTile extends StatelessWidget {
 
   /// A widget to display before the [title].
   final Widget? leading;
+
+  /// An icon to display before the [title].
+  final Icon? icon;
 
   /// The primary content of the list tile.
   final Widget title;
@@ -50,6 +54,8 @@ class MacosCheckBoxListTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (leading != null) leading!,
+          const SizedBox(width: 4),
+          if (icon != null) icon!,
           SizedBox(width: leadingWhitespace),
           Expanded(
             child: Column(

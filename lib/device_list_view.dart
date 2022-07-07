@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
-import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/macos_checkbox_list_tile.dart';
 import 'package:usb_file_finder/models/storage_info.dart';
 
@@ -76,9 +75,10 @@ class DeviceListView extends StatelessWidget {
                                 ),
                                 MacosPulldownMenuItem(
                                   title: const Text('Eject Storage'),
-                                  onTap: () async => await context
+                                onTap: () => context
                                       .read<DeviceCubit>()
                                       .menuAction(StorageAction.eject, index),
+                                enabled: device.storageType == 'usb',
                                 ),
                                 MacosPulldownMenuItem(
                                   title: const Text('Rescan Storage'),
@@ -94,7 +94,14 @@ class DeviceListView extends StatelessWidget {
                                           StorageAction.removeData, index),
                                 ),
                               ],
-                            )),
+                          ),
+                          icon: Icon(
+                              device.storageType == 'usb'
+                                  ? Icons.usb
+                                  : Icons.folder_open,
+                              size: 20,
+                              color: Colors.black45),
+                        ),
                       );
                     }),
               ),

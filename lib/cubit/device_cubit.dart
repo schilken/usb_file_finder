@@ -66,7 +66,6 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   Future<dynamic> menuAction(StorageAction action, int index) async {
     print('menuAction: $action');
-    final currentState = state as DeviceLoaded;
     switch (action) {
       case StorageAction.selectAll:
       case StorageAction.selectAllOthers:

@@ -2,8 +2,16 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+enum StorageType {
+  usb,
+  sd,
+  internal,
+  unknown,
+}
+
 class StorageInfo extends Equatable {
   const StorageInfo({
+    required this.storageType,
     required this.name,
     required this.folderPath,
     required this.totalFileCount,
@@ -14,6 +22,7 @@ class StorageInfo extends Equatable {
     this.scanDuration,
   });
 
+  final String storageType;
   final String name;
   final String folderPath;
   final int totalFileCount;
@@ -27,6 +36,7 @@ class StorageInfo extends Equatable {
       scanDuration != null ? (1000 * totalFileCount ~/ scanDuration!) : null;
 
   StorageInfo copyWith({
+    String? storageType,
     String? name,
     String? folderPath,
     int? totalFileCount,
@@ -37,6 +47,7 @@ class StorageInfo extends Equatable {
     bool? isMounted,
   }) {
     return StorageInfo(
+      storageType: storageType ?? this.storageType,
       name: name ?? this.name,
       folderPath: folderPath ?? this.folderPath,
       totalFileCount: totalFileCount ?? this.totalFileCount,
@@ -50,6 +61,7 @@ class StorageInfo extends Equatable {
 
   @override
   List<Object?> get props => [
+        storageType,
         name,
         folderPath,
         totalFileCount,
@@ -62,6 +74,7 @@ class StorageInfo extends Equatable {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'storageType': storageType,
       'name': name,
       'folderPath': folderPath,
       'totalFileCount': totalFileCount,
@@ -78,6 +91,7 @@ class StorageInfo extends Equatable {
     final inputMap = map['fileCountMap'];
     inputMap.forEach((k, v) => fileCountMap[k] = v as int);
     return StorageInfo(
+      storageType: map['storageType'] ?? 'usb' as String,
       name: map['name'] as String,
       folderPath: map['folderPath'] as String,
       totalFileCount: map['totalFileCount'] as int,

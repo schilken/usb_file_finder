@@ -11,11 +11,11 @@ import 'package:usb_file_finder/models/storage_info.dart';
 
 typedef IntStringCallback = void Function(
   int fileCount,
-  String volumePath,
+  String folderPath,
 );
 typedef IntStringStringCallback = void Function(
   int fileCount,
-  String volumePath,
+  String folderPath,
   String folderPathPath,
 );
 
@@ -47,20 +47,20 @@ class FilesRepository {
   }
 
   Future<StreamSubscription<File>> scanFolder({
-    required String volumePath,
+    required String folderPath,
     required IntStringStringCallback progressCallback,
     required IntStringCallback onScanDone,
   }) async {
     final startTime = DateTime.now();
     _fileCountMap.clear();
-    var dir = Directory(volumePath);
-    final deviceName = p.basename(volumePath);
+    var dir = Directory(folderPath);
+    final deviceName = p.basename(folderPath);
     await removeStorageData(deviceName);
     _skippedFolderNames.clear();
     _sinkMap = await buildSinkMap(deviceName);
     Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
     var fileCount = 0;
-    String folderPath = '';
+    String currentFolderPath = '';
     final subscription = scannedFiles.listen((File file) async {
       final extension = p.extension(file.path);
       final listfileSink = _sinkMap[extension];
@@ -71,18 +71,18 @@ class FilesRepository {
 
         if (++fileCount % 1000 == 0) {
           final components = p.split(file.path);
-          folderPath = components.length > 3 ? components[3] : '';
-          progressCallback(fileCount, volumePath, folderPath);
+          currentFolderPath = components.length > 3 ? components[3] : '';
+          progressCallback(fileCount, folderPath, currentFolderPath);
         }
       }
     });
     subscription.onDone(
       () async {
-        final info = createStorageInfo(startTime, volumePath);
+        final info = createStorageInfo(startTime, folderPath);
         await saveStorageInfo(info);
         await writeIgnoredFoldersFile(deviceName);
         closeAllSinks();
-        onScanDone(fileCount, volumePath);
+        onScanDone(fileCount, folderPath);
       },
     );
     subscription.onError((e) {
@@ -95,7 +95,10 @@ class FilesRepository {
     final scanDuration = DateTime.now().difference(startTime);
     final totalFileCount = _fileCountMap.values.reduce((sum, b) => sum + b);
     final deviceName = p.basename(folderPath);
+    final storageType =
+        folderPath.contains('/Macintosh HD/') ? 'internal' : 'usb';
     return StorageInfo(
+      storageType: storageType,
       name: deviceName,
       folderPath: folderPath,
       totalFileCount: totalFileCount,
@@ -277,8 +280,8 @@ class FilesRepository {
     print('runEjectCommand: stdout:  ${process.stdout} err: ${process.stderr}');
   }
 
-  String volumePathForIndex(int index) {
-    return '/Volumes/${_storageInfos[index].name}';
+  String folderPathForIndex(int index) {
+    return _storageInfos[index].folderPath;
   }
 
   StorageInfo storageInfoForIndex(int index) {
