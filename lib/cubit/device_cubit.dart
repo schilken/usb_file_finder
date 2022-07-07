@@ -73,9 +73,11 @@ class DeviceCubit extends Cubit<DeviceState> {
       case StorageAction.unselectAllOthers:
       case StorageAction.eject:
       case StorageAction.removeData:
+        final infoList =
+            await filesRepository.executeStorageAction(action, index);
         emit(DeviceLoaded(
-          devices: await filesRepository.executeStorageAction(action, index),
-          deviceCount: currentState.deviceCount,
+          devices: infoList,
+          deviceCount: infoList.length,
         ));
         break;
       case StorageAction.showInfo:
