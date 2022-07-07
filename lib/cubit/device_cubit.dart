@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:usb_file_finder/event_bus.dart';
@@ -20,6 +22,7 @@ class DeviceCubit extends Cubit<DeviceState> {
   DeviceCubit(this.filesRepository) : super(DeviceInitial());
 
   final FilesRepository filesRepository;
+  StreamSubscription<DevicesChanged>? _devicesChangedSubscription;
 
   Future<DeviceCubit> initialize() async {
     emit(DeviceLoading());
@@ -31,7 +34,8 @@ class DeviceCubit extends Cubit<DeviceState> {
         deviceCount: devices.length,
       ),
     );
-    eventBus.on<DevicesChanged>().listen((event) async {
+    _devicesChangedSubscription =
+        eventBus.on<DevicesChanged>().listen((event) async {
       print('DeviceCubit event: $event');
       final updatedDevices = await filesRepository.readStorageInfos();
       emit(
@@ -43,6 +47,11 @@ class DeviceCubit extends Cubit<DeviceState> {
     });
     await menuAction(StorageAction.selectAll, 0);
     return this;
+  }
+
+  Future<void> dispose() async {
+    print('>>>>>>>>>> DeviceCubit dispose');
+    await _devicesChangedSubscription?.cancel();
   }
 
   void toggleDevice(
