@@ -343,6 +343,7 @@ class FilesRepository {
       '.mpeg': videoListStream,
       '.mwv': videoListStream,
       '.mkv': videoListStream,
+      '.otrkey': videoListStream,
       //
       '.jpg': imageListStream,
       '.png': imageListStream,
