@@ -17,7 +17,9 @@ import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/overview_window.dart';
 import 'package:usb_file_finder/settings_window.dart';
 import 'package:usb_file_finder/preferences_page.dart';
-import 'package:usb_file_finder/tabview_page.dart';
+import 'package:usb_file_finder/preferences_page.dart';
+
+import 'logger_page.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -175,6 +177,10 @@ class _MainViewState extends State<MainView> {
                 leading: MacosIcon(CupertinoIcons.graph_square),
                 label: Text('Preferences'),
               ),
+              SidebarItem(
+                leading: MacosIcon(CupertinoIcons.graph_square),
+                label: Text('Logger'),
+              ),
             ],
           ),
           bottom: const MacosListTile(
@@ -187,8 +193,8 @@ class _MainViewState extends State<MainView> {
           index: _pageIndex,
           children: const [
             MainPage(),
-            TabViewPage()
-//            PreferencesPage(),
+            PreferencesPage(),
+            LoggerPage(Stream.empty()),
           ],
         ),
       ),

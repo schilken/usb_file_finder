@@ -1,52 +1,69 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/preferences_cubit.dart';
-import 'package:usb_file_finder/get_custom_toolbar.dart';
+import 'package:usb_file_finder/chip_list_editor.dart';
+import 'package:usb_file_finder/list_editor.dart';
 
-class PreferencesPage extends StatelessWidget {
+class PreferencesPage extends StatefulWidget {
   const PreferencesPage({super.key});
 
   @override
+  State<PreferencesPage> createState() => _PreferencesPageState();
+}
+
+class _PreferencesPageState extends State<PreferencesPage> {
+  final _controller = MacosTabController(
+    initialIndex: 0,
+    length: 3,
+  );
+
+  @override
   Widget build(BuildContext context) {
-    print('PreferencesPage.build');
-    return Builder(builder: (context) {
-      return MacosScaffold(
-        toolBar: getCustomToolBar(context),
-        children: [
-          ContentArea(
-            builder: (context, scrollController) {
-              return BlocBuilder<PreferencesCubit, PreferencesState>(
-                builder: (context, state) {
-//                    print('builder: $state');
-                  if (state is PreferencesLoaded) {
-                    return Column(
-                      children: [
-                        Container(
-                          color: Colors.blueGrey[100],
-                          padding: const EdgeInsets.fromLTRB(12, 20, 20, 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Text('Paths from File: '),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  } else if (state is PreferencesLoading) {
-                    return const CupertinoActivityIndicator();
-                  }
-                  return Center(
-                      child:
-                          TextButton(onPressed: () {}, child: Text('refresh')));
-                },
-              );
-            },
-          ),
-        ],
-      );
-    });
+    return MacosScaffold(
+      toolBar: const ToolBar(
+        title: Text('Preferences'),
+      ),
+      children: [
+        ContentArea(
+          builder: (context, scrollController) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: MacosTabView(
+                controller: _controller,
+                tabs: [
+                  MacosTab(
+                    label: 'General',
+                    active: _controller.index == 0,
+                  ),
+                  MacosTab(
+                    label: 'Ignore Folders for Scan',
+                    active: _controller.index == 1,
+                  ),
+                  MacosTab(
+                    label: 'Exclude Strings from Search',
+                    active: _controller.index == 2,
+                  ),
+                ],
+                children: const [
+                  Center(
+                    child: Text('Tab 1'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: ListEditor(),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: ChipListEditor(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 }
