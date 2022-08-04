@@ -14,7 +14,7 @@ class FilterSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
-        print('FilterSidebar builder: ${state}');
+//        print('FilterSidebar builder: ${state}');
 
         if (state is SettingsLoaded) {
           return Column(

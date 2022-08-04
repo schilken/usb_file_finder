@@ -11,6 +11,7 @@ import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/cubit/preferences_cubit.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
@@ -191,10 +192,10 @@ class _MainViewState extends State<MainView> {
         ),
         child: IndexedStack(
           index: _pageIndex,
-          children: const [
+          children: [
             MainPage(),
             PreferencesPage(),
-            LoggerPage(Stream.empty()),
+            LoggerPage(eventBus.streamController.stream),
           ],
         ),
       ),

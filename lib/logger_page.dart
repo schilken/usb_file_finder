@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:usb_file_finder/cubit/settings_cubit.dart';
 
 class LoggerPage extends StatefulWidget {
-  const LoggerPage(Stream<String> commandStdout, {super.key})
+  const LoggerPage(Stream<dynamic> commandStdout, {super.key})
       : _commandStdout = commandStdout;
-  final Stream<String> _commandStdout;
+  final Stream<dynamic> _commandStdout;
 
   @override
   State<LoggerPage> createState() => _LoggerPageState();
@@ -16,7 +17,7 @@ class LoggerPage extends StatefulWidget {
 
 class _LoggerPageState extends State<LoggerPage> {
   final List<String> _lines = <String>[];
-  late StreamSubscription<String> _streamSubscription;
+  StreamSubscription<dynamic>? _streamSubscription;
 
   void onClear() {
     setState(
@@ -28,20 +29,25 @@ class _LoggerPageState extends State<LoggerPage> {
 
   @override
   void didUpdateWidget(covariant LoggerPage oldWidget) {
+    addListerners();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void addListerners() {
+    _streamSubscription?.cancel();
     _streamSubscription = widget._commandStdout.listen(
       (line) {
         setState(
           () {
-            _lines.add(line);
+            _lines.add(line.toString());
           },
         );
       },
     );
-    super.didUpdateWidget(oldWidget);
   }
 
   onDispose() {
-    _streamSubscription.cancel();
+    _streamSubscription?.cancel();
     super.dispose();
   }
 
