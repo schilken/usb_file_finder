@@ -16,7 +16,6 @@ import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/overview_window.dart';
-import 'package:usb_file_finder/settings_window.dart';
 import 'package:usb_file_finder/preferences_page.dart';
 import 'package:usb_file_finder/preferences_page.dart';
 
@@ -31,11 +30,6 @@ void main(List<String> args) {
         : jsonDecode(args[2]) as Map<String, dynamic>;
     if (arguments['args1'] == 'About') {
       runApp(AboutWindow(
-        windowController: WindowController.fromWindowId(windowId),
-        args: arguments,
-      ));
-    } else if (arguments['args1'] == 'Preferences') {
-      runApp(SettingsWindow(
         windowController: WindowController.fromWindowId(windowId),
         args: arguments,
       ));
@@ -132,24 +126,6 @@ class _MainViewState extends State<MainView> {
                   ..setFrame(const Offset(0, 0) & const Size(350, 350))
                   ..center()
                   ..setTitle('About usb_file_finder')
-                  ..show();
-              },
-            ),
-            PlatformMenuItem(
-              label: 'Preferences',
-              onSelected: () async {
-                final window = await DesktopMultiWindow.createWindow(jsonEncode(
-                  {
-                    'args1': 'Preferences',
-                    'args2': 500,
-                    'args3': true,
-                  },
-                ));
-                debugPrint('$window');
-                window
-                  ..setFrame(const Offset(0, 0) & const Size(500, 400))
-                  ..center()
-                  ..setTitle('The Preferences')
                   ..show();
               },
             ),
