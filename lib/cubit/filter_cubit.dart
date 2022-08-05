@@ -4,10 +4,10 @@ import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usb_file_finder/event_bus.dart';
 
-part 'settings_state.dart';
+part 'filter_state.dart';
 
-class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit() : super(SettingsInitial()) {
+class FilterCubit extends Cubit<FilterState> {
+  FilterCubit() : super(SettingsInitial()) {
     print('create SettingsCubit');
     eventBus.on<SettingsTrigger>().listen((event) async {
       print('SettingsTrigger received');
@@ -28,7 +28,7 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   get fileTypeFilter => _prefs.getString('fileTypeFilter') ?? 'Text Files';
 
-  Future<SettingsCubit> initialize() async {
+  Future<FilterCubit> initialize() async {
     await Future.delayed(const Duration(milliseconds: 1000));
     _prefs = await SharedPreferences.getInstance();
     emitSettingsLoaded();
@@ -41,7 +41,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void emitSettingsLoaded() {
-    final settingsLoaded = SettingsLoaded(
+    final settingsLoaded = FilterLoaded(
       fileTypeFilter: fileTypeFilter,
       showHiddenFiles: getSearchOption('showHiddenFiles'),
       searchInFilename: getSearchOption('searchInFilename'),
@@ -99,5 +99,4 @@ class SettingsCubit extends Cubit<SettingsState> {
     await _prefs.setStringList('exclusionWords', exclusionWords);
     emitSettingsLoaded();
   }
-
 }

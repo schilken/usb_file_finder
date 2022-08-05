@@ -10,7 +10,7 @@ import 'package:usb_file_finder/about_window.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
 import 'package:usb_file_finder/cubit/preferences_cubit.dart';
-import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/cubit/filter_cubit.dart';
 import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/filter_sidebar.dart';
@@ -50,8 +50,8 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SettingsCubit>(
-        future: SettingsCubit().initialize(),
+    return FutureBuilder<FilterCubit>(
+        future: FilterCubit().initialize(),
         builder: (context, snapshot) {
           print('builder: ${snapshot.hasData}');
           if (!snapshot.hasData) {
@@ -65,12 +65,12 @@ class App extends StatelessWidget {
                   value: snapshot.data!,
                 ),
                 BlocProvider(
-                  create: (context) => AppCubit(context.read<SettingsCubit>(),
+                  create: (context) => AppCubit(context.read<FilterCubit>(),
                       context.read<FilesRepository>()),
                 ),
                 BlocProvider(
                   create: (context) => PreferencesCubit(
-                      context.read<SettingsCubit>(),
+                    context.read<FilterCubit>(),
                     context.read<FilesRepository>(),
                   )..load(),
                 ),

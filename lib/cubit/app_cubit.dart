@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/cubit/filter_cubit.dart';
 import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
@@ -18,12 +18,12 @@ enum SearchResultAction {
 
 class AppCubit extends Cubit<AppState> {
   AppCubit(
-    SettingsCubit settingsCubit,
+    FilterCubit settingsCubit,
     this.filesRepository,
   )   : _settingsCubit = settingsCubit,
         super(AppInitial()) {
     print('create AppCubit');
-    eventBus.on<SettingsLoaded>().listen((event) async {
+    eventBus.on<FilterLoaded>().listen((event) async {
       _applyFilters(event);
     });
     Future.delayed(
@@ -44,7 +44,7 @@ class AppCubit extends Cubit<AppState> {
   int _fileCount = 0;
   int _primaryHitCount = 0;
   int _secondaryHitCount = 0;
-  final SettingsCubit _settingsCubit;
+  final FilterCubit _settingsCubit;
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;
@@ -193,7 +193,7 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  void _applyFilters(SettingsLoaded newSettings) {
+  void _applyFilters(FilterLoaded newSettings) {
     print('_applyFilters: $newSettings');
     _selectedFileType = newSettings.fileTypeFilter;
     _includeHiddenFolders = newSettings.showHiddenFiles;

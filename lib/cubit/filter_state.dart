@@ -1,15 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'settings_cubit.dart';
+part of 'filter_cubit.dart';
 
 @immutable
-abstract class SettingsState extends Equatable {}
+abstract class FilterState extends Equatable {}
 
-class SettingsInitial extends SettingsState {
+class SettingsInitial extends FilterState {
   @override
   List<Object?> get props => [];
 }
 
-class SettingsLoaded extends SettingsState {
+class FilterLoaded extends FilterState {
   String fileTypeFilter;
   bool showHiddenFiles;
   bool searchInFilename;
@@ -17,7 +17,7 @@ class SettingsLoaded extends SettingsState {
   final List<String> ignoredFolders;
   final List<String> exclusionWords;
 
-  SettingsLoaded({
+  FilterLoaded({
     required this.fileTypeFilter,
     required this.showHiddenFiles,
     required this.searchInFilename,

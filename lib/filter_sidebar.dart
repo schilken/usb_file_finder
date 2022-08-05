@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/cubit/filter_cubit.dart';
 import 'package:usb_file_finder/device_list_view.dart';
 import 'package:usb_file_finder/macos_checkbox_list_tile.dart';
 
@@ -12,11 +12,11 @@ class FilterSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(
+    return BlocBuilder<FilterCubit, FilterState>(
       builder: (context, state) {
 //        print('FilterSidebar builder: ${state}');
 
-        if (state is SettingsLoaded) {
+        if (state is FilterLoaded) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -24,12 +24,12 @@ class FilterSidebar extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               MacosPopupButton<String>(
-                value: context.read<SettingsCubit>().fileTypeFilter,
+                value: context.read<FilterCubit>().fileTypeFilter,
                 onChanged: (String? value) async {
-                  await context.read<SettingsCubit>().setFileTypeFilter(value);
+                  await context.read<FilterCubit>().setFileTypeFilter(value);
                 },
                 items: context
-                    .read<SettingsCubit>()
+                    .read<FilterCubit>()
                     .allFileTypes
                     .map<MacosPopupMenuItem<String>>((String value) {
                   return MacosPopupMenuItem<String>(
@@ -44,7 +44,7 @@ class FilterSidebar extends StatelessWidget {
                 child: MacosCheckBoxListTile(
                   title: Text('Include Hidden Folders'),
                   onChanged: (value) => context
-                      .read<SettingsCubit>()
+                      .read<FilterCubit>()
                       .toggleSearchOption('showHiddenFiles', value ?? false),
                   value: state.showHiddenFiles,
                 ),
@@ -54,7 +54,7 @@ class FilterSidebar extends StatelessWidget {
                 child: MacosCheckBoxListTile(
                   title: Text('Search in Filename'),
                   onChanged: (value) => context
-                      .read<SettingsCubit>()
+                      .read<FilterCubit>()
                       .toggleSearchOption('searchInFilename', value ?? false),
                   value: state.searchInFilename,
                 ),
@@ -64,7 +64,7 @@ class FilterSidebar extends StatelessWidget {
                 child: MacosCheckBoxListTile(
                   title: Text('Search in Foldername'),
                   onChanged: (value) => context
-                      .read<SettingsCubit>()
+                      .read<FilterCubit>()
                       .toggleSearchOption('searchInFoldername', value ?? false),
                   value: state.searchInFoldername,
                 ),

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/cubit/filter_cubit.dart';
 
 class LoggerPage extends StatefulWidget {
   const LoggerPage(Stream<dynamic> commandStdout, {super.key})

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/cubit/filter_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
 part 'preferences_state.dart';
@@ -12,7 +12,7 @@ class PreferencesCubit extends Cubit<PreferencesState> {
   ) : super(PreferencesInitial());
 
   final FilesRepository _filesRepository;
-  final SettingsCubit _settingsCubit;
+  final FilterCubit _settingsCubit;
 
   void load() async {
     emit(PreferencesLoading());
