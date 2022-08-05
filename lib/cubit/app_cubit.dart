@@ -18,16 +18,13 @@ enum SearchResultAction {
 
 class AppCubit extends Cubit<AppState> {
   AppCubit(
-    FilterCubit settingsCubit,
-    this.filesRepository,
-  )   : _settingsCubit = settingsCubit,
-        super(AppInitial()) {
+    this.filesRepository) : super(AppInitial()) {
     print('create AppCubit');
     eventBus.on<FilterLoaded>().listen((event) async {
       _applyFilters(event);
     });
     Future.delayed(
-        Duration(milliseconds: 100), () => eventBus.fire(SettingsTrigger()));
+        Duration(milliseconds: 100), () => eventBus.fire(PreferencesTrigger()));
     eventBus.on<RescanDevice>().listen((event) async {
       print('AppCubit event: $event');
       final folderPath = filesRepository.folderPathForIndex(event.index);
@@ -44,7 +41,6 @@ class AppCubit extends Cubit<AppState> {
   int _fileCount = 0;
   int _primaryHitCount = 0;
   int _secondaryHitCount = 0;
-  final FilterCubit _settingsCubit;
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;

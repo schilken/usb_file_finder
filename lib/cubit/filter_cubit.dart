@@ -1,20 +1,21 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usb_file_finder/event_bus.dart';
+
+import '../preferences_repository.dart';
 
 part 'filter_state.dart';
 
 class FilterCubit extends Cubit<FilterState> {
-  FilterCubit() : super(SettingsInitial()) {
-    print('create SettingsCubit');
-    eventBus.on<SettingsTrigger>().listen((event) async {
-      print('SettingsTrigger received');
-      emitSettingsLoaded();
+  FilterCubit(this._preferencesRepository) : super(SettingsInitial()) {
+    print('create FilterCubit');
+    eventBus.on<FilterLoaded>().listen((event) async {
+      _emitFilterLoaded(event);
     });
+
   }
-  late SharedPreferences _prefs;
+  final PreferencesRepository _preferencesRepository;
 
   final allFileTypes = <String>[
     'Text Files',
@@ -26,77 +27,46 @@ class FilterCubit extends Cubit<FilterState> {
     'Dart Files',
   ];
 
-  get fileTypeFilter => _prefs.getString('fileTypeFilter') ?? 'Text Files';
 
-  Future<FilterCubit> initialize() async {
-    await Future.delayed(const Duration(milliseconds: 1000));
-    _prefs = await SharedPreferences.getInstance();
-    emitSettingsLoaded();
-    return this;
-  }
-
-  Future<void> setFileTypeFilter(value) async {
-    await _prefs.setString('fileTypeFilter', value);
-    emitSettingsLoaded();
-  }
-
-  void emitSettingsLoaded() {
-    final settingsLoaded = FilterLoaded(
-      fileTypeFilter: fileTypeFilter,
-      showHiddenFiles: getSearchOption('showHiddenFiles'),
-      searchInFilename: getSearchOption('searchInFilename'),
-      searchInFoldername: getSearchOption('searchInFoldername'),
-      ignoredFolders: ignoredFolders,
-      exclusionWords: exclusionWords,
-    );
+  void _emitFilterLoaded(FilterLoaded settingsLoaded) {
     emit(settingsLoaded);
-    eventBus.fire(settingsLoaded);
+  }
+
+  get fileTypeFilter => _preferencesRepository.fileTypeFilter;
+  
+  Future<void> setFileTypeFilter(value) async {
+    await _preferencesRepository.setFileTypeFilter(value);
   }
 
   Future<void> toggleSearchOption(String option, bool value) async {
-    await _prefs.setBool(option, value);
-    emitSettingsLoaded();
+    await _preferencesRepository.toggleSearchOption(option, value);
   }
 
   bool getSearchOption(String option) {
-    return _prefs.getBool(option) ?? false;
+    return _preferencesRepository.getSearchOption(option);
   }
 
   List<String> get ignoredFolders {
-    final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
-    return ignoredFolders;
+    return _preferencesRepository.ignoredFolders;
   }
 
   List<String> get exclusionWords {
-    final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
-    return exclusionWords;
+    return _preferencesRepository.exclusionWords;
   }
 
   Future<void> addIgnoredFolder(String folder) async {
-    final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
-    ignoredFolders.add(folder);
-    await _prefs.setStringList('ignoredFolders', ignoredFolders);
-    emitSettingsLoaded();
+    await _preferencesRepository.addIgnoredFolder(folder);
   }
 
   Future<void> removeIgnoredFolder(String folder) async {
-    final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
-    ignoredFolders.remove(folder);
-    await _prefs.setStringList('ignoredFolders', ignoredFolders);
-    emitSettingsLoaded();
+    await _preferencesRepository.removeIgnoredFolder(folder);
   }
 
   Future<void> addExclusionWord(String exclusionWord) async {
-    final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
-    exclusionWords.add(exclusionWord);
-    await _prefs.setStringList('exclusionWords', exclusionWords);
-    emitSettingsLoaded();
+    await _preferencesRepository.addExclusionWord(exclusionWord);
   }
 
   Future<void> removeExclusionWord(String exclusionWord) async {
-    final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
-    exclusionWords.remove(exclusionWord);
-    await _prefs.setStringList('exclusionWords', exclusionWords);
-    emitSettingsLoaded();
+    await _preferencesRepository.removeExclusionWord(exclusionWord);
   }
 }

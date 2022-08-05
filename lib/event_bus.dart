@@ -7,11 +7,11 @@ class DevicesChanged {
   const DevicesChanged();
 }
 
-class SettingsTrigger {}
+class PreferencesTrigger {}
 
-class SettingsChanged {
+class PreferencesChanged {
   final String fileTypeFilter;
-  const SettingsChanged(this.fileTypeFilter);
+  const PreferencesChanged(this.fileTypeFilter);
 }
 
 class RescanDevice {

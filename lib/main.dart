@@ -17,9 +17,9 @@ import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/overview_window.dart';
 import 'package:usb_file_finder/preferences_page.dart';
-import 'package:usb_file_finder/preferences_page.dart';
 
 import 'logger_page.dart';
+import 'preferences_repository.dart';
 
 void main(List<String> args) {
   print('main: $args');
@@ -50,27 +50,36 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<FilterCubit>(
-        future: FilterCubit().initialize(),
+    return FutureBuilder<PreferencesRepository>(
+        future: PreferencesRepository().initialize(),
         builder: (context, snapshot) {
           print('builder: ${snapshot.hasData}');
           if (!snapshot.hasData) {
             return Container();
           }
-          return RepositoryProvider(
-            create: (context) => FilesRepository(),
+          return MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider(
+                create: (context) => FilesRepository(),
+              ),
+              RepositoryProvider<PreferencesRepository>.value(
+                value: snapshot.data!,
+              ),
+            ],
             child: MultiBlocProvider(
               providers: [
-                BlocProvider.value(
-                  value: snapshot.data!,
+                BlocProvider(
+                  create: (context) => FilterCubit(
+                    context.read<PreferencesRepository>(),
+                  ),
                 ),
                 BlocProvider(
-                  create: (context) => AppCubit(context.read<FilterCubit>(),
-                      context.read<FilesRepository>()),
+                  create: (context) =>
+                      AppCubit(context.read<FilesRepository>()),
                 ),
                 BlocProvider(
                   create: (context) => PreferencesCubit(
-                    context.read<FilterCubit>(),
+                    context.read<PreferencesRepository>(),
                     context.read<FilesRepository>(),
                   )..load(),
                 ),

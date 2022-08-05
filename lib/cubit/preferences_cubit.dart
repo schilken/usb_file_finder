@@ -1,44 +1,45 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:usb_file_finder/cubit/filter_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
+
+import '../preferences_repository.dart';
 
 part 'preferences_state.dart';
 
 class PreferencesCubit extends Cubit<PreferencesState> {
   PreferencesCubit(
-    this._settingsCubit,
+    this._preferencesRepository,
     this._filesRepository,
   ) : super(PreferencesInitial());
 
   final FilesRepository _filesRepository;
-  final FilterCubit _settingsCubit;
+  final PreferencesRepository _preferencesRepository;
 
   void load() async {
     emit(PreferencesLoading());
     emit(PreferencesLoaded(
-      _settingsCubit.ignoredFolders,
-      _settingsCubit.exclusionWords,
+      _preferencesRepository.ignoredFolders,
+      _preferencesRepository.exclusionWords,
     ));
   }
 
   Future<void> addIgnoredFolder(String folder) async {
-    await _settingsCubit.addIgnoredFolder(folder);
+    await _preferencesRepository.addIgnoredFolder(folder);
     load();
   }
 
   Future<void> removeIgnoredFolder(String folder) async {
-    await _settingsCubit.removeIgnoredFolder(folder);
+    await _preferencesRepository.removeIgnoredFolder(folder);
     load();
   }
 
   Future<void> addExclusionWord(String word) async {
-    await _settingsCubit.addExclusionWord(word);
+    await _preferencesRepository.addExclusionWord(word);
     load();
   }
 
   Future<void> removeExclusionWord(String word) async {
-    await _settingsCubit.removeExclusionWord(word);
+    await _preferencesRepository.removeExclusionWord(word);
     load();
   }
 }
