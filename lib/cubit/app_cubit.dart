@@ -20,7 +20,7 @@ class AppCubit extends Cubit<AppState> {
   AppCubit(
     this.filesRepository) : super(AppInitial()) {
     print('create AppCubit');
-    eventBus.on<FilterLoaded>().listen((event) async {
+    eventBus.on<PreferencesChanged>().listen((event) async {
       _applyFilters(event);
     });
     Future.delayed(
@@ -189,7 +189,7 @@ class AppCubit extends Cubit<AppState> {
     );
   }
 
-  void _applyFilters(FilterLoaded newSettings) {
+  void _applyFilters(PreferencesChanged newSettings) {
     print('_applyFilters: $newSettings');
     _selectedFileType = newSettings.fileTypeFilter;
     _includeHiddenFolders = newSettings.showHiddenFiles;

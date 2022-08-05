@@ -10,7 +10,7 @@ part 'filter_state.dart';
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit(this._preferencesRepository) : super(SettingsInitial()) {
     print('create FilterCubit');
-    eventBus.on<FilterLoaded>().listen((event) async {
+    eventBus.on<PreferencesChanged>().listen((event) async {
       _emitFilterLoaded(event);
     });
 
@@ -28,8 +28,15 @@ class FilterCubit extends Cubit<FilterState> {
   ];
 
 
-  void _emitFilterLoaded(FilterLoaded settingsLoaded) {
-    emit(settingsLoaded);
+  void _emitFilterLoaded(PreferencesChanged preferencesChanged) {
+    emit(FilterLoaded(
+      fileTypeFilter: fileTypeFilter,
+      showHiddenFiles: preferencesChanged.showHiddenFiles,
+      searchInFilename: preferencesChanged.searchInFilename,
+      searchInFoldername: preferencesChanged.searchInFoldername,
+      ignoredFolders: preferencesChanged.ignoredFolders,
+      exclusionWords: preferencesChanged.exclusionWords,
+    ));
   }
 
   get fileTypeFilter => _preferencesRepository.fileTypeFilter;

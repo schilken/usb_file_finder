@@ -1,14 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:usb_file_finder/event_bus.dart';
 
-import 'cubit/filter_cubit.dart';
-
 class PreferencesRepository {
   PreferencesRepository() {
     print('create PreferencesRepository');
     eventBus.on<PreferencesTrigger>().listen((event) async {
       print('PreferencesTrigger received');
-      fireSettingsLoaded();
+      _firePreferencesChanged();
     });
   }
   late SharedPreferences _prefs;
@@ -18,17 +16,17 @@ class PreferencesRepository {
   Future<PreferencesRepository> initialize() async {
     await Future.delayed(const Duration(milliseconds: 1000));
     _prefs = await SharedPreferences.getInstance();
-    fireSettingsLoaded();
+    _firePreferencesChanged();
     return this;
   }
 
   Future<void> setFileTypeFilter(value) async {
     await _prefs.setString('fileTypeFilter', value);
-    fireSettingsLoaded();
+    _firePreferencesChanged();
   }
 
-  void fireSettingsLoaded() {
-    final settingsLoaded = FilterLoaded(
+  void _firePreferencesChanged() {
+    final settingsLoaded = PreferencesChanged(
       fileTypeFilter: fileTypeFilter,
       showHiddenFiles: getSearchOption('showHiddenFiles'),
       searchInFilename: getSearchOption('searchInFilename'),
@@ -41,7 +39,7 @@ class PreferencesRepository {
 
   Future<void> toggleSearchOption(String option, bool value) async {
     await _prefs.setBool(option, value);
-    fireSettingsLoaded();
+    _firePreferencesChanged();
   }
 
   bool getSearchOption(String option) {
@@ -62,27 +60,27 @@ class PreferencesRepository {
     final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
     ignoredFolders.add(folder);
     await _prefs.setStringList('ignoredFolders', ignoredFolders);
-    fireSettingsLoaded();
+    _firePreferencesChanged();
   }
 
   Future<void> removeIgnoredFolder(String folder) async {
     final ignoredFolders = _prefs.getStringList('ignoredFolders') ?? [];
     ignoredFolders.remove(folder);
     await _prefs.setStringList('ignoredFolders', ignoredFolders);
-    fireSettingsLoaded();
+    _firePreferencesChanged();
   }
 
   Future<void> addExclusionWord(String exclusionWord) async {
     final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
     exclusionWords.add(exclusionWord);
     await _prefs.setStringList('exclusionWords', exclusionWords);
-    fireSettingsLoaded();
+    _firePreferencesChanged();
   }
 
   Future<void> removeExclusionWord(String exclusionWord) async {
     final exclusionWords = _prefs.getStringList('exclusionWords') ?? [];
     exclusionWords.remove(exclusionWord);
     await _prefs.setStringList('exclusionWords', exclusionWords);
-    fireSettingsLoaded();
+    _firePreferencesChanged();
   }
 }
