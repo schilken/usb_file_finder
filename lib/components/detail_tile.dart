@@ -6,7 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'package:usb_file_finder/cubit/app_cubit.dart';
-import 'package:usb_file_finder/highlighted_text.dart';
+import 'package:usb_file_finder/components/highlighted_text.dart';
 
 class DetailTile extends StatelessWidget {
   const DetailTile({

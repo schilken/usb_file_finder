@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/chip_list_editor.dart';
-import 'package:usb_file_finder/list_editor.dart';
+import 'package:usb_file_finder/components/chip_list_editor.dart';
+import 'package:usb_file_finder/components/list_editor.dart';
 
 class PreferencesPage extends StatefulWidget {
   const PreferencesPage({super.key});

@@ -6,20 +6,20 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/about_window.dart';
+import 'package:usb_file_finder/pages/about_window.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/cubit/device_cubit.dart';
-import 'package:usb_file_finder/cubit/preferences_cubit.dart';
 import 'package:usb_file_finder/cubit/filter_cubit.dart';
-import 'package:usb_file_finder/event_bus.dart';
-import 'package:usb_file_finder/files_repository.dart';
-import 'package:usb_file_finder/filter_sidebar.dart';
-import 'package:usb_file_finder/main_page.dart';
-import 'package:usb_file_finder/overview_window.dart';
-import 'package:usb_file_finder/preferences_page.dart';
+import 'package:usb_file_finder/services/event_bus.dart';
+import 'package:usb_file_finder/services/files_repository.dart';
+import 'package:usb_file_finder/components/filter_sidebar.dart';
+import 'package:usb_file_finder/pages/main_page.dart';
+import 'package:usb_file_finder/pages/overview_window.dart';
+import 'package:usb_file_finder/preferences/preferences_page.dart';
 
-import 'logger_page.dart';
-import 'preferences_repository.dart';
+import 'pages/logger_page.dart';
+import 'preferences/preferences_cubit.dart';
+import 'preferences/preferences_repository.dart';
 
 void main(List<String> args) {
   print('main: $args');

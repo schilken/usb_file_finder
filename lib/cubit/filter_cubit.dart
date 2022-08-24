@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:usb_file_finder/event_bus.dart';
+import 'package:usb_file_finder/services/event_bus.dart';
 
-import '../preferences_repository.dart';
+import '../preferences/preferences_repository.dart';
 
 part 'filter_state.dart';
 

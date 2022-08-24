@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart' hide OverlayVisibilityMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/preferences_cubit.dart';
+
+import '../preferences/preferences_cubit.dart';
 
 class ListEditor extends StatefulWidget {
   const ListEditor({Key? key}) : super(key: key);
@@ -29,8 +30,8 @@ class _ListEditorState extends State<ListEditor> {
       return;
     }
     context.read<PreferencesCubit>().addIgnoredFolder(newItem);
-      _textEditingController.clear();
-      Future.delayed(Duration(milliseconds: 100), () => _scrollToEnd());
+    _textEditingController.clear();
+    Future.delayed(Duration(milliseconds: 100), () => _scrollToEnd());
     FocusScope.of(context).requestFocus(_focusNode);
   }
 

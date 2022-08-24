@@ -7,8 +7,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:usb_file_finder/cubit/filter_cubit.dart';
-import 'package:usb_file_finder/event_bus.dart';
-import 'package:usb_file_finder/files_repository.dart';
+import 'package:usb_file_finder/services/event_bus.dart';
+import 'package:usb_file_finder/services/files_repository.dart';
 
 part 'app_state.dart';
 

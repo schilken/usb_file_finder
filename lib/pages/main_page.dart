@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
-import 'package:usb_file_finder/detail_tile.dart';
-import 'package:usb_file_finder/get_custom_toolbar.dart';
-import 'package:usb_file_finder/highlighted_text.dart';
-import 'package:usb_file_finder/textfield_dialog.dart';
+import 'package:usb_file_finder/components/detail_tile.dart';
+import 'package:usb_file_finder/components/get_custom_toolbar.dart';
+import 'package:usb_file_finder/components/highlighted_text.dart';
+import 'package:usb_file_finder/components/textfield_dialog.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});

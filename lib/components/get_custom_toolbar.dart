@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
-import 'package:usb_file_finder/toolbar_searchfield.dart';
-import 'package:usb_file_finder/toolbar_widget_toggle.dart';
+import 'package:usb_file_finder/components/toolbar_searchfield.dart';
+import 'package:usb_file_finder/components/toolbar_widget_toggle.dart';
 
 ToolBar getCustomToolBar(BuildContext context) {
   return ToolBar(

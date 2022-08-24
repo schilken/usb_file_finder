@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:usb_file_finder/event_bus.dart';
+import 'package:usb_file_finder/services/event_bus.dart';
 
 class PreferencesRepository {
   PreferencesRepository() {

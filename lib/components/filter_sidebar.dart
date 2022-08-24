@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/filter_cubit.dart';
-import 'package:usb_file_finder/device_list_view.dart';
-import 'package:usb_file_finder/macos_checkbox_list_tile.dart';
+import 'package:usb_file_finder/components/device_list_view.dart';
+import 'package:usb_file_finder/components/macos_checkbox_list_tile.dart';
 
 class FilterSidebar extends StatelessWidget {
   const FilterSidebar({
