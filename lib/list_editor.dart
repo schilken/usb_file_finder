@@ -44,7 +44,7 @@ class _ListEditorState extends State<ListEditor> {
 
   @override
   Widget build(BuildContext context) {
-    FocusScope.of(context).requestFocus(_focusNode);
+//    FocusScope.of(context).requestFocus(_focusNode);
     return Container(
       color: Colors.white,
       child: Padding(
