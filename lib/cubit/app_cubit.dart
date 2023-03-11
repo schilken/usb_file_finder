@@ -17,8 +17,7 @@ enum SearchResultAction {
 }
 
 class AppCubit extends Cubit<AppState> {
-  AppCubit(
-    this.filesRepository) : super(AppInitial()) {
+  AppCubit(this.filesRepository) : super(AppInitial()) {
     print('create AppCubit');
     eventBus.on<PreferencesChanged>().listen((event) async {
       _applyFilters(event);

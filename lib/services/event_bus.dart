@@ -32,6 +32,7 @@ class PreferencesChanged {
     return 'PreferencesChanged(fileTypeFilter: $fileTypeFilter, showHiddenFiles: $showHiddenFiles, searchInFilename: $searchInFilename, searchInFoldername: $searchInFoldername, ignoredFolders: $ignoredFolders, exclusionWords: $exclusionWords)';
   }
 }
+
 class RescanDevice {
   final int index;
 

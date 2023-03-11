@@ -13,7 +13,6 @@ class FilterCubit extends Cubit<FilterState> {
     eventBus.on<PreferencesChanged>().listen((event) async {
       _emitFilterLoaded(event);
     });
-
   }
   final PreferencesRepository _preferencesRepository;
 
@@ -27,7 +26,6 @@ class FilterCubit extends Cubit<FilterState> {
     'Dart Files',
   ];
 
-
   void _emitFilterLoaded(PreferencesChanged preferencesChanged) {
     emit(FilterLoaded(
       fileTypeFilter: fileTypeFilter,
@@ -40,7 +38,7 @@ class FilterCubit extends Cubit<FilterState> {
   }
 
   get fileTypeFilter => _preferencesRepository.fileTypeFilter;
-  
+
   Future<void> setFileTypeFilter(value) async {
     await _preferencesRepository.setFileTypeFilter(value);
   }

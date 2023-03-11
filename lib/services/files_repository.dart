@@ -69,7 +69,7 @@ class FilesRepository {
         _fileCountMap.update(extension, (value) => value + 1,
             ifAbsent: () => 1);
 
-        if (++fileCount % 1000 == 0) {
+        if (++fileCount % 100 == 0) {
           final components = p.split(file.path);
           currentFolderPath = components.length > 3 ? components[3] : '';
           progressCallback(fileCount, folderPath, currentFolderPath);

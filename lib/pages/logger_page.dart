@@ -12,7 +12,6 @@ class LoggerPage extends StatefulWidget {
 
   @override
   State<LoggerPage> createState() => _LoggerPageState();
-
 }
 
 class _LoggerPageState extends State<LoggerPage> {
@@ -89,12 +88,12 @@ class _LoggerPageState extends State<LoggerPage> {
                   SizedBox(height: 8),
                   Expanded(
                     child: ListView.builder(
-                          controller: scrollController,
-                          itemCount: _lines.length,
-                          itemBuilder: (BuildContext context, int index) {
+                      controller: scrollController,
+                      itemCount: _lines.length,
+                      itemBuilder: (BuildContext context, int index) {
                         Future.delayed(Duration.zero, () {
                           _scrollToEnd(scrollController);
-                        }); 
+                        });
                         return Text(_lines[index]);
                       },
                     ),
@@ -107,5 +106,4 @@ class _LoggerPageState extends State<LoggerPage> {
       ],
     );
   }
-
 }
