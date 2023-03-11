@@ -6,7 +6,7 @@ import 'package:macos_ui/macos_ui.dart';
 import '../preferences/preferences_cubit.dart';
 
 class ChipListEditor extends StatefulWidget {
-  const ChipListEditor({Key? key}) : super(key: key);
+  const ChipListEditor({super.key});
 
   @override
   State<ChipListEditor> createState() => _ListEditorState();
@@ -17,6 +17,7 @@ class _ListEditorState extends State<ChipListEditor> {
   late ScrollController _scrollController;
   late FocusNode _focusNode;
 
+  @override
   initState() {
     super.initState();
     _textEditingController = TextEditingController();
@@ -31,7 +32,7 @@ class _ListEditorState extends State<ChipListEditor> {
     }
     context.read<PreferencesCubit>().addExclusionWord(newItem);
     _textEditingController.clear();
-    Future.delayed(Duration(milliseconds: 100), () => _scrollToEnd());
+    Future.delayed(const Duration(milliseconds: 100), () => _scrollToEnd());
     FocusScope.of(context).requestFocus(_focusNode);
   }
 
@@ -53,8 +54,8 @@ class _ListEditorState extends State<ChipListEditor> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8.0),
                 child: Text('ChipListEditor'),
               ),
               Expanded(
@@ -67,7 +68,8 @@ class _ListEditorState extends State<ChipListEditor> {
                             .map((item) => Chip(
                                   label: Text(item),
                                   deleteIcon:
-                                      MacosIcon(CupertinoIcons.clear_circled),
+                                      const MacosIcon(
+                                      CupertinoIcons.clear_circled),
                                   onDeleted: () {
                                     context
                                         .read<PreferencesCubit>()
@@ -85,15 +87,15 @@ class _ListEditorState extends State<ChipListEditor> {
                       }
                       return Center(
                           child: TextButton(
-                              onPressed: () {}, child: Text('no data')));
+                              onPressed: () {}, child: const Text('no data')));
                     },
                   ), // Material
                 ),
               ),
               Row(
                 children: [
-                  Text('Add String to the List:'),
-                  SizedBox(width: 20.0),
+                  const Text('Add String to the List:'),
+                  const SizedBox(width: 20.0),
                   Expanded(
                     child: MacosTextField(
                       controller: _textEditingController,

@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/filter_cubit.dart';
 
 class LoggerPage extends StatefulWidget {
   const LoggerPage(Stream<dynamic> commandStdout, {super.key})
@@ -54,7 +52,7 @@ class _LoggerPageState extends State<LoggerPage> {
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       curve: Curves.easeOut,
-      duration: Duration(milliseconds: 10),
+      duration: const Duration(milliseconds: 10),
     );
   }
 
@@ -77,7 +75,7 @@ class _LoggerPageState extends State<LoggerPage> {
                         'Logger Ausgabe',
                         style: MacosTheme.of(context).typography.largeTitle,
                       ),
-                      TextButton(onPressed: onClear, child: Text('clear'))
+                      TextButton(onPressed: onClear, child: const Text('clear'))
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -85,7 +83,7 @@ class _LoggerPageState extends State<LoggerPage> {
                     'Command',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Expanded(
                     child: ListView.builder(
                       controller: scrollController,

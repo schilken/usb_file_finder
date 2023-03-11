@@ -90,9 +90,9 @@ class InfoDetailRow extends StatelessWidget {
   const InfoDetailRow(
     this.label,
     this.value, {
-    Key? key,
+    super.key,
     this.measure = '',
-  }) : super(key: key);
+  });
   final String label;
   final String value;
   final String measure;

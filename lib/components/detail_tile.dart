@@ -56,9 +56,9 @@ class DetailTile extends StatelessWidget {
 
 class ListTilePullDownMenu extends StatelessWidget {
   const ListTilePullDownMenu({
-    Key? key,
+    super.key,
     required this.detail,
-  }) : super(key: key);
+  });
 
   final Detail detail;
 

@@ -144,7 +144,7 @@ class _MainViewState extends State<MainView> {
           ],
         ),
       ],
-      body: MacosWindow(
+      child: MacosWindow(
         sidebar: Sidebar(
           minWidth: 240,
           decoration: BoxDecoration(
@@ -181,8 +181,8 @@ class _MainViewState extends State<MainView> {
         child: IndexedStack(
           index: _pageIndex,
           children: [
-            MainPage(),
-            PreferencesPage(),
+            const MainPage(),
+            const PreferencesPage(),
             LoggerPage(eventBus.streamController.stream),
           ],
         ),

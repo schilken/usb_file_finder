@@ -42,7 +42,7 @@ class FilterSidebar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
                 child: MacosCheckBoxListTile(
-                  title: Text('Include Hidden Folders'),
+                  title: const Text('Include Hidden Folders'),
                   onChanged: (value) => context
                       .read<FilterCubit>()
                       .toggleSearchOption('showHiddenFiles', value ?? false),
@@ -52,7 +52,7 @@ class FilterSidebar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
                 child: MacosCheckBoxListTile(
-                  title: Text('Search in Filename'),
+                  title: const Text('Search in Filename'),
                   onChanged: (value) => context
                       .read<FilterCubit>()
                       .toggleSearchOption('searchInFilename', value ?? false),
@@ -62,7 +62,7 @@ class FilterSidebar extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 4, 0),
                 child: MacosCheckBoxListTile(
-                  title: Text('Search in Foldername'),
+                  title: const Text('Search in Foldername'),
                   onChanged: (value) => context
                       .read<FilterCubit>()
                       .toggleSearchOption('searchInFoldername', value ?? false),
