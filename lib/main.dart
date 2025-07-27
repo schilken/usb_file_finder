@@ -21,7 +21,14 @@ import 'pages/logger_page.dart';
 import 'preferences/preferences_cubit.dart';
 import 'preferences/preferences_repository.dart';
 
-void main(List<String> args) {
+/// This method initializes macos_window_utils and styles the window.
+Future<void> _configureMacosWindowUtils() async {
+  const config = MacosWindowUtilsConfig();
+  await config.apply();
+}
+
+Future<void> main(List<String> args) async {
+  await _configureMacosWindowUtils();
   print('main: $args');
   if (args.firstOrNull == 'multi_window') {
     final windowId = int.parse(args[1]);
