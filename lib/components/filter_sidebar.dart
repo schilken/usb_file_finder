@@ -12,7 +12,9 @@ class FilterSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FilterCubit, FilterState>(
+    return Container(
+      color: Colors.grey.shade200,
+      child: BlocBuilder<FilterCubit, FilterState>(
       builder: (context, state) {
 //        print('FilterSidebar builder: ${state}');
 
@@ -81,6 +83,7 @@ class FilterSidebar extends StatelessWidget {
         }
         return Container();
       },
+        ),
     );
   }
 }

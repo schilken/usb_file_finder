@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
@@ -8,6 +9,9 @@ import 'package:usb_file_finder/components/toolbar_widget_toggle.dart';
 
 ToolBar getCustomToolBar(BuildContext context) {
   return ToolBar(
+    decoration: BoxDecoration(
+      color: Colors.grey.shade100,
+    ),
     title: const Text('USB File Finder'),
     titleWidth: 250.0,
     actions: [

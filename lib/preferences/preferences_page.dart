@@ -20,13 +20,16 @@ class _PreferencesPageState extends State<PreferencesPage> {
   @override
   Widget build(BuildContext context) {
     return MacosScaffold(
+      backgroundColor: Colors.grey.shade100,
       toolBar: const ToolBar(
         title: Text('Preferences'),
       ),
       children: [
         ContentArea(
           builder: (context, scrollController) {
-            return Padding(
+            return Container(
+              color: Colors.grey.shade100,
+              child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: MacosTabView(
                 controller: _controller,
@@ -60,6 +63,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
                   ),
                 ],
               ),
+                ),
             );
           },
         ),

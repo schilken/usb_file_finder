@@ -91,9 +91,12 @@ class App extends StatelessWidget {
               ],
               child: MacosApp(
                 title: 'usb_file_finder',
-                theme: MacosThemeData.light(),
+                theme: MacosThemeData.light().copyWith(
+                  canvasColor: Colors.grey.shade100,
+                  dividerColor: Colors.grey.shade300,
+                ),
                 darkTheme: MacosThemeData.dark(),
-                themeMode: ThemeMode.system,
+                themeMode: ThemeMode.light,
                 home: const MainView(),
                 debugShowCheckedModeBanner: false,
               ),
@@ -145,37 +148,45 @@ class _MainViewState extends State<MainView> {
         ),
       ],
       child: MacosWindow(
+        backgroundColor: Colors.grey.shade100,
         sidebar: Sidebar(
           minWidth: 240,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,
           ),
           top: const FilterSidebar(),
-          builder: (context, scrollController) => SidebarItems(
-            currentIndex: _pageIndex,
-            scrollController: scrollController,
-            onChanged: (index) {
-              setState(() => _pageIndex = index);
-            },
-            items: const [
-              SidebarItem(
-                leading: MacosIcon(CupertinoIcons.search),
-                label: Text('Search Result'),
-              ),
-              SidebarItem(
-                leading: MacosIcon(CupertinoIcons.graph_square),
-                label: Text('Preferences'),
-              ),
-              SidebarItem(
-                leading: MacosIcon(CupertinoIcons.graph_square),
-                label: Text('Logger'),
-              ),
-            ],
+          builder: (context, scrollController) => Container(
+            color: Colors.grey.shade200,
+            child: SidebarItems(
+              currentIndex: _pageIndex,
+              scrollController: scrollController,
+              itemSize: SidebarItemSize.large,
+              onChanged: (index) {
+                setState(() => _pageIndex = index);
+              },
+              items: const [
+                SidebarItem(
+                  leading: MacosIcon(CupertinoIcons.search),
+                  label: Text('Search Result'),
+                ),
+                SidebarItem(
+                  leading: MacosIcon(CupertinoIcons.graph_square),
+                  label: Text('Preferences'),
+                ),
+                SidebarItem(
+                  leading: MacosIcon(CupertinoIcons.graph_square),
+                  label: Text('Logger'),
+                ),
+              ],
+            ),
           ),
-          bottom: const MacosListTile(
-            leading: MacosIcon(CupertinoIcons.profile_circled),
-            title: Text('Alfred Schilken'),
-            subtitle: Text('alfred@schilken.de'),
+          bottom: Container(
+            color: Colors.grey.shade200,
+            child: const MacosListTile(
+              leading: MacosIcon(CupertinoIcons.profile_circled),
+              title: Text('Alfred Schilken'),
+              subtitle: Text('alfred@schilken.de'),
+            ),
           ),
         ),
         child: IndexedStack(

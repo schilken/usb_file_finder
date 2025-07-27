@@ -59,11 +59,14 @@ class _LoggerPageState extends State<LoggerPage> {
   @override
   Widget build(BuildContext context) {
     return MacosScaffold(
+      backgroundColor: Colors.grey.shade100,
       children: [
         ContentArea(
           minWidth: 500,
           builder: (context, scrollController) {
-            return Padding(
+            return Container(
+              color: Colors.grey.shade100,
+              child: Padding(
               padding: const EdgeInsets.all(40.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,6 +101,7 @@ class _LoggerPageState extends State<LoggerPage> {
                   ),
                 ],
               ),
+                ),
             );
           },
         ),

@@ -39,11 +39,14 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
       return MacosScaffold(
+        backgroundColor: Colors.grey.shade100,
         toolBar: getCustomToolBar(context),
         children: [
           ContentArea(
             builder: (context, scrollController) {
-              return BlocBuilder<AppCubit, AppState>(
+              return Container(
+                color: Colors.grey.shade100,
+                child: BlocBuilder<AppCubit, AppState>(
                 builder: (context, state) {
                   if (state is DetailsLoaded) {
                     return Column(
@@ -141,6 +144,7 @@ class MainPage extends StatelessWidget {
                   }
                   return const Center(child: Text('No file selected'));
                 },
+                ),
               );
             },
           ),
