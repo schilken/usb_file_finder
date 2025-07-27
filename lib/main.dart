@@ -155,15 +155,15 @@ class _MainViewState extends State<MainView> {
         ),
       ],
       child: MacosWindow(
-        backgroundColor: Colors.grey.shade100,
+//        backgroundColor: Colors.grey.shade100,
         sidebar: Sidebar(
           minWidth: 240,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-          ),
+          // decoration: BoxDecoration(
+          //   color: Colors.grey.shade200,
+          // ),
           top: const FilterSidebar(),
           builder: (context, scrollController) => Container(
-            color: Colors.grey.shade200,
+ //           color: Colors.grey.shade200,
             child: SidebarItems(
               currentIndex: _pageIndex,
               scrollController: scrollController,
@@ -188,7 +188,7 @@ class _MainViewState extends State<MainView> {
             ),
           ),
           bottom: Container(
-            color: Colors.grey.shade200,
+//            color: Colors.grey.shade200,
             child: const MacosListTile(
               leading: MacosIcon(CupertinoIcons.profile_circled),
               title: Text('Alfred Schilken'),

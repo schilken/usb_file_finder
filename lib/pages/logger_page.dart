@@ -59,7 +59,7 @@ class _LoggerPageState extends State<LoggerPage> {
   @override
   Widget build(BuildContext context) {
     return MacosScaffold(
-      backgroundColor: Colors.grey.shade100,
+//      backgroundColor: Colors.grey.shade100,
       children: [
         ContentArea(
           minWidth: 500,

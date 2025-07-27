@@ -45,7 +45,7 @@ class MainPage extends StatelessWidget {
           ContentArea(
             builder: (context, scrollController) {
               return Container(
-                color: Colors.grey.shade100,
+//                color: Colors.grey.shade100,
                 child: BlocBuilder<AppCubit, AppState>(
                 builder: (context, state) {
                   if (state is DetailsLoaded) {

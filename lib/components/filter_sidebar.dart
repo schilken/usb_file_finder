@@ -13,7 +13,7 @@ class FilterSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey.shade200,
+//      color: Colors.grey.shade200,
       child: BlocBuilder<FilterCubit, FilterState>(
       builder: (context, state) {
 //        print('FilterSidebar builder: ${state}');
