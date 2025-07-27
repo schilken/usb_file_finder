@@ -1,8 +1,12 @@
 PODS:
+  - appkit_ui_element_colors (1.0.0):
+    - FlutterMacOS
   - desktop_multi_window (0.0.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - macos_ui (0.1.0):
+    - FlutterMacOS
+  - macos_window_utils (1.0.0):
     - FlutterMacOS
   - path_provider_foundation (0.0.1):
     - Flutter
@@ -12,31 +16,39 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - appkit_ui_element_colors (from `Flutter/ephemeral/.symlinks/plugins/appkit_ui_element_colors/macos`)
   - desktop_multi_window (from `Flutter/ephemeral/.symlinks/plugins/desktop_multi_window/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - macos_ui (from `Flutter/ephemeral/.symlinks/plugins/macos_ui/macos`)
-  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/macos`)
-  - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/macos`)
+  - macos_window_utils (from `Flutter/ephemeral/.symlinks/plugins/macos_window_utils/macos`)
+  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
+  - shared_preferences_foundation (from `Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin`)
 
 EXTERNAL SOURCES:
+  appkit_ui_element_colors:
+    :path: Flutter/ephemeral/.symlinks/plugins/appkit_ui_element_colors/macos
   desktop_multi_window:
     :path: Flutter/ephemeral/.symlinks/plugins/desktop_multi_window/macos
   FlutterMacOS:
     :path: Flutter/ephemeral
   macos_ui:
     :path: Flutter/ephemeral/.symlinks/plugins/macos_ui/macos
+  macos_window_utils:
+    :path: Flutter/ephemeral/.symlinks/plugins/macos_window_utils/macos
   path_provider_foundation:
-    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/macos
+    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
   shared_preferences_foundation:
-    :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/macos
+    :path: Flutter/ephemeral/.symlinks/plugins/shared_preferences_foundation/darwin
 
 SPEC CHECKSUMS:
-  desktop_multi_window: 566489c048b501134f9d7fb6a2354c60a9126486
-  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  macos_ui: 6229a8922cd97bafb7d9636c8eb8dfb0744183ca
-  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
-  shared_preferences_foundation: 986fc17f3d3251412d18b0265f9c64113a8c2472
+  appkit_ui_element_colors: c8e13c23cbd781e0f5d9b75cad686e6a4bb958da
+  desktop_multi_window: 93667594ccc4b88d91a97972fd3b1b89667fa80a
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  macos_ui: ff29104a215c2e1b76f37aacdcbba648abb25faa
+  macos_window_utils: 23f54331a0fd51eea9e0ed347253bf48fd379d1d
+  path_provider_foundation: 9b2865ae0d177584c376882d93e61be1e80b9e39
+  shared_preferences_foundation: 9febbcd5d8b5587372cd230ce67c9dde54338f6b
 
-PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
+PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.16.2

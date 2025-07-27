@@ -55,8 +55,7 @@ class MainPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               PushButton(
-                                buttonSize: ButtonSize.large,
-                                isSecondary: true,
+                                controlSize: ControlSize.large,
                                 color: Colors.white,
                                 child: const Text('Exclude'),
                                 onPressed: () => promptString(context),
