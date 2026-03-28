@@ -15,7 +15,7 @@ class ToolbarWidgetToggle extends ToolbarItem {
   final bool value;
   final BoolCallback onChanged;
   final Widget child;
-  final String? tooltipMessage; 
+  final String? tooltipMessage;
 
   @override
   Widget build(BuildContext context, ToolbarItemDisplayMode displayMode) {
@@ -78,7 +78,7 @@ class _WidgetToggleButtonState extends State<WidgetToggleButton> {
           )
         : PushButton(
             onPressed: _onPressed,
-            buttonSize: ButtonSize.large,
+            controlSize: ControlSize.large,
             color: currentValue ? Colors.green[100] : Colors.white,
             child: widget.child,
           );

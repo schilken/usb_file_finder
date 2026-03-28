@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:macos_window_utils/macos_window_utils.dart';
 import 'package:usb_file_finder/about_window.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
 import 'package:usb_file_finder/cubit/settings_cubit.dart';
@@ -15,21 +16,28 @@ import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/settings_window.dart';
 import 'package:usb_file_finder/statistics_page.dart';
 
-void main(List<String> args) {
-  print('main: $args');
+Future<void> main(List<String> args) async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Configure macos_window_utils for macos_ui 2.x
+  const config = MacosWindowUtilsConfig(
+    toolbarStyle: NSWindowToolbarStyle.unified,
+  );
+  await config.apply();
+
   if (args.firstOrNull == 'multi_window') {
     final windowId = int.parse(args[1]);
     final arguments = args[2].isEmpty
-        ? const {}
+        ? const <String, dynamic>{}
         : jsonDecode(args[2]) as Map<String, dynamic>;
     if (arguments['args1'] == 'About') {
       runApp(AboutWindow(
-        windowController: WindowController.fromWindowId(windowId),
+        windowController: WindowController.fromWindowId(windowId.toString()),
         args: arguments,
       ));
     } else if (arguments['args1'] == 'Preferences') {
       runApp(SettingsWindow(
-        windowController: WindowController.fromWindowId(windowId),
+        windowController: WindowController.fromWindowId(windowId.toString()),
         args: arguments,
       ));
     }
@@ -97,37 +105,33 @@ class _MainViewState extends State<MainView> {
             PlatformMenuItem(
               label: 'About',
               onSelected: () async {
-                final window = await DesktopMultiWindow.createWindow(jsonEncode(
-                  {
-                    'args1': 'About',
-                    'args2': 500,
-                    'args3': true,
-                  },
-                ));
-                debugPrint('$window');
-                window
-                  ..setFrame(const Offset(0, 0) & const Size(350, 350))
-                  ..center()
-                  ..setTitle('About usb_file_finder')
-                  ..show();
+                final window = await WindowController.create(
+                  WindowConfiguration(
+                    hiddenAtLaunch: true,
+                    arguments: jsonEncode({
+                      'args1': 'About',
+                      'args2': 500,
+                      'args3': true,
+                    }),
+                  ),
+                );
+                await window.show();
               },
             ),
             PlatformMenuItem(
               label: 'Preferences',
               onSelected: () async {
-                final window = await DesktopMultiWindow.createWindow(jsonEncode(
-                  {
-                    'args1': 'Preferences',
-                    'args2': 500,
-                    'args3': true,
-                  },
-                ));
-                debugPrint('$window');
-                window
-                  ..setFrame(const Offset(0, 0) & const Size(350, 350))
-                  ..center()
-                  ..setTitle('The Preferences')
-                  ..show();
+                final window = await WindowController.create(
+                  WindowConfiguration(
+                    hiddenAtLaunch: true,
+                    arguments: jsonEncode({
+                      'args1': 'Preferences',
+                      'args2': 500,
+                      'args3': true,
+                    }),
+                  ),
+                );
+                await window.show();
               },
             ),
             const PlatformProvidedMenuItem(
@@ -136,7 +140,7 @@ class _MainViewState extends State<MainView> {
           ],
         ),
       ],
-      body: MacosWindow(
+      child: MacosWindow(
         sidebar: Sidebar(
           minWidth: 240,
           top: const FilterSidebar(),

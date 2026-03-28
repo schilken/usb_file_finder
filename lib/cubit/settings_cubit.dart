@@ -32,5 +32,4 @@ class SettingsCubit extends Cubit<SettingsState> {
     ));
     eventBus.fire(SettingsChanged(fileTypeFilter));
   }
-
 }

@@ -177,7 +177,9 @@ class HighlightedText extends StatelessWidget {
       textDirection: textDirection,
       softWrap: softWrap,
       overflow: overflow,
-      textScaleFactor: textScaleFactor,
+      textScaler: textScaleFactor != null
+          ? TextScaler.linear(textScaleFactor!)
+          : TextScaler.noScaling,
       maxLines: maxLines,
 //      locale: locale,
 //      strutStyle: strutStyle,
