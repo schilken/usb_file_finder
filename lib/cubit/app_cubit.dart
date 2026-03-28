@@ -1,51 +1,45 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
-import 'package:usb_file_finder/cubit/filter_cubit.dart';
-import 'package:usb_file_finder/services/event_bus.dart';
-import 'package:usb_file_finder/services/files_repository.dart';
+import 'package:usb_file_finder/cubit/settings_cubit.dart';
+import 'package:usb_file_finder/event_bus.dart';
+import 'package:usb_file_finder/files_repository.dart';
 
 part 'app_state.dart';
 
-enum SearchResultAction {
-  showOnlyFilesInsameFolder,
-}
-
 class AppCubit extends Cubit<AppState> {
-  AppCubit(this.filesRepository) : super(AppInitial()) {
+  AppCubit(
+    SettingsCubit settingsCubit,
+    this.filesRepository,
+  )   : _settingsCubit = settingsCubit,
+        super(AppInitial()) {
     print('create AppCubit');
-    eventBus.on<PreferencesChanged>().listen((event) async {
-      _applyFilters(event);
+    eventBus.on<SettingsChanged>().listen((event) async {
+      _applyFilters(event.fileTypeFilter);
     });
-    Future.delayed(
-        Duration(milliseconds: 100), () => eventBus.fire(PreferencesTrigger()));
     eventBus.on<RescanDevice>().listen((event) async {
       print('AppCubit event: $event');
-      final folderPath = filesRepository.folderPathForIndex(event.index);
-      scanFolder(folderPath: folderPath);
+      final volumePath = filesRepository.volumePathForIndex(event.index);
+      scanVolume(volumePath: volumePath);
     });
   }
   final FilesRepository filesRepository;
   String? _primaryWord;
   String? _secondaryWord;
-  String? _onlyInThisFolder;
   final List<String> _exclusionWords = [];
-  List<String> _exclusionWordsFromPreferences = [];
   String? _fileType;
   int _fileCount = 0;
   int _primaryHitCount = 0;
   int _secondaryHitCount = 0;
+  final SettingsCubit _settingsCubit;
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;
-  bool _includeHiddenFolders = false;
   String _folderPath = '';
-  var _searchResult = <Detail>[];
 
   List<String> _filteredFilePaths = [];
 
@@ -57,9 +51,6 @@ class AppCubit extends Cubit<AppState> {
     parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
     if (_exclusionWords.isNotEmpty) {
       parameters.add('excluded: ${_exclusionWords.join(' ')}');
-    }
-    if (_onlyInThisFolder != null) {
-      parameters.add('only in: $_onlyInThisFolder');
     }
     return parameters.join(' - ');
   }
@@ -78,16 +69,7 @@ class AppCubit extends Cubit<AppState> {
     }
   }
 
-  bool containsExclusionWordFromPreferences(String path) {
-    if (_exclusionWordsFromPreferences.isEmpty) {
-      return false;
-    }
-    final result =
-        _exclusionWordsFromPreferences.any((word) => path.contains(word));
-    return result;
-  }
-
-  bool containsTemporaryExclusionWord(String path) {
+  bool containsAnyExclusionWord(String path) {
     if (_exclusionWords.isEmpty) {
       return false;
     }
@@ -100,17 +82,15 @@ class AppCubit extends Cubit<AppState> {
     final linesAsStream = filesRepository
         .allLinesAsStream(_selectedFileType)
         .map((path) => _searchCaseSensitiv ? path : path.toLowerCase())
-        .where((path) => !containsExclusionWordFromPreferences(path))
-        .where((path) => !containsTemporaryExclusionWord(path))
-        .where((path) =>
-            _onlyInThisFolder == null || path.contains(_onlyInThisFolder!));
+        .where((path) => !path.contains('XXX'))
+        .where((path) => !containsAnyExclusionWord(path));
 
     _filteredFilePaths = await linesAsStream.toList();
 //    _allFilePaths = await filesRepository.loadTotalFileList(_selectedFileType);
     _fileCount = _filteredFilePaths.length;
     _primaryHitCount = 0;
     _secondaryHitCount = 0;
-    _searchResult = <Detail>[];
+    final primaryResult = <Detail>[];
     for (final path in _filteredFilePaths) {
       if (path.contains(_primaryWord ?? '')) {
         _primaryHitCount++;
@@ -122,7 +102,7 @@ class AppCubit extends Cubit<AppState> {
           var folderPath = path;
           folderPath =
               components.sublist(3).join('/').replaceFirst(filename, '');
-          _searchResult.add(Detail(
+          primaryResult.add(Detail(
             filePath: filename,
             storageName: storageName,
             folderPath: folderPath,
@@ -132,69 +112,124 @@ class AppCubit extends Cubit<AppState> {
         }
       }
     }
-    emitDetailsLoaded(
-      currentSearchParameters: _searchParameters,
-      details: _searchResult,
-    );
-  }
-
-  void progressCallback(int fileCount, String volumePath, String folderPath) {
-    _fileCount = fileCount;
-    _folderPath = folderPath;
-    emitDetailsLoaded(
-      currentSearchParameters: '$volumePath - $_folderPath',
-      isScanRunning: true,
-    );
-  }
-
-  void onScanDone(int fileCount, String volumePath) {
-    _fileCount = fileCount;
-    emitDetailsLoaded(currentSearchParameters: volumePath);
-    eventBus.fire(const DevicesChanged());
-  }
-
-  Future<void> scanFolder({required String folderPath}) async {
-    _primaryHitCount = 0;
-    _secondaryHitCount = 0;
-    _subscription = await filesRepository.scanFolder(
-      folderPath: folderPath,
-      progressCallback: progressCallback,
-      onScanDone: onScanDone,
-    );
-  }
-
-  Future<void> cancelScan() async {
-    await _subscription?.cancel();
-    emitDetailsLoaded();
-  }
-
-  void emitDetailsLoaded({
-    bool isScanRunning = false,
-    List<Detail> details = const [],
-    String currentSearchParameters = '',
-  }) {
     emit(
       DetailsLoaded(
-        currentSearchParameters: currentSearchParameters,
-        fileType: _fileType,
-        fileCount: _fileCount,
+        currentSearchParameters: _searchParameters,
+        fileType: _selectedFileType,
+        fileCount: _filteredFilePaths.length,
         primaryHitCount: _primaryHitCount,
         secondaryHitCount: _secondaryHitCount,
-        details: details,
-        isScanRunning: isScanRunning,
+        details: primaryResult,
         primaryWord: _primaryWord,
         secondaryWord: _secondaryWord,
+        isScanRunning: false,
       ),
     );
   }
 
-  void _applyFilters(PreferencesChanged newSettings) {
-    print('_applyFilters: $newSettings');
-    _selectedFileType = newSettings.fileTypeFilter;
-    _includeHiddenFolders = newSettings.showHiddenFiles;
-    filesRepository.includeHiddenFolders = newSettings.showHiddenFiles;
-    _exclusionWordsFromPreferences = newSettings.exclusionWords;
-    filesRepository.ignoredFolders = newSettings.ignoredFolders;
+  final _ignoredFolders = <String>{
+    'Backups.backupdb',
+    'Contents',
+    'BACKUP-ELLENS_MAC',
+  };
+
+  bool ignoreFolder(String folderPath) {
+    final folderName = p.basename(folderPath);
+    if (folderName.startsWith('.')) {
+      return true;
+    }
+    if (_ignoredFolders.contains(folderName)) {
+      return true;
+    }
+    return false;
+  }
+
+//async* + yield* for recursive functions
+  Stream<File> scanningFilesWithAsyncRecursive(Directory dir) async* {
+    //dirList is FileSystemEntity list for every directories/subdirectories
+    //entities in this list might be file, directory or link
+    try {
+      var dirList = dir.list();
+      await for (final FileSystemEntity entity in dirList) {
+        if (entity is File) {
+          yield entity;
+        } else if (entity is Directory && !ignoreFolder(entity.path)) {
+          yield* scanningFilesWithAsyncRecursive(Directory(entity.path));
+        }
+      }
+    } on Exception catch (e) {
+      print('exception: $e');
+    }
+  }
+
+  Future<void> scanVolume({required String volumePath}) async {
+    var dir = Directory(volumePath);
+    final deviceName = p.basename(volumePath);
+    Map<String, File> extensionMap =
+        await filesRepository.buildExtensionMap(deviceName);
+
+    Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
+
+    _fileCount = 0;
+    _subscription = scannedFiles.listen((File file) async {
+      final listfile = extensionMap[p.extension(file.path)];
+      if (listfile != null) {
+        listfile.writeAsStringSync('${file.path}\n', mode: FileMode.append);
+        if (++_fileCount % 100 == 0) {
+//          print('files: $_fileCount');
+          final components = p.split(file.path);
+          _folderPath = components.length > 3 ? components[3] : '';
+          emit(DetailsLoaded(
+            currentSearchParameters: '$volumePath - $_folderPath',
+            fileType: _fileType,
+            fileCount: _fileCount,
+            primaryHitCount: _primaryHitCount,
+            secondaryHitCount: 0,
+            isScanRunning: true,
+            details: const [],
+          ));
+        }
+      }
+    });
+    _subscription?.onDone(
+      () {
+        emit(
+          DetailsLoaded(
+            currentSearchParameters: volumePath,
+            fileType: _fileType,
+            fileCount: _fileCount,
+            primaryHitCount: _primaryHitCount,
+            secondaryHitCount: 0,
+            isScanRunning: false,
+            details: const [],
+          ),
+        );
+        eventBus.fire(const DevicesChanged());
+      },
+    );
+    _subscription?.onError((Object error) {
+      print('error: $error');
+    });
+  }
+
+  Future<void> cancelScan() async {
+    await _subscription?.cancel();
+    emit(
+      DetailsLoaded(
+        currentSearchParameters: '',
+        fileType: _fileType,
+        fileCount: _fileCount,
+        primaryHitCount: _primaryHitCount,
+        secondaryHitCount: 0,
+        isScanRunning: false,
+        details: const [],
+      ),
+    );
+  }
+
+  void _applyFilters(String fileTypeFilter) {
+    print('_applyFilters: $fileTypeFilter');
+    _selectedFileType = fileTypeFilter;
     search();
   }
 
@@ -214,7 +249,6 @@ class AppCubit extends Cubit<AppState> {
 
   clearExcludes() {
     _exclusionWords.clear();
-    _onlyInThisFolder = null;
     search();
   }
 
@@ -224,19 +258,5 @@ class AppCubit extends Cubit<AppState> {
 
   showInFinder(String filePath) {
     Process.run('open', ['-R', filePath]);
-  }
-
-  menuAction(SearchResultAction menuAction, String? folderPath) {
-    _onlyInThisFolder = folderPath;
-    search();
-  }
-
-  copyToClipboard(String path) {
-    Clipboard.setData(ClipboardData(text: path));
-  }
-
-  showInTerminal(String path) {
-    final dirname = p.dirname(path);
-    Process.run('open', ['-a', 'iTerm', dirname]);
   }
 }

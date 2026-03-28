@@ -23,9 +23,9 @@ class HighlightedText extends StatelessWidget {
   final TextWidthBasis textWidthBasis;
 //  final TextHeightBehavior textHeightBehavior;
 
-  const HighlightedText({
+  HighlightedText({
     //DynamicTextHighlighting
-    super.key,
+    Key? key,
     required this.text,
     required this.highlights,
     this.color = Colors.yellow,
@@ -55,7 +55,8 @@ class HighlightedText extends StatelessWidget {
         assert(overflow != null),
         assert(textScaleFactor != null),
         assert(maxLines == null || maxLines > 0),
-        assert(textWidthBasis != null);
+        assert(textWidthBasis != null),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +177,9 @@ class HighlightedText extends StatelessWidget {
       textDirection: textDirection,
       softWrap: softWrap,
       overflow: overflow,
-      textScaleFactor: textScaleFactor,
+      textScaler: textScaleFactor != null
+          ? TextScaler.linear(textScaleFactor!)
+          : TextScaler.noScaling,
       maxLines: maxLines,
 //      locale: locale,
 //      strutStyle: strutStyle,

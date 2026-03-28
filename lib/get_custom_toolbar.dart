@@ -1,17 +1,13 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
-import 'package:usb_file_finder/components/toolbar_searchfield.dart';
-import 'package:usb_file_finder/components/toolbar_widget_toggle.dart';
+import 'package:usb_file_finder/toolbar_searchfield.dart';
+import 'package:usb_file_finder/toolbar_widget_toggle.dart';
 
 ToolBar getCustomToolBar(BuildContext context) {
   return ToolBar(
-    // decoration: BoxDecoration(
-    //   color: Colors.grey.shade100,
-    // ),
     title: const Text('USB File Finder'),
     titleWidth: 250.0,
     actions: [
@@ -38,7 +34,7 @@ ToolBar getCustomToolBar(BuildContext context) {
               if (selectedDirectory != null) {
                 context
                     .read<AppCubit>()
-                    .scanFolder(folderPath: selectedDirectory);
+                    .scanVolume(volumePath: selectedDirectory);
               }
             },
           ),
@@ -67,16 +63,18 @@ ToolBar getCustomToolBar(BuildContext context) {
       ),
       ToolbarWidgetToggle(
           onChanged: context.read<AppCubit>().setCaseSentitiv,
-          child: const Text('Aa'),
-          tooltipMessage: 'Search case sentitiv'),
+        child: const Text('Aa'),
+          tooltipMessage: 'Search case sentitiv'
+      ),
       ToolBarIconButton(
-          label: "Search",
-          icon: const MacosIcon(
-            CupertinoIcons.search,
-          ),
-          onPressed: () => context.read<AppCubit>().search(),
-          showLabel: false,
-          tooltipMessage: 'Start new Search'),
+        label: "Search",
+        icon: const MacosIcon(
+          CupertinoIcons.search,
+        ),
+        onPressed: () => context.read<AppCubit>().search(),
+        showLabel: false,
+          tooltipMessage: 'Start new Search'
+      ),
       const ToolBarDivider(),
       ToolBarIconButton(
         label: "Share",

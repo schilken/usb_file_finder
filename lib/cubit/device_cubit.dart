@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:usb_file_finder/services/event_bus.dart';
-import 'package:usb_file_finder/services/files_repository.dart';
-import 'package:usb_file_finder/models/storage_info.dart';
+import 'package:usb_file_finder/event_bus.dart';
+import 'package:usb_file_finder/files_repository.dart';
 
 part 'device_state.dart';
 
@@ -22,22 +19,20 @@ class DeviceCubit extends Cubit<DeviceState> {
   DeviceCubit(this.filesRepository) : super(DeviceInitial());
 
   final FilesRepository filesRepository;
-  StreamSubscription<DevicesChanged>? _devicesChangedSubscription;
 
   Future<DeviceCubit> initialize() async {
     emit(DeviceLoading());
     await Future.delayed(const Duration(milliseconds: 1000));
-    final devices = await filesRepository.readStorageInfos();
+    final devices = await filesRepository.readDeviceData();
     emit(
       DeviceLoaded(
         devices: devices,
         deviceCount: devices.length,
       ),
     );
-    _devicesChangedSubscription =
-        eventBus.on<DevicesChanged>().listen((event) async {
+    eventBus.on<DevicesChanged>().listen((event) async {
       print('DeviceCubit event: $event');
-      final updatedDevices = await filesRepository.readStorageInfos();
+      final updatedDevices = await filesRepository.readDeviceData();
       emit(
         DeviceLoaded(
           devices: updatedDevices,
@@ -45,13 +40,7 @@ class DeviceCubit extends Cubit<DeviceState> {
         ),
       );
     });
-    await menuAction(StorageAction.selectAll, 0);
     return this;
-  }
-
-  Future<void> dispose() async {
-    print('>>>>>>>>>> DeviceCubit dispose');
-    await _devicesChangedSubscription?.cancel();
   }
 
   void toggleDevice(
@@ -67,32 +56,28 @@ class DeviceCubit extends Cubit<DeviceState> {
     );
   }
 
-  Future<StorageInfo> getStorageInfo(int index) async {
-    final storageInfo = await filesRepository
-        .loadStorageInfoForDevice(filesRepository.storageInfoForIndex(index));
-    return storageInfo;
-  }
-
-  Future<dynamic> menuAction(StorageAction action, int index) async {
+  menuAction(StorageAction action, int index) async {
     print('menuAction: $action');
+    final currentState = state as DeviceLoaded;
     switch (action) {
       case StorageAction.selectAll:
       case StorageAction.selectAllOthers:
       case StorageAction.unselectAllOthers:
       case StorageAction.eject:
       case StorageAction.removeData:
-        final infoList =
-            await filesRepository.executeStorageAction(action, index);
         emit(DeviceLoaded(
-          devices: infoList,
-          deviceCount: infoList.length,
+          devices: await filesRepository.executeStorageAction(action, index),
+          deviceCount: currentState.deviceCount,
         ));
         break;
       case StorageAction.showInfo:
+        final storageInfo = await filesRepository.createStorageInfoForDevice(
+            filesRepository.storageDetailsForIndex(index));
         break;
       case StorageAction.rescan:
         eventBus.fire(RescanDevice(index));
         break;
     }
   }
+
 }

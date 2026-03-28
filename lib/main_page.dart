@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/app_cubit.dart';
-import 'package:usb_file_finder/components/detail_tile.dart';
-import 'package:usb_file_finder/components/get_custom_toolbar.dart';
-import 'package:usb_file_finder/components/highlighted_text.dart';
-import 'package:usb_file_finder/components/textfield_dialog.dart';
+import 'package:usb_file_finder/detail_tile.dart';
+import 'package:usb_file_finder/get_custom_toolbar.dart';
+import 'package:usb_file_finder/highlighted_text.dart';
+import 'package:usb_file_finder/textfield_dialog.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -21,8 +21,8 @@ class MainPage extends StatelessWidget {
       textOK: const Text('OK'),
       textCancel: const Text('Abbrechen'),
       validator: (String? value) {
-        if (value == null || value.isEmpty || value.length < 2) {
-          return 'Mindestens 2 Buchstaben oder Ziffern';
+        if (value == null || value.isEmpty || value.length < 3) {
+          return 'Mindestens 3 Buchstaben oder Ziffern';
         }
         return null;
       },
@@ -35,18 +35,44 @@ class MainPage extends StatelessWidget {
     }
   }
 
+  macosPromptString(BuildContext context) {
+    showMacosAlertDialog(
+      context: context,
+      builder: (context) => MacosAlertDialog(
+        appIcon: const FlutterLogo(
+          size: 56,
+        ),
+        title: const Text(
+          'Alert Dialog with Secondary Action',
+        ),
+        message: const Text(
+          'This is an alert dialog with primary action and secondary action laid out horizontally',
+          textAlign: TextAlign.center,
+        ),
+        //horizontalActions: false,
+        primaryButton: PushButton(
+          controlSize: ControlSize.large,
+          onPressed: Navigator.of(context).pop,
+          child: const Text('Primary'),
+        ),
+        secondaryButton: PushButton(
+          controlSize: ControlSize.large,
+          onPressed: Navigator.of(context).pop,
+          child: const Text('Secondary'),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
       return MacosScaffold(
-        backgroundColor: Colors.grey.shade100,
         toolBar: getCustomToolBar(context),
         children: [
           ContentArea(
             builder: (context, scrollController) {
-              return Container(
-//                color: Colors.grey.shade100,
-                child: BlocBuilder<AppCubit, AppState>(
+              return BlocBuilder<AppCubit, AppState>(
                 builder: (context, state) {
                   if (state is DetailsLoaded) {
                     return Column(
@@ -78,6 +104,13 @@ class MainPage extends StatelessWidget {
                                       context.read<AppCubit>().clearExcludes(),
                                 ),
                               const Spacer(),
+                              if (state.isScanRunning)
+                                TextButton(
+                                    onPressed: context
+                                        .read<AppCubit>()
+                                        .addToIgnoreFolderList,
+                                    child: const Text(
+                                        'Add Folder to Ignore List')),
                               if (state.isScanRunning)
                                 TextButton(
                                     onPressed:
@@ -144,7 +177,6 @@ class MainPage extends StatelessWidget {
                   }
                   return const Center(child: Text('No file selected'));
                 },
-                ),
               );
             },
           ),
