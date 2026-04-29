@@ -5,6 +5,7 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:macos_window_utils/macos_window_utils.dart';
 import 'package:usb_file_finder/about_window.dart';
@@ -42,7 +43,7 @@ Future<void> main(List<String> args) async {
       ));
     }
   } else {
-    runApp(const App());
+    runApp(const ProviderScope(child: App()));
   }
 }
 
