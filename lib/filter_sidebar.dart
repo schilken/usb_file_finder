@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/settings_notifier.dart';
+import 'package:usb_file_finder/providers/settings_notifier.dart';
 import 'package:usb_file_finder/device_list_view.dart';
 
 class FilterSidebar extends ConsumerWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/statistics_notifier.dart';
+import 'package:usb_file_finder/providers/statistics_notifier.dart';
 import 'package:usb_file_finder/get_custom_toolbar.dart';
 
 class StatisticsPage extends ConsumerWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:usb_file_finder/files_repository.dart';
 
-export 'package:usb_file_finder/cubit/app_notifier.dart'
+export 'package:usb_file_finder/providers/app_notifier.dart'
     show
         appProvider,
         AppNotifier,
@@ -10,7 +10,7 @@ export 'package:usb_file_finder/cubit/app_notifier.dart'
         DetailsLoading,
         DetailsLoaded,
         Detail;
-export 'package:usb_file_finder/cubit/device_notifier.dart'
+export 'package:usb_file_finder/providers/device_notifier.dart'
     show
         deviceProvider,
         DeviceNotifier,
@@ -19,9 +19,9 @@ export 'package:usb_file_finder/cubit/device_notifier.dart'
         DeviceLoading,
         DeviceLoaded,
         StorageAction;
-export 'package:usb_file_finder/cubit/settings_notifier.dart'
+export 'package:usb_file_finder/providers/settings_notifier.dart'
     show settingsProvider, SettingsNotifier, SettingsState;
-export 'package:usb_file_finder/cubit/statistics_notifier.dart'
+export 'package:usb_file_finder/providers/statistics_notifier.dart'
     show
         statisticsProvider,
         StatisticsNotifier,

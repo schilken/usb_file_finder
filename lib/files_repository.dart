@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:usb_file_finder/cubit/device_notifier.dart';
+import 'package:usb_file_finder/providers/device_notifier.dart';
 
 class StorageDetails {
   const StorageDetails({

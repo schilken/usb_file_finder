@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/app_notifier.dart';
+import 'package:usb_file_finder/providers/app_notifier.dart';
 import 'package:usb_file_finder/toolbar_searchfield.dart';
 import 'package:usb_file_finder/toolbar_widget_toggle.dart';
 

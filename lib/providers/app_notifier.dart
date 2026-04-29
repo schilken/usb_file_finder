@@ -3,13 +3,13 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
-import 'package:usb_file_finder/cubit/app_state_models.dart';
-import 'package:usb_file_finder/cubit/settings_notifier.dart';
+import 'package:usb_file_finder/providers/app_state_models.dart';
+import 'package:usb_file_finder/providers/settings_notifier.dart';
 import 'package:usb_file_finder/event_bus.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/providers.dart';
 
-export 'package:usb_file_finder/cubit/app_state_models.dart';
+export 'package:usb_file_finder/providers/app_state_models.dart';
 
 class AppNotifier extends Notifier<AppState> {
   late FilesRepository _filesRepository;

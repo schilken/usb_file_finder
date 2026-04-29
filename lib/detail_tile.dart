@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:usb_file_finder/cubit/app_notifier.dart';
-import 'package:usb_file_finder/cubit/app_state_models.dart';
+import 'package:usb_file_finder/providers/app_notifier.dart';
+import 'package:usb_file_finder/providers/app_state_models.dart';
 import 'package:usb_file_finder/highlighted_text.dart';
 
 class DetailTile extends StatelessWidget {
