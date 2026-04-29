@@ -10,6 +10,7 @@ class StorageDetails {
     required this.fileCount,
     required this.isSelected,
     required this.isMounted,
+    this.path,
   });
 
   final String name;
@@ -17,17 +18,24 @@ class StorageDetails {
   final bool isSelected;
   final bool isMounted;
 
+  /// Full path to the storage root. Falls back to "/Volumes/[name]" if null.
+  final String? path;
+
+  String get fullPath => path ?? '/Volumes/$name';
+
   StorageDetails copyWith({
     String? name,
     int? fileCount,
     bool? isSelected,
     bool? isMounted,
+    String? path,
   }) {
     return StorageDetails(
       name: name ?? this.name,
       fileCount: fileCount ?? this.fileCount,
       isSelected: isSelected ?? this.isSelected,
       isMounted: isMounted ?? this.isMounted,
+      path: path ?? this.path,
     );
   }
 }
@@ -115,16 +123,35 @@ class FilesRepository {
     await readMountedDevices();
     final dir = await deviceDataDirectory;
     _entities = await dir.list().toList();
-    _devices = _entities.whereType<Directory>().map((entity) {
-      final storageName = p.basename(entity.path);
-      return StorageDetails(
-        name: storageName,
-        fileCount: 0,
-        isSelected: false,
-        isMounted: isMounted(storageName),
-      );
-    }).toList();
+    _devices = await Future.wait(
+      _entities.whereType<Directory>().map((entity) async {
+        final storageName = p.basename(entity.path);
+        final pathFile = File(p.join(entity.path, '.scan-path'));
+        String? storedPath;
+        if (pathFile.existsSync()) {
+          storedPath = pathFile.readAsStringSync().trim();
+          if (storedPath.isEmpty) storedPath = null;
+        }
+        return StorageDetails(
+          name: storageName,
+          fileCount: 0,
+          isSelected: false,
+          isMounted: storedPath != null
+              ? Directory(storedPath).existsSync()
+              : isMounted(storageName),
+          path: storedPath,
+        );
+      }).toList(),
+    );
     return _devices;
+  }
+
+  /// Persists the full scan path for a device so "Rescan" can find it later.
+  Future<void> saveDevicePath(String deviceName, String fullPath) async {
+    final dir = await deviceDataDirectory;
+    final pathFile = File(p.join(dir.path, deviceName, '.scan-path'));
+    await pathFile.parent.create(recursive: true);
+    await pathFile.writeAsString(fullPath);
   }
 
   List<StorageDetails> toggleDevice(int index, bool? value) {
@@ -186,7 +213,7 @@ class FilesRepository {
   }
 
   String volumePathForIndex(int index) {
-    return '/Volumes/${_devices[index].name}';
+    return _devices[index].fullPath;
   }
 
   StorageDetails storageDetailsForIndex(int index) {
@@ -260,11 +287,11 @@ class FilesRepository {
 
     final Directory directory =
         await Directory(outputFolder).create(recursive: true);
-    final File textListFile = File('${directory.path} /text-files.txt');
+    final File textListFile = File('${directory.path}/text-files.txt');
     final File audioListFile = File('${directory.path}/audio-files.txt');
     final File videoListFile = File('${directory.path}/video-files.txt');
-    final File miscListFile = File('${directory.path} /misc-files.txt');
-    final File zipListFile = File('${directory.path}  /zip-files.txt');
+    final File miscListFile = File('${directory.path}/misc-files.txt');
+    final File zipListFile = File('${directory.path}/zip-files.txt');
     final File imageListFile = File('${directory.path}/image-files.txt');
 
     return <String, File>{

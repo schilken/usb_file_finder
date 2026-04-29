@@ -145,9 +145,34 @@ class AppNotifier extends Notifier<AppState> {
 
   Future<void> scanVolume({required String volumePath}) async {
     final dir = Directory(volumePath);
+
+    if (!dir.existsSync()) {
+      state = DetailsLoaded(
+        currentSearchParameters: volumePath,
+        fileType: _fileType,
+        fileCount: 0,
+        primaryHitCount: 0,
+        secondaryHitCount: 0,
+        isScanRunning: false,
+        details: const [],
+        message: 'Storage not found: $volumePath',
+      );
+      return;
+    }
+
     final deviceName = p.basename(volumePath);
+    // Persist the full path so "Rescan Storage" works for non-/Volumes dirs.
+    await _filesRepository.saveDevicePath(deviceName, volumePath);
+
     final Map<String, File> extensionMap =
         await _filesRepository.buildExtensionMap(deviceName);
+
+    // Clear existing index files before rescanning so old entries are not kept.
+    for (final indexFile in extensionMap.values.toSet()) {
+      if (indexFile.existsSync()) {
+        indexFile.writeAsStringSync('');
+      }
+    }
 
     final Stream<File> scannedFiles = scanningFilesWithAsyncRecursive(dir);
 

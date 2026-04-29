@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/device_notifier.dart';
+import 'package:usb_file_finder/files_repository.dart';
 
 class DeviceListView extends ConsumerStatefulWidget {
   const DeviceListView({super.key});
@@ -21,15 +22,34 @@ class _DeviceListViewState extends ConsumerState<DeviceListView> {
   @override
   Widget build(BuildContext context) {
     final deviceState = ref.watch(deviceProvider);
-    if (deviceState is DeviceLoaded) {
+
+    if (deviceState is DeviceShowInfo) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showStorageInfoDialog(
+            context, deviceState.storageInfo, deviceState.storageDetails);
+      });
+    }
+
+    final devices = deviceState is DeviceLoaded
+        ? deviceState.devices
+        : deviceState is DeviceShowInfo
+            ? deviceState.devices
+            : null;
+    final deviceCount = deviceState is DeviceLoaded
+        ? deviceState.devices.length
+        : deviceState is DeviceShowInfo
+            ? deviceState.devices.length
+            : null;
+
+    if (devices != null) {
       return Column(
         children: [
           Expanded(
             child: ListView.builder(
               controller: ScrollController(),
-              itemCount: deviceState.devices.length,
+              itemCount: devices.length,
               itemBuilder: (context, index) {
-                final device = deviceState.devices[index];
+                final device = devices[index];
                 return CheckboxListTile(
                   tileColor:
                       device.isMounted ? Colors.green[100] : Colors.transparent,
@@ -94,7 +114,7 @@ class _DeviceListViewState extends ConsumerState<DeviceListView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('${deviceState.devices.length} Storages'),
+              Text('${deviceCount ?? 0} Storages'),
               MacosIconButton(
                 backgroundColor: Colors.transparent,
                 icon: const MacosIcon(CupertinoIcons.refresh),
@@ -110,5 +130,60 @@ class _DeviceListViewState extends ConsumerState<DeviceListView> {
     } else {
       return const Text('No devices');
     }
+  }
+
+  void _showStorageInfoDialog(
+      BuildContext context, StorageInfo info, StorageDetails details) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => AlertDialog(
+        title: Text(info.name),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _infoRow('Name', details.name),
+              _infoRow('Path', details.fullPath),
+              _infoRow('Status', info.isMounted ? 'Mounted' : 'Not mounted'),
+              _infoRow('Total files', '${info.totalFileCount}'),
+              const Divider(),
+              ...info.fileCountMap.entries.map(
+                (e) => _infoRow(e.key, '${e.value}'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              ref.read(deviceProvider.notifier).dismissInfo();
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      // If dismissed via barrier tap the state still needs to be reset
+      if (ref.read(deviceProvider) is DeviceShowInfo) {
+        ref.read(deviceProvider.notifier).dismissInfo();
+      }
+    });
+  }
+
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+          const SizedBox(width: 16),
+          Text(value),
+        ],
+      ),
+    );
   }
 }

@@ -31,6 +31,19 @@ class DeviceLoaded extends DeviceState {
   const DeviceLoaded({required this.devices, required this.deviceCount});
 }
 
+class DeviceShowInfo extends DeviceState {
+  final List<StorageDetails> devices;
+  final int deviceCount;
+  final StorageInfo storageInfo;
+  final StorageDetails storageDetails;
+  const DeviceShowInfo({
+    required this.devices,
+    required this.deviceCount,
+    required this.storageInfo,
+    required this.storageDetails,
+  });
+}
+
 class DeviceNotifier extends Notifier<DeviceState> {
   late FilesRepository _filesRepository;
 
@@ -60,9 +73,25 @@ class DeviceNotifier extends Notifier<DeviceState> {
     );
   }
 
+  void dismissInfo() {
+    final current = state as DeviceShowInfo;
+    state = DeviceLoaded(
+      devices: current.devices,
+      deviceCount: current.deviceCount,
+    );
+  }
+
   Future<void> menuAction(StorageAction action, int index) async {
     print('menuAction: $action');
-    final current = state as DeviceLoaded;
+    final s = state;
+    final DeviceLoaded current;
+    if (s is DeviceLoaded) {
+      current = s;
+    } else if (s is DeviceShowInfo) {
+      current = DeviceLoaded(devices: s.devices, deviceCount: s.deviceCount);
+    } else {
+      return;
+    }
     switch (action) {
       case StorageAction.selectAll:
       case StorageAction.selectAllOthers:
@@ -75,8 +104,14 @@ class DeviceNotifier extends Notifier<DeviceState> {
         );
         break;
       case StorageAction.showInfo:
-        await _filesRepository.createStorageInfoForDevice(
-            _filesRepository.storageDetailsForIndex(index));
+        final details = _filesRepository.storageDetailsForIndex(index);
+        final info = await _filesRepository.createStorageInfoForDevice(details);
+        state = DeviceShowInfo(
+          devices: current.devices,
+          deviceCount: current.deviceCount,
+          storageInfo: info,
+          storageDetails: details,
+        );
         break;
       case StorageAction.rescan:
         eventBus.fire(RescanDevice(index));
