@@ -23,6 +23,8 @@ class AppNotifier extends Notifier<AppState> {
   String _selectedFileType = '';
   StreamSubscription<File>? _subscription;
   bool _searchCaseSensitiv = false;
+  String? _primaryWordRaw;
+  String? _secondaryWordRaw;
   String _folderPath = '';
   List<String> _filteredFilePaths = [];
 
@@ -42,7 +44,7 @@ class AppNotifier extends Notifier<AppState> {
 
   String get _searchParameters {
     final parameters = <String>[];
-    parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'ignore Case');
+    parameters.add(_searchCaseSensitiv ? 'Case Sensitiv' : 'Ignore Case');
     if (_exclusionWords.isNotEmpty) {
       parameters.add('excluded: ${_exclusionWords.join(' ')}');
     }
@@ -50,17 +52,16 @@ class AppNotifier extends Notifier<AppState> {
   }
 
   void setPrimarySearchWord(String? word) {
-    _primaryWord = _searchCaseSensitiv ? word : word?.toLowerCase();
-    if (_primaryWord != null && (_primaryWord ?? '').isEmpty) {
-      _primaryWord = null;
-    }
+    _primaryWordRaw = (word != null && word.isEmpty) ? null : word;
+    _primaryWord =
+        _searchCaseSensitiv ? _primaryWordRaw : _primaryWordRaw?.toLowerCase();
   }
 
   void setSecondarySearchWord(String? word) {
-    _secondaryWord = _searchCaseSensitiv ? word : word?.toLowerCase();
-    if (_secondaryWord != null && (_secondaryWord ?? '').isEmpty) {
-      _secondaryWord = null;
-    }
+    _secondaryWordRaw = (word != null && word.isEmpty) ? null : word;
+    _secondaryWord = _searchCaseSensitiv
+        ? _secondaryWordRaw
+        : _secondaryWordRaw?.toLowerCase();
   }
 
   bool containsAnyExclusionWord(String path) {
@@ -112,6 +113,7 @@ class AppNotifier extends Notifier<AppState> {
       primaryWord: _primaryWord,
       secondaryWord: _secondaryWord,
       isScanRunning: false,
+      caseSensitive: _searchCaseSensitiv,
     );
   }
 
@@ -238,6 +240,13 @@ class AppNotifier extends Notifier<AppState> {
 
   void setCaseSentitiv(bool caseSensitiv) {
     _searchCaseSensitiv = caseSensitiv;
+    // Re-apply casing to stored raw words so the next search uses the correct form.
+    _primaryWord =
+        _searchCaseSensitiv ? _primaryWordRaw : _primaryWordRaw?.toLowerCase();
+    _secondaryWord = _searchCaseSensitiv
+        ? _secondaryWordRaw
+        : _secondaryWordRaw?.toLowerCase();
+    search();
   }
 
   Future<void> addExclusionWord(String exclusionWord) async {

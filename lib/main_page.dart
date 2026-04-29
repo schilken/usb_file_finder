@@ -55,8 +55,10 @@ class MainPage extends ConsumerWidget {
                       children: [
                         PushButton(
                           controlSize: ControlSize.large,
-                          color: Colors.white,
-                          child: const Text('Exclude'),
+                          color: Colors.blueGrey[700],
+                          child: Text('Exclude',
+                              style: TextStyle(fontSize: 14)
+                                  .copyWith(color: Colors.white)),
                           onPressed: () => _promptString(context, ref),
                         ),
                         const SizedBox(width: 8),
@@ -110,6 +112,7 @@ class MainPage extends ConsumerWidget {
                               HighlightedText(
                                 text: detail.filePath ?? 'no preview',
                                 highlights: highlights,
+                                caseSensitive: appState.caseSensitive,
                               ),
                               const SizedBox(width: 12),
                               const Spacer(),
@@ -125,6 +128,7 @@ class MainPage extends ConsumerWidget {
                           highlights: highlights,
                           displayLinesCount: appState.displayLineCount ?? 1,
                           fileType: appState.fileType,
+                          caseSensitive: appState.caseSensitive,
                         );
                       },
                       separatorBuilder: (BuildContext context, int index) {

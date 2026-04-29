@@ -5,7 +5,8 @@ import 'package:macos_ui/macos_ui.dart';
 typedef BoolCallback = void Function(bool);
 
 class ToolbarWidgetToggle extends ToolbarItem {
-  const ToolbarWidgetToggle({
+  // ignore: prefer_const_constructors_in_immutables
+  ToolbarWidgetToggle({
     super.key,
     this.value = false,
     required this.onChanged,
@@ -20,7 +21,7 @@ class ToolbarWidgetToggle extends ToolbarItem {
   @override
   Widget build(BuildContext context, ToolbarItemDisplayMode displayMode) {
     Widget widgetToggleButton = SizedBox(
-      width: 40,
+      width: 110,
       child: WidgetToggleButton(
         value: value,
         onChanged: onChanged,
@@ -37,7 +38,7 @@ class ToolbarWidgetToggle extends ToolbarItem {
   }
 }
 
-class WidgetToggleButton extends StatefulWidget {
+class WidgetToggleButton extends StatelessWidget {
   const WidgetToggleButton({
     super.key,
     required this.child,
@@ -48,39 +49,23 @@ class WidgetToggleButton extends StatefulWidget {
   final BoolCallback onChanged;
   final Widget child;
 
-  @override
-  State<WidgetToggleButton> createState() => _WidgetToggleButtonState();
-}
-
-class _WidgetToggleButtonState extends State<WidgetToggleButton> {
-  late bool currentValue;
-
-  @override
-  void initState() {
-    super.initState();
-    currentValue = widget.value;
-  }
-
-  _onPressed() {
-    setState(() {
-      currentValue = !currentValue;
-    });
-    widget.onChanged(currentValue);
+  void _onPressed() {
+    onChanged(!value);
   }
 
   @override
   Widget build(BuildContext context) {
-    return (widget.child is Icon)
+    return (child is Icon)
         ? MacosIconButton(
             onPressed: _onPressed,
-            backgroundColor: currentValue ? Colors.green[100] : Colors.white,
-            icon: widget.child,
+            backgroundColor: value ? Colors.green[100] : Colors.white,
+            icon: child,
           )
         : PushButton(
             onPressed: _onPressed,
             controlSize: ControlSize.large,
-            color: currentValue ? Colors.green[100] : Colors.white,
-            child: widget.child,
+            color: value ? Colors.green[100] : Colors.white,
+            child: child,
           );
   }
 }

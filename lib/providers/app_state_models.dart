@@ -3,11 +3,21 @@
 abstract class AppState {
   final String? primaryWord;
   final String? secondaryWord;
-  const AppState({this.primaryWord, this.secondaryWord});
+  final bool caseSensitive;
+  const AppState({
+    this.primaryWord,
+    this.secondaryWord,
+    this.caseSensitive = false,
+  });
 }
 
 class AppInitial extends AppState {
   const AppInitial();
+}
+
+class AppInitialWithCase extends AppState {
+  const AppInitialWithCase({required bool caseSensitive})
+      : super(caseSensitive: caseSensitive);
 }
 
 class Detail {
@@ -56,6 +66,7 @@ class DetailsLoaded extends AppState {
     this.message,
     super.primaryWord,
     super.secondaryWord,
+    super.caseSensitive,
     this.displayLineCount,
   });
 
@@ -69,6 +80,7 @@ class DetailsLoaded extends AppState {
     String? message,
     int? displayLineCount,
     bool? isScanRunning,
+    bool? caseSensitive,
   }) {
     return DetailsLoaded(
       fileType: fileType ?? this.fileType,
@@ -81,6 +93,7 @@ class DetailsLoaded extends AppState {
       message: message ?? this.message,
       displayLineCount: displayLineCount ?? this.displayLineCount,
       isScanRunning: isScanRunning ?? this.isScanRunning,
+      caseSensitive: caseSensitive ?? this.caseSensitive,
     );
   }
 }

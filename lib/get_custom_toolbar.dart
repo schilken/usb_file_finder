@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/providers/app_notifier.dart';
@@ -7,6 +8,8 @@ import 'package:usb_file_finder/toolbar_searchfield.dart';
 import 'package:usb_file_finder/toolbar_widget_toggle.dart';
 
 ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
+  final appState = ref.watch(appProvider);
+  final isCaseSensitive = appState.caseSensitive;
   return ToolBar(
     title: const Text('USB File Finder'),
     titleWidth: 250.0,
@@ -62,9 +65,16 @@ ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
         },
       ),
       ToolbarWidgetToggle(
+          value: isCaseSensitive,
           onChanged: ref.read(appProvider.notifier).setCaseSentitiv,
-          child: const Text('Aa'),
-          tooltipMessage: 'Search case sentitiv'),
+          child: Text(
+            isCaseSensitive ? 'Case Sensitive' : 'Ignore Case',
+            style: const TextStyle(fontSize: 12)
+                .copyWith(color: isCaseSensitive ? Colors.black : Colors.white),
+          ),
+          tooltipMessage: isCaseSensitive
+              ? 'Switch to ignore case'
+              : 'Switch to case sensitive'),
       ToolBarIconButton(
         label: "Search",
         icon: const MacosIcon(CupertinoIcons.search),

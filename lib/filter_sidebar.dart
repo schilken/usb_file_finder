@@ -40,13 +40,12 @@ class FilterSidebar extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         const SizedBox(
-          height: 315,
+          height: 600,
           width: 220,
           child: Material(
             child: DeviceListView(),
           ),
         ),
-        const SizedBox(height: 32),
         const SizedBox(height: 32),
       ],
     );

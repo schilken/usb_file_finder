@@ -15,11 +15,13 @@ class DetailTile extends StatelessWidget {
     required this.highlights,
     required this.displayLinesCount,
     this.fileType,
+    this.caseSensitive = true,
   });
   final Detail detail;
   final List<String> highlights;
   final int displayLinesCount;
   final String? fileType;
+  final bool caseSensitive;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class DetailTile extends StatelessWidget {
       title: HighlightedText(
         text: detail.filePath ?? 'no filepath',
         highlights: highlights,
+        caseSensitive: caseSensitive,
       ),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 4),
@@ -73,7 +76,7 @@ class DetailTile extends StatelessWidget {
               text: detail.folderPath ?? 'no filename',
               style: const TextStyle(color: Colors.blueGrey),
               highlights: highlights,
-              caseSensitive: false,
+              caseSensitive: caseSensitive,
             ),
           ],
         ),
