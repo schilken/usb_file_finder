@@ -55,14 +55,15 @@ Remove `flutter_bloc`, `bloc`, `equatable`; add `flutter_riverpod`.
 ### Phase 4: Migrate DeviceCubit + StatisticsCubit
 
 - **Goal**: remaining cubits replaced; flutter_bloc fully removed
-- [ ] `lib/cubit/device_notifier.dart` (new) — `DeviceNotifier extends StateNotifier<DeviceState>`; mirror `initialize()`, `toggleDevice()`, `menuAction()`
-- [ ] `lib/cubit/statistics_notifier.dart` (new) — `StatisticsNotifier extends StateNotifier<StatisticsState>`; mirror `load()`
-- [ ] `lib/providers.dart` — add `deviceProvider`, `statisticsProvider`
-- [ ] `lib/device_list_view.dart` — replace `BlocProvider<DeviceCubit>` + `BlocBuilder` with `ref.watch(deviceProvider)` / `ref.read(deviceProvider.notifier)`; `ConsumerWidget`
-- [ ] `lib/statistics_page.dart` — replace `BlocProvider<StatisticsCubit>` + `BlocBuilder` with Riverpod equivalents; `ConsumerWidget`
-- [ ] `pubspec.yaml` — remove `flutter_bloc`, `bloc`; remove `equatable` if no longer used elsewhere; remove `provider` if unused
-- [ ] Delete all remaining cubit files; delete `lib/cubit/` directory if empty
-- [ ] Verify: `flutter analyze` && `flutter test`
+- [x] `lib/cubit/device_notifier.dart` (new) — `DeviceNotifier extends Notifier<DeviceState>`; `StorageAction` enum defined here; mirrors `initialize()`, `toggleDevice()`, `menuAction()`
+- [x] `lib/cubit/statistics_notifier.dart` (new) — `StatisticsNotifier extends Notifier<StatisticsState>`; mirrors `load()`
+- [x] `lib/providers.dart` — added `deviceProvider`, `statisticsProvider` exports
+- [x] `lib/device_list_view.dart` — replaced `BlocProvider<DeviceCubit>` + `BlocBuilder` with `ref.watch(deviceProvider)`; converted to `ConsumerStatefulWidget`
+- [x] `lib/statistics_page.dart` — replaced `BlocProvider<StatisticsCubit>` + `BlocBuilder` with `ref.watch(statisticsProvider)`; `ConsumerWidget`
+- [x] `pubspec.yaml` — removed `flutter_bloc`, `bloc`, `equatable`, `provider`
+- [x] `lib/files_repository.dart` — removed `equatable` import; `StorageDetails`/`StorageInfo` are plain classes; imports `StorageAction` from `device_notifier.dart`
+- [x] Delete all remaining cubit files — deleted `device_cubit.dart`, `device_state.dart`, `statistics_cubit.dart`, `statistics_state.dart`
+- [x] Verify: `flutter analyze` (0 errors, 59 pre-existing warnings) && `flutter test` (pre-existing failure only)
 
 ## Risks / Out of scope
 

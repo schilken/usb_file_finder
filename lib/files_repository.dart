@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:usb_file_finder/cubit/device_cubit.dart';
+import 'package:usb_file_finder/cubit/device_notifier.dart';
 
-class StorageDetails extends Equatable {
+class StorageDetails {
   const StorageDetails({
     required this.name,
     required this.fileCount,
@@ -31,13 +30,9 @@ class StorageDetails extends Equatable {
       isMounted: isMounted ?? this.isMounted,
     );
   }
-
-  @override
-  List<Object?> get props => [name, fileCount, isSelected, isMounted];
 }
 
-
-class StorageInfo extends Equatable {
+class StorageInfo {
   const StorageInfo({
     required this.name,
     required this.totalFileCount,
@@ -57,34 +52,7 @@ class StorageInfo extends Equatable {
   final int? scanSpeed;
   final bool isSelected;
   final bool isMounted;
-
-  // StorageDetails copyWith({
-  //   String? name,
-  //   int? fileCount,
-  //   bool? isSelected,
-  //   bool? isMounted,
-  // }) {
-  //   return StorageDetails(
-  //     name: name ?? this.name,
-  //     fileCount: fileCount ?? this.fileCount,
-  //     isSelected: isSelected ?? this.isSelected,
-  //     isMounted: isMounted ?? this.isMounted,
-  //   );
-  // }
-
-  @override
-  List<Object?> get props => [
-        name,
-        totalFileCount,
-        isSelected,
-        isMounted,
-        fileCountMap,
-        dateOfLastScan,
-        scanDuration,
-        scanSpeed
-      ];
 }
-
 
 class FilesRepository {
   List<FileSystemEntity> _entities = [];
@@ -345,6 +313,4 @@ class FilesRepository {
       '.app': miscListFile,
     };
   }
-  
-
 }

@@ -10,8 +10,26 @@ export 'package:usb_file_finder/cubit/app_notifier.dart'
         DetailsLoading,
         DetailsLoaded,
         Detail;
+export 'package:usb_file_finder/cubit/device_notifier.dart'
+    show
+        deviceProvider,
+        DeviceNotifier,
+        DeviceState,
+        DeviceInitial,
+        DeviceLoading,
+        DeviceLoaded,
+        StorageAction;
 export 'package:usb_file_finder/cubit/settings_notifier.dart'
     show settingsProvider, SettingsNotifier, SettingsState;
+export 'package:usb_file_finder/cubit/statistics_notifier.dart'
+    show
+        statisticsProvider,
+        StatisticsNotifier,
+        StatisticsState,
+        StatisticsInitial,
+        StatisticsLoading,
+        StatisticsLoaded,
+        Frequency;
 
 final filesRepositoryProvider = Provider<FilesRepository>((ref) {
   return FilesRepository();
