@@ -41,14 +41,16 @@ Remove `flutter_bloc`, `bloc`, `equatable`; add `flutter_riverpod`.
 ### Phase 3: Migrate AppCubit → AppNotifier
 
 - **Goal**: `AppCubit` replaced; all UI consumers updated
-- [ ] `lib/cubit/app_notifier.dart` (new) — `AppNotifier extends StateNotifier<AppState>`; keep `AppState` / `DetailsLoaded` / `DetailsLoading` / `AppInitial` as plain classes; mirror all methods (`search`, `scanVolume`, `cancelScan`, etc.)
-- [ ] `lib/providers.dart` — add `appProvider` (`StateNotifierProvider`); inject `settingsProvider` notifier + `filesRepositoryProvider`
-- [ ] `lib/main_page.dart` — replace `BlocBuilder<AppCubit>` + `context.read<AppCubit>` with `ref.watch(appProvider)` / `ref.read(appProvider.notifier)`; convert to `ConsumerWidget`/`ConsumerStatefulWidget`
-- [ ] `lib/get_custom_toolbar.dart` — replace all `context.read<AppCubit>()` calls with `ref.read(appProvider.notifier)`
-- [ ] `lib/detail_tile.dart` — replace `context.read<AppCubit>().openEditor` with `ref.read(appProvider.notifier).openEditor`
-- [ ] `lib/main.dart` — remove `BlocProvider` for `AppCubit`
-- [ ] Delete `lib/cubit/app_cubit.dart` + `lib/cubit/app_state.dart` once unused
-- [ ] Verify: `flutter analyze` && `flutter test`
+- [x] `lib/cubit/app_notifier.dart` (new) — `AppNotifier extends Notifier<AppState>`; state classes extracted to `app_state_models.dart`; all methods mirrored
+- [x] `lib/providers.dart` — add `appProvider` (`NotifierProvider`); exports `AppNotifier`, state types
+- [x] `lib/main_page.dart` — replaced `BlocBuilder<AppCubit>` + `context.read<AppCubit>` with `ref.watch(appProvider)` / `ref.read(appProvider.notifier)`; converted to `ConsumerWidget`
+- [x] `lib/get_custom_toolbar.dart` — replaced all `context.read<AppCubit>()` with `ref.read(appProvider.notifier)`; signature updated to `(BuildContext, WidgetRef)`
+- [x] `lib/detail_tile.dart` — replaced `context.read<AppCubit>()` with `ref.read(appProvider.notifier)`; `NameWithOpenInEditor` → `ConsumerWidget`
+- [x] `lib/main.dart` — removed `BlocProvider` for `AppCubit`, removed `FutureBuilder<SettingsCubit>`, removed `RepositoryProvider`; `App` is now a plain `StatelessWidget`
+- [x] Delete `lib/cubit/app_cubit.dart` + `lib/cubit/app_state.dart` — deleted
+- [x] Delete `lib/cubit/settings_cubit.dart` + `lib/cubit/settings_state.dart` — deleted (deferred from Phase 2)
+- [x] `lib/statistics_page.dart` — converted to `ConsumerWidget` to pass `ref` to `getCustomToolBar` (full migration deferred to Phase 4)
+- [x] Verify: `flutter analyze` (0 errors) && `flutter test` (pre-existing failure only)
 
 ### Phase 4: Migrate DeviceCubit + StatisticsCubit
 

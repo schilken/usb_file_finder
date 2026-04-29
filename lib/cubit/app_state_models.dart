@@ -1,19 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'app_cubit.dart';
 
-@immutable
-abstract class AppState extends Equatable {
+abstract class AppState {
   final String? primaryWord;
   final String? secondaryWord;
-  const AppState({
-    this.primaryWord,
-    this.secondaryWord,
-  });
+  const AppState({this.primaryWord, this.secondaryWord});
 }
 
 class AppInitial extends AppState {
-  @override
-  List<Object?> get props => [];
+  const AppInitial();
 }
 
 class Detail {
@@ -34,31 +28,10 @@ class Detail {
     this.filePathName,
     this.projectPathName,
   });
-
-  Detail copyWith({
-    String? folderPath,
-    String? storageName,
-    String? filePath,
-    String? imageUrl,
-    int? lineNumber,
-    String? filePathName,
-    String? projectPathName,
-  }) {
-    return Detail(
-      folderPath: folderPath ?? folderPath,
-      storageName: storageName ?? storageName,
-      filePath: filePath ?? filePath,
-      imageUrl: imageUrl ?? this.imageUrl,
-      lineNumber: lineNumber ?? this.lineNumber,
-      filePathName: filePathName ?? this.filePathName,
-      projectPathName: projectPathName ?? this.projectPathName,
-    );
-  }
 }
 
 class DetailsLoading extends AppState {
-  @override
-  List<Object?> get props => [];
+  const DetailsLoading();
 }
 
 class DetailsLoaded extends AppState {
@@ -110,17 +83,4 @@ class DetailsLoaded extends AppState {
       isScanRunning: isScanRunning ?? this.isScanRunning,
     );
   }
-  
-  @override
-  List<Object?> get props => [
-        fileCount,
-        isScanRunning,
-        message,
-        currentSearchParameters,
-        fileType,
-        details,
-        primaryHitCount,
-        secondaryHitCount,
-        displayLineCount
-      ];
 }

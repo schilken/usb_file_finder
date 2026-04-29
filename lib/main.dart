@@ -4,14 +4,10 @@ import 'package:collection/collection.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:macos_window_utils/macos_window_utils.dart';
 import 'package:usb_file_finder/about_window.dart';
-import 'package:usb_file_finder/cubit/app_cubit.dart';
-import 'package:usb_file_finder/cubit/settings_cubit.dart';
-import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/filter_sidebar.dart';
 import 'package:usb_file_finder/main_page.dart';
 import 'package:usb_file_finder/settings_window.dart';
@@ -50,39 +46,16 @@ Future<void> main(List<String> args) async {
 class App extends StatelessWidget {
   const App({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<SettingsCubit>(
-        future: SettingsCubit().initialize(),
-        builder: (context, snapshot) {
-          print('builder: ${snapshot.hasData}');
-          if (!snapshot.hasData) {
-            return Container();
-          }
-          return RepositoryProvider(
-            create: (context) => FilesRepository(),
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider.value(
-                  value: snapshot.data!,
-                ),
-                BlocProvider(
-                  create: (context) => AppCubit(context.read<SettingsCubit>(),
-                      context.read<FilesRepository>()),
-                ),
-              ],
-              child: MacosApp(
-                title: 'usb_file_finder',
-                theme: MacosThemeData.light(),
-                darkTheme: MacosThemeData.dark(),
-                themeMode: ThemeMode.system,
-                home: const MainView(),
-                debugShowCheckedModeBanner: false,
-              ),
-            ),
-          );
-        });
+    return MacosApp(
+      title: 'usb_file_finder',
+      theme: MacosThemeData.light(),
+      darkTheme: MacosThemeData.dark(),
+      themeMode: ThemeMode.system,
+      home: const MainView(),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
 

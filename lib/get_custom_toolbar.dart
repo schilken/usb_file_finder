@@ -1,12 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:provider/provider.dart';
-import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/cubit/app_notifier.dart';
 import 'package:usb_file_finder/toolbar_searchfield.dart';
 import 'package:usb_file_finder/toolbar_widget_toggle.dart';
 
-ToolBar getCustomToolBar(BuildContext context) {
+ToolBar getCustomToolBar(BuildContext context, WidgetRef ref) {
   return ToolBar(
     title: const Text('USB File Finder'),
     titleWidth: 250.0,
@@ -32,8 +32,8 @@ ToolBar getCustomToolBar(BuildContext context) {
               String? selectedDirectory = await FilePicker.platform
                   .getDirectoryPath(initialDirectory: '/Volumes');
               if (selectedDirectory != null) {
-                context
-                    .read<AppCubit>()
+                ref
+                    .read(appProvider.notifier)
                     .scanVolume(volumePath: selectedDirectory);
               }
             },
@@ -46,41 +46,36 @@ ToolBar getCustomToolBar(BuildContext context) {
       ToolbarSearchfield(
         placeholder: 'Primary word',
         onChanged: (word) =>
-            context.read<AppCubit>().setPrimarySearchWord(word),
+            ref.read(appProvider.notifier).setPrimarySearchWord(word),
         onSubmitted: (word) {
-          context.read<AppCubit>().setPrimarySearchWord(word);
-          context.read<AppCubit>().search();
+          ref.read(appProvider.notifier).setPrimarySearchWord(word);
+          ref.read(appProvider.notifier).search();
         },
       ),
       ToolbarSearchfield(
         placeholder: 'Secondary word',
         onChanged: (word) =>
-            context.read<AppCubit>().setSecondarySearchWord(word),
+            ref.read(appProvider.notifier).setSecondarySearchWord(word),
         onSubmitted: (word) {
-          context.read<AppCubit>().setSecondarySearchWord(word);
-          context.read<AppCubit>().search();
+          ref.read(appProvider.notifier).setSecondarySearchWord(word);
+          ref.read(appProvider.notifier).search();
         },
       ),
       ToolbarWidgetToggle(
-          onChanged: context.read<AppCubit>().setCaseSentitiv,
-        child: const Text('Aa'),
-          tooltipMessage: 'Search case sentitiv'
-      ),
+          onChanged: ref.read(appProvider.notifier).setCaseSentitiv,
+          child: const Text('Aa'),
+          tooltipMessage: 'Search case sentitiv'),
       ToolBarIconButton(
         label: "Search",
-        icon: const MacosIcon(
-          CupertinoIcons.search,
-        ),
-        onPressed: () => context.read<AppCubit>().search(),
+        icon: const MacosIcon(CupertinoIcons.search),
+        onPressed: () => ref.read(appProvider.notifier).search(),
         showLabel: false,
-          tooltipMessage: 'Start new Search'
+        tooltipMessage: 'Start new Search',
       ),
       const ToolBarDivider(),
       ToolBarIconButton(
         label: "Share",
-        icon: const MacosIcon(
-          CupertinoIcons.share,
-        ),
+        icon: const MacosIcon(CupertinoIcons.share),
         onPressed: () => debugPrint("pressed"),
         showLabel: false,
       ),

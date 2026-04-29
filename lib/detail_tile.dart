@@ -2,10 +2,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:provider/provider.dart';
-
-import 'package:usb_file_finder/cubit/app_cubit.dart';
+import 'package:usb_file_finder/cubit/app_notifier.dart';
+import 'package:usb_file_finder/cubit/app_state_models.dart';
 import 'package:usb_file_finder/highlighted_text.dart';
 
 class DetailTile extends StatelessWidget {
@@ -33,47 +33,45 @@ class DetailTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              detail.storageName ?? 'no storage',
-            ),
+            Text(detail.storageName ?? 'no storage'),
             const SizedBox(width: 12),
-            MacosPulldownButton(
-              icon: CupertinoIcons.ellipsis_circle,
-              items: [
-                MacosPulldownMenuItem(
-                  title: const Text('hide selected file'),
-                  onTap: () => debugPrint("hide selected file"),
-                ),
-                MacosPulldownMenuItem(
-                  title: const Text('hide all in same folder'),
-                  onTap: () => debugPrint("hide all in same folder"),
-                ),
-                MacosPulldownMenuItem(
-                  title: const Text('hide all with same extension'),
-                  onTap: () => debugPrint("hide all with same extension"),
-                ),
-                const MacosPulldownMenuDivider(),
-                MacosPulldownMenuItem(
-                  title: const Text('show only files of this folder'),
-                  onTap: () => debugPrint("show only files of this folder"),
-                ),
-                const MacosPulldownMenuDivider(),
-                MacosPulldownMenuItem(
-                  title: const Text('Show in Finder'),
-                  onTap: () => detail.filePathName == null
-                      ? null
-                      : context
-                          .read<AppCubit>()
-                          .showInFinder(detail.filePathName!),
-                ),
-              ],
-            ),
+            Consumer(builder: (context, ref, _) {
+              return MacosPulldownButton(
+                icon: CupertinoIcons.ellipsis_circle,
+                items: [
+                  MacosPulldownMenuItem(
+                    title: const Text('hide selected file'),
+                    onTap: () => debugPrint("hide selected file"),
+                  ),
+                  MacosPulldownMenuItem(
+                    title: const Text('hide all in same folder'),
+                    onTap: () => debugPrint("hide all in same folder"),
+                  ),
+                  MacosPulldownMenuItem(
+                    title: const Text('hide all with same extension'),
+                    onTap: () => debugPrint("hide all with same extension"),
+                  ),
+                  const MacosPulldownMenuDivider(),
+                  MacosPulldownMenuItem(
+                    title: const Text('show only files of this folder'),
+                    onTap: () => debugPrint("show only files of this folder"),
+                  ),
+                  const MacosPulldownMenuDivider(),
+                  MacosPulldownMenuItem(
+                    title: const Text('Show in Finder'),
+                    onTap: () => detail.filePathName == null
+                        ? null
+                        : ref
+                            .read(appProvider.notifier)
+                            .showInFinder(detail.filePathName!),
+                  ),
+                ],
+              );
+            }),
             const SizedBox(width: 12),
             HighlightedText(
               text: detail.folderPath ?? 'no filename',
-              style: const TextStyle(
-                color: Colors.blueGrey,
-              ),
+              style: const TextStyle(color: Colors.blueGrey),
               highlights: highlights,
               caseSensitive: false,
             ),
@@ -82,10 +80,9 @@ class DetailTile extends StatelessWidget {
       ),
     );
   }
-
 }
 
-class NameWithOpenInEditor extends StatelessWidget {
+class NameWithOpenInEditor extends ConsumerWidget {
   const NameWithOpenInEditor({
     super.key,
     required this.name,
@@ -97,7 +94,7 @@ class NameWithOpenInEditor extends StatelessWidget {
   final String? path;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         HighlightedText(
@@ -105,12 +102,10 @@ class NameWithOpenInEditor extends StatelessWidget {
           highlights: highlights ?? [],
         ),
         MacosIconButton(
-          icon: const MacosIcon(
-            CupertinoIcons.link,
-          ),
+          icon: const MacosIcon(CupertinoIcons.link),
           shape: BoxShape.circle,
           onPressed: () {
-            context.read<AppCubit>().openEditor(path);
+            ref.read(appProvider.notifier).openEditor(path);
           },
         ),
       ],

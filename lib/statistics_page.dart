@@ -1,22 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:usb_file_finder/cubit/statistics_cubit.dart';
 import 'package:usb_file_finder/files_repository.dart';
 import 'package:usb_file_finder/get_custom_toolbar.dart';
 
-class StatisticsPage extends StatelessWidget {
+class StatisticsPage extends ConsumerWidget {
   const StatisticsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     print('StatisticsPage.build');
     return BlocProvider<StatisticsCubit>(
       create: (context) => StatisticsCubit(context.read<FilesRepository>()),
       child: Builder(builder: (context) {
         return MacosScaffold(
-          toolBar: getCustomToolBar(context),
+          toolBar: getCustomToolBar(context, ref),
           children: [
             ContentArea(
               builder: (context, scrollController) {
