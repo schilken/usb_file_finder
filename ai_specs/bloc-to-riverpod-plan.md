@@ -31,12 +31,12 @@ Remove `flutter_bloc`, `bloc`, `equatable`; add `flutter_riverpod`.
 ### Phase 2: Migrate SettingsCubit → SettingsNotifier
 
 - **Goal**: `SettingsCubit` replaced by `StateNotifier`; `filter_sidebar.dart` reads from Riverpod
-- [ ] `lib/cubit/settings_notifier.dart` (new) — `SettingsState` as plain class (no Equatable), `SettingsNotifier extends StateNotifier<SettingsState>`, mirror `initialize()` / `setFileTypeFilter()` / `emitSettingsLoaded()` logic
-- [ ] `lib/providers.dart` — add `settingsProvider` (`StateNotifierProvider<SettingsNotifier, SettingsState>`); initialize via `FutureProvider` or `AsyncNotifier`
-- [ ] `lib/filter_sidebar.dart` — replace `BlocBuilder<SettingsCubit>` + `context.read<SettingsCubit>` with `ref.watch(settingsProvider)` / `ref.read(settingsProvider.notifier)`; convert to `ConsumerWidget`
-- [ ] `lib/main.dart` — remove `BlocProvider.value(value: snapshot.data!)` for SettingsCubit; remove `FutureBuilder<SettingsCubit>` wrapper; use `settingsProvider` initialization instead
-- [ ] Delete `lib/cubit/settings_cubit.dart` and `lib/cubit/settings_state.dart` once unused
-- [ ] Verify: `flutter analyze` && `flutter test`
+- [x] `lib/cubit/settings_notifier.dart` (new) — `SettingsState` as plain class (no Equatable), `SettingsNotifier extends AsyncNotifier<SettingsState>`, mirror `initialize()` / `setFileTypeFilter()` / `emitSettingsLoaded()` logic
+- [x] `lib/providers.dart` — add `settingsProvider` (`AsyncNotifierProvider<SettingsNotifier, SettingsState>`); exports re-exported from notifier file
+- [x] `lib/filter_sidebar.dart` — replace `BlocBuilder<SettingsCubit>` + `context.read<SettingsCubit>` with `ref.watch(settingsProvider)` / `ref.read(settingsProvider.notifier)`; converted to `ConsumerWidget`
+- [ ] `lib/main.dart` — remove `BlocProvider.value(value: snapshot.data!)` for SettingsCubit; remove `FutureBuilder<SettingsCubit>` wrapper; use `settingsProvider` initialization instead — **deferred to Phase 3** (AppCubit still depends on SettingsCubit)
+- [ ] Delete `lib/cubit/settings_cubit.dart` and `lib/cubit/settings_state.dart` once unused — **deferred: still needed by AppCubit until Phase 3**
+- [x] Verify: `flutter analyze` (0 errors) && `flutter test` (pre-existing failure only)
 
 ### Phase 3: Migrate AppCubit → AppNotifier
 
